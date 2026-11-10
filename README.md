@@ -176,7 +176,8 @@ Para cada veículo, o sistema procura a última OS entregue com um serviço peri
 |-------|--------|-------------|
 | 1 | Estrutura de pastas e Bootstrap | Guilherme |
 | 1 | Planejamento e requisitos (este README) | Luís |
-| 1 | Interface inicial: páginas, menu, identidade visual e tema | Luís |
+| 1 | Wireframes do Painel, Clientes e Veículos | Luís |
+| 1 | Wireframes de Ordens de serviço, Catálogo e Revisões | Guilherme |
 | 2 | Camada de dados (`localStorage`) e funções de validação | Guilherme |
 | 2 | CRUD de clientes | Luís |
 | 2 | CRUD do catálogo | Guilherme |
