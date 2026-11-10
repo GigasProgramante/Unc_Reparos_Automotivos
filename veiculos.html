@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Veículos · UnC Reparos Automotivos</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+</head>
+<body class="bg-body-tertiary">
+    <nav class="navbar navbar-expand-lg bg-dark" data-bs-theme="dark">
+        <div class="container">
+            <a class="navbar-brand" href="index.html"><i class="bi bi-wrench-adjustable"></i> UnC Reparos Automotivos</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menu" aria-controls="menu" aria-expanded="false" aria-label="Abrir menu">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="menu">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="index.html">Painel</a></li>
+                    <li class="nav-item"><a class="nav-link" href="ordens.html">Ordens de serviço</a></li>
+                    <li class="nav-item"><a class="nav-link" href="clientes.html">Clientes</a></li>
+                    <li class="nav-item"><a class="nav-link active" aria-current="page" href="veiculos.html">Veículos</a></li>
+                    <li class="nav-item"><a class="nav-link" href="catalogo.html">Catálogo</a></li>
+                    <li class="nav-item"><a class="nav-link" href="revisoes.html">Revisões</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container py-4">
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
+            <h1 class="h2 mb-0">Veículos</h1>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalVeiculo"><i class="bi bi-plus-lg"></i> Novo veículo</button>
+        </div>
+
+        <!-- Pesquisa, filtros e ordenação -->
+        <form class="row g-2 mb-3" role="search">
+            <div class="col-md-5"><input type="search" class="form-control" placeholder="Pesquisar por placa, modelo ou dono"></div>
+            <div class="col-6 col-md-2">
+                <select class="form-select"><option>Todas as marcas</option><option>Chevrolet</option><option>Fiat</option><option>Volkswagen</option></select>
+            </div>
+            <div class="col-6 col-md-2">
+                <select class="form-select"><option>Todos</option><option>Na oficina</option><option>Liberados</option></select>
+            </div>
+            <div class="col-md-3">
+                <select class="form-select"><option>Placa (A–Z)</option><option>Mais novos</option><option>Maior quilometragem</option></select>
+            </div>
+        </form>
+
+        <section class="row g-3">
+                <div class="col-sm-6 col-lg-4">
+                    <div class="card h-100 placeholder-glow">
+                        <div class="card-body">
+                            <span class="badge text-bg-light border font-monospace mb-2">ABC1D23</span>
+                            <h2 class="h5 card-title"><span class="placeholder col-7"></span></h2>
+                            <p class="card-text small mb-1">Marca / ano: <span class="placeholder col-5"></span></p>
+                            <p class="card-text small mb-1">Km: <span class="placeholder col-4"></span></p>
+                            <p class="card-text small mb-0">Dono: <span class="placeholder col-6"></span></p>
+                        </div>
+                        <div class="card-footer bg-transparent d-flex gap-2">
+                            <button class="btn btn-sm btn-primary" disabled>Nova OS</button>
+                            <button class="btn btn-sm btn-outline-primary" disabled>Editar</button>
+                            <button class="btn btn-sm btn-outline-danger" disabled>Excluir</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-lg-4">
+                    <div class="card h-100 placeholder-glow">
+                        <div class="card-body">
+                            <span class="badge text-bg-light border font-monospace mb-2">ABC1D23</span>
+                            <h2 class="h5 card-title"><span class="placeholder col-7"></span></h2>
+                            <p class="card-text small mb-1">Marca / ano: <span class="placeholder col-5"></span></p>
+                            <p class="card-text small mb-1">Km: <span class="placeholder col-4"></span></p>
+                            <p class="card-text small mb-0">Dono: <span class="placeholder col-6"></span></p>
+                        </div>
+                        <div class="card-footer bg-transparent d-flex gap-2">
+                            <button class="btn btn-sm btn-primary" disabled>Nova OS</button>
+                            <button class="btn btn-sm btn-outline-primary" disabled>Editar</button>
+                            <button class="btn btn-sm btn-outline-danger" disabled>Excluir</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-lg-4">
+                    <div class="card h-100 placeholder-glow">
+                        <div class="card-body">
+                            <span class="badge text-bg-light border font-monospace mb-2">ABC1D23</span>
+                            <h2 class="h5 card-title"><span class="placeholder col-7"></span></h2>
+                            <p class="card-text small mb-1">Marca / ano: <span class="placeholder col-5"></span></p>
+                            <p class="card-text small mb-1">Km: <span class="placeholder col-4"></span></p>
+                            <p class="card-text small mb-0">Dono: <span class="placeholder col-6"></span></p>
+                        </div>
+                        <div class="card-footer bg-transparent d-flex gap-2">
+                            <button class="btn btn-sm btn-primary" disabled>Nova OS</button>
+                            <button class="btn btn-sm btn-outline-primary" disabled>Editar</button>
+                            <button class="btn btn-sm btn-outline-danger" disabled>Excluir</button>
+                        </div>
+                    </div>
+                </div>
+        </section>
+    </main>
+
+    <!-- Formulário de cadastro -->
+    <div class="modal fade" id="modalVeiculo" tabindex="-1" aria-labelledby="tituloModalVeiculo">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title fs-5" id="tituloModalVeiculo">Novo veículo</h2>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body">
+                    <form class="row g-3">
+                        <div class="col-12"><label class="form-label" for="dono">Dono</label><select class="form-select" id="dono"><option>Selecione o cliente</option></select></div>
+                        <div class="col-sm-5"><label class="form-label" for="placa">Placa</label><input class="form-control text-uppercase" id="placa" placeholder="ABC1D23"></div>
+                        <div class="col-sm-7"><label class="form-label" for="marca">Marca</label><select class="form-select" id="marca"><option>Selecione</option></select></div>
+                        <div class="col-12"><label class="form-label" for="modelo">Modelo</label><input class="form-control" id="modelo" placeholder="Ex.: Onix LT 1.0"></div>
+                        <div class="col-4"><label class="form-label" for="ano">Ano</label><input type="number" class="form-control" id="ano"></div>
+                        <div class="col-4"><label class="form-label" for="cor">Cor</label><input class="form-control" id="cor"></div>
+                        <div class="col-4"><label class="form-label" for="km">Km atual</label><input type="number" class="form-control" id="km"></div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" disabled>Salvar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="border-top py-3 mt-5">
+        <div class="container text-body-secondary small">UnC Reparos Automotivos · Desenvolvimento Web I</div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/script.js"></script>
+</body>
+</html>
