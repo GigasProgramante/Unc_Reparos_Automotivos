@@ -31,10 +31,10 @@
     <main class="container py-4">
         <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
             <h1 class="h2 mb-0">Ordens de serviço</h1>
-            
+            <a href="#nova-ordem" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Nova ordem de serviço</a>
         </div>
 
-        <section class="card">
+        <section class="card mb-4">
             <div class="table-responsive">
                 <table class="table table-hover align-middle mb-0">
                     <thead>
@@ -59,62 +59,65 @@
             </div>
         </section>
 
-        <a href="#nova-ordem" class="btn btn-primary mt-2"><i class="bi bi-plus-lg"></i> Nova ordem de serviço</a>
+        <section id="nova-ordem" class="card">
+            <div class="card-header fw-semibold">Nova ordem de serviço</div>
+            <form id="form-ordem" class="card-body">
 
-        <div class="d-flex flex-wrap row py-4">
-            <section class="col-lg-7">
-                <div class="card h-100">
-                    <div class="card-header fw-semibold">Nova ordem de serviço</div>
-                        <ul class="list-group list-group-flush">
-                            <li class="list-group-item placeholder-glow">
-                                <div class="mb-3">
-                                    <label for="inputCliente" class="form-label">Cliente</label>
-                                    <input
-                                        type="text"
-                                        name="Cliente"
-                                        id="inputCliente"
-                                        class="form-control"
-                                    />
-                                </div>
-                            </li>
-                            <li class="list-group-item placeholder-glow">
-                                <div class="mb-3">
-                                    <label for="inputCliente" class="form-label">Veículo</label>
-                                    <input
-                                        type="text"
-                                        name="Cliente"
-                                        id="inputCliente"
-                                        class="form-control"
-                                    />
-                                </div>
-                            </li>
-                            <li class="list-group-item placeholder-glow">
-                                <div class="mb-3">
-                                    <label for="inputCliente" class="form-label">Status</label>
-                                    <input
-                                        type="text"
-                                        name="Cliente"
-                                        id="inputCliente"
-                                        class="form-control"
-                                    />
-                                </div>
-                            </li>
-                            <li class="list-group-item placeholder-glow">
-                                <div class="mb-3">
-                                    <label for="inputCliente" class="form-label">Total</label>
-                                    <input
-                                        type="text"
-                                        name="Cliente"
-                                        id="inputCliente"
-                                        class="form-control"
-                                    />
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
+                <div class="mb-3">
+                    <label for="cliente" class="form-label">Cliente</label>
+                    <select id="cliente" name="cliente" class="form-select" required>
+                        <option value="">Selecione um cliente</option>
+                    </select>
                 </div>
-            </section>
-        </div>
+
+                <div class="mb-3">
+                    <label for="veiculo" class="form-label">Veículo</label>
+                    <select id="veiculo" name="veiculo" class="form-select" required>
+                        <option value="">Selecione um veículo</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label for="km" class="form-label">Km de entrada</label>
+                    <input type="number" id="km" name="km" class="form-control" min="0" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="problema" class="form-label">Problema relatado</label>
+                    <textarea id="problema" name="problema" class="form-control" rows="3" minlength="10" required></textarea>
+                    <div class="form-text">Mínimo de 10 caracteres.</div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Item do catálogo</label>
+                    <div id="itens">
+                        <div class="linha-item input-group mb-2">
+                            <select name="item" class="form-select">
+                                <option value="">Selecione um serviço ou peça</option>
+                            </select>
+                            <button type="button" class="btn btn-outline-primary btn-adicionar-item">
+                                <i class="bi bi-plus-lg"></i> Adicionar item
+                            </button>
+                        </div>
+                    </div>
+                    <div class="form-text">Opcional na abertura.</div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="desconto" class="form-label">Desconto (%)</label>
+                    <input type="number" id="desconto" name="desconto" class="form-control" min="0" max="15" value="0">
+                    <div class="form-text">De 0% a 15%.</div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="subtotal" class="form-label">Subtotal</label>
+                    <input type="text" id="subtotal" name="subtotal" class="form-control" value="R$ 0,00" readonly>
+                    <div class="form-text">Valor final</div>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Abrir ordem de serviço</button>
+            </form>
+        </section>
     </main>
 
     <footer class="border-top py-3 mt-5">
