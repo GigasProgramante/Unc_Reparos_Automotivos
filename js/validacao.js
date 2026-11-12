@@ -178,3 +178,122 @@ function validarItem(dados, idAtual = null) {
  
   return erros;
 }
+
+// Status da OS e as transições permitidas (fluxo do README)
+const STATUS_ORDEM = {
+  aberta: ["diagnostico", "cancelada"],
+  diagnostico: ["execucao", "aguardando_peca", "cancelada"],
+  aguardando_peca: ["execucao", "cancelada"],
+  execucao: ["pronta"],
+  pronta: ["entregue"],
+  entregue: [],
+  cancelada: [],
+};
+
+// OS em andamento = ainda não foi entregue nem cancelada
+function ordemEmAndamento(ordem) {
+  return ordem.status !== "entregue" && ordem.status !== "cancelada";
+}
+
+// Valida os dados de uma OS (abertura ou edição).
+// idAtual: informe ao editar, para a própria OS não contar como "outra OS em andamento"
+// e para comparar o km com o que já estava salvo.
+// Campo obrigatório e faixa do desconto (0 a 15) são validados pelo HTML; aqui ficam
+// as regras que dependem dos dados salvos.
+function validarOrdem(dados, idAtual = null) {
+  const erros = [];
+  const veiculo = buscar(CHAVES.veiculos, dados.veiculoId);
+  const atual = idAtual !== null ? buscar(CHAVES.ordens, idAtual) : undefined;
+
+  // OS entregue ou cancelada não pode mais ser alterada
+  if (atual && !ordemEmAndamento(atual)) {
+    erros.push("OS entregue ou cancelada não pode ser alterada.");
+  }
+
+  if (!veiculo) {
+    erros.push("Selecione um veículo existente.");
+  } else {
+    // Só uma OS em andamento por veículo
+    const ocupado = listar(CHAVES.ordens).some(
+      (o) => o.id !== idAtual && o.veiculoId === veiculo.id && ordemEmAndamento(o)
+    );
+    if (ocupado) erros.push("Este veículo já tem uma OS em andamento.");
+
+    // O km de entrada não pode ser menor que o último km do veículo.
+    // Ao editar sem mexer no veículo nem no km, não há o que conferir
+    // (o km do veículo já foi atualizado na abertura).
+    const mudouKm = !atual || atual.veiculoId !== veiculo.id || Number(atual.kmEntrada) !== Number(dados.kmEntrada);
+    if (mudouKm && Number(dados.kmEntrada) < Number(veiculo.km)) {
+      erros.push("O km de entrada não pode ser menor que o último registrado (" + veiculo.km + ").");
+    }
+  }
+
+  // Pega espaços só digitados, que o minlength do HTML deixaria passar
+  if (String(dados.problema ?? "").trim().length < 10) {
+    erros.push("Descreva o problema com pelo menos 10 caracteres.");
+  }
+
+  const desconto = Number(dados.desconto || 0);
+  if (desconto < 0 || desconto > 15) {
+    erros.push("O desconto deve ficar entre 0% e 15%.");
+  }
+
+  return erros;
+}
+
+// Valida a mudança de status de uma OS já salva.
+// dados: campos extras da etapa, como formaPagamento na entrega.
+// Considera itens = [{ itemId, quantidade }].
+function validarMudancaStatus(idOrdem, novoStatus, dados = {}) {
+  const erros = [];
+  const ordem = buscar(CHAVES.ordens, idOrdem);
+
+  if (!ordem) {
+    erros.push("OS não encontrada.");
+    return erros;
+  }
+
+  const permitidos = STATUS_ORDEM[ordem.status] || [];
+  if (!permitidos.includes(novoStatus)) {
+    erros.push("Não é possível mudar a OS de \"" + ordem.status + "\" para \"" + novoStatus + "\".");
+    return erros; // as demais regras dependem de a transição ser válida
+  }
+
+  // Iniciar a execução: precisa ter itens e estoque para todas as peças
+  if (novoStatus === "execucao") {
+    const itens = ordem.itens || [];
+    if (itens.length === 0) {
+      erros.push("Adicione itens à OS antes de iniciar a execução.");
+    }
+    for (const linha of itens) {
+      const item = buscar(CHAVES.catalogo, linha.itemId);
+      if (item && item.tipo === "peca" && Number(item.estoque) < Number(linha.quantidade)) {
+        erros.push("Estoque insuficiente de \"" + item.nome + "\" (disponível: " + item.estoque + ").");
+      }
+    }
+  }
+
+  // A entrega exige a forma de pagamento
+  if (novoStatus === "entregue") {
+    const formas = ["pix", "dinheiro", "debito", "credito"];
+    if (!formas.includes(dados.formaPagamento)) {
+      erros.push("Informe a forma de pagamento.");
+    }
+  }
+
+  return erros;
+}
+
+// Valida a exclusão de uma OS: só abertas ou canceladas podem ser excluídas
+function validarExclusaoOrdem(idOrdem) {
+  const erros = [];
+  const ordem = buscar(CHAVES.ordens, idOrdem);
+
+  if (!ordem) {
+    erros.push("OS não encontrada.");
+  } else if (ordem.status !== "aberta" && ordem.status !== "cancelada") {
+    erros.push("Só é possível excluir OS abertas ou canceladas.");
+  }
+
+  return erros;
+}
