@@ -109,19 +109,19 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
                 </div>
                 <div class="modal-body">
-                    <form class="row g-3">
-                        <div class="col-12"><label class="form-label" for="dono">Dono</label><select class="form-select" id="dono"><option>Selecione o cliente</option></select></div>
-                        <div class="col-sm-5"><label class="form-label" for="placa">Placa</label><input class="form-control text-uppercase" id="placa" placeholder="ABC1D23"></div>
-                        <div class="col-sm-7"><label class="form-label" for="marca">Marca</label><select class="form-select" id="marca"><option>Selecione</option></select></div>
-                        <div class="col-12"><label class="form-label" for="modelo">Modelo</label><input class="form-control" id="modelo" placeholder="Ex.: Onix LT 1.0"></div>
-                        <div class="col-4"><label class="form-label" for="ano">Ano</label><input type="number" class="form-control" id="ano"></div>
-                        <div class="col-4"><label class="form-label" for="cor">Cor</label><input class="form-control" id="cor"></div>
-                        <div class="col-4"><label class="form-label" for="km">Km atual</label><input type="number" class="form-control" id="km"></div>
+                    <form class="row g-3" id="form-veiculo">
+                        <div class="col-12"><label class="form-label" for="dono">Dono</label><select class="form-select" id="dono" name="clienteId" required><option value="">Selecione o cliente</option></select></div>
+                        <div class="col-sm-5"><label class="form-label" for="placa">Placa</label><input class="form-control text-uppercase" id="placa" name="placa" placeholder="ABC1D23" minlength="7" maxlength="7" required></div>
+                        <div class="col-sm-7"><label class="form-label" for="marca">Marca</label><select class="form-select" id="marca" name="marca" required><option value="">Selecione</option></select></div>
+                        <div class="col-12"><label class="form-label" for="modelo">Modelo</label><input class="form-control" id="modelo" name="modelo" placeholder="Ex.: Onix LT 1.0" minlength="2" required></div>
+                        <div class="col-4"><label class="form-label" for="ano">Ano</label><input type="number" class="form-control" id="ano" name="ano" min="1960" max="2027" step="1" required></div>
+                        <div class="col-4"><label class="form-label" for="cor">Cor</label><input class="form-control" id="cor" name="cor"></div>
+                        <div class="col-4"><label class="form-label" for="km">Km atual</label><input type="number" class="form-control" id="km" name="km" min="0" step="1" required></div>
                     </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-primary" disabled>Salvar</button>
+                    <button type="submit" form="form-veiculo" class="btn btn-primary" disabled>Salvar</button>
                 </div>
             </div>
         </div>
