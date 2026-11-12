@@ -7,6 +7,20 @@ const CHAVES = {
   ordens: "ordens",
 };
 
+// Crie o Sequencial caso ele não exista no localStorage
+if (localStorage.getItem("sequencial") === null){
+    localStorage.setItem("sequencial", "0");
+}
+
+// Para gerar o sequencial especifico da Ordem de serviço, apenas aumenta
+function gerarSequencial() {
+    let sequencial = Number(localStorage.getItem("sequencial"));
+    sequencial += 1;
+
+    localStorage.setItem("sequencial", String(sequencial));
+    return sequencial;
+}
+
 // Gera um id hexadecimal único baseado no milisegundo atual, não garante
 // unicidade absoluta, mas é mais que o suficiente para o nosso projeto,
 // visto que é executado localmente
