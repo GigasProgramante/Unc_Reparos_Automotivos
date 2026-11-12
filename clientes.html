@@ -69,17 +69,18 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
                 </div>
                 <div class="modal-body">
-                    <form class="row g-3" id="form-cliente">
-                        <div class="col-12"><label class="form-label" for="nome">Nome completo</label><input class="form-control" id="nome" name="nome" required></div>
-                        <div class="col-sm-6"><label class="form-label" for="cpf">CPF</label><input class="form-control" id="cpf" name="cpf" placeholder="000.000.000-00" maxlength="14" inputmode="numeric" required></div>
-                        <div class="col-sm-6"><label class="form-label" for="telefone">Telefone</label><input type="tel" class="form-control" id="telefone" name="telefone" placeholder="(47) 99999-9999" maxlength="15" required></div>
-                        <div class="col-sm-7"><label class="form-label" for="email">E-mail</label><input type="email" class="form-control" id="email" name="email"></div>
-                        <div class="col-sm-5"><label class="form-label" for="cidade">Cidade</label><select class="form-select" id="cidade" name="cidade" required><option value="">Selecione</option><option>Mafra</option><option>Rio Negrinho</option><option>Canoinhas</option></select></div>
+                    <div class="alert alert-danger d-none" id="erros-cliente" role="alert"></div>
+                    <form class="row g-3" id="form-cliente" novalidate>
+                        <div class="col-12"><label class="form-label" for="nome">Nome completo</label><input class="form-control" id="nome" name="nome" required><div class="invalid-feedback">Informe o nome.</div></div>
+                        <div class="col-sm-6"><label class="form-label" for="cpf">CPF</label><input class="form-control" id="cpf" name="cpf" placeholder="000.000.000-00" maxlength="14" inputmode="numeric" required><div class="invalid-feedback">Informe o CPF.</div></div>
+                        <div class="col-sm-6"><label class="form-label" for="telefone">Telefone</label><input type="tel" class="form-control" id="telefone" name="telefone" placeholder="(47) 99999-9999" maxlength="15" required><div class="invalid-feedback">Informe o telefone.</div></div>
+                        <div class="col-sm-7"><label class="form-label" for="email">E-mail</label><input type="email" class="form-control" id="email" name="email"><div class="invalid-feedback">E-mail em formato inválido.</div></div>
+                        <div class="col-sm-5"><label class="form-label" for="cidade">Cidade</label><select class="form-select" id="cidade" name="cidade" required><option value="">Selecione</option><option>Mafra</option><option>Rio Negrinho</option><option>Canoinhas</option></select><div class="invalid-feedback">Escolha a cidade.</div></div>
                     </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" form="form-cliente" class="btn btn-primary" disabled>Salvar</button>
+                    <button type="submit" form="form-cliente" class="btn btn-primary">Salvar</button>
                 </div>
             </div>
         </div>

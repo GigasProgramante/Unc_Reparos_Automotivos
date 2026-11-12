@@ -54,5 +54,62 @@ function renderizarClientes() {
   tabelaClientes.innerHTML = html;
 }
 
+// ---------- Formulário (cadastro e edição) ----------
+const formCliente = document.getElementById("form-cliente");
+const modalCliente = new bootstrap.Modal("#modalCliente");
+const errosCliente = document.getElementById("erros-cliente");
+let idEmEdicao = null; // null = cadastrando um cliente novo
+
+// Junta os valores do formulário num objeto
+function lerFormulario() {
+  return {
+    nome: formCliente.nome.value.trim(),
+    cpf: somenteDigitos(formCliente.cpf.value),
+    telefone: formCliente.telefone.value.trim(),
+    email: formCliente.email.value.trim(),
+    cidade: formCliente.cidade.value,
+  };
+}
+
+function mostrarErros(erros) {
+  errosCliente.innerHTML = erros.join("<br>");
+  errosCliente.classList.remove("d-none");
+}
+
+// Volta o formulário ao estado inicial (chamado quando o modal fecha)
+function limparFormulario() {
+  formCliente.reset();
+  formCliente.classList.remove("was-validated");
+  errosCliente.classList.add("d-none");
+  document.getElementById("tituloModalCliente").textContent = "Novo cliente";
+  idEmEdicao = null;
+}
+
+document.getElementById("modalCliente").addEventListener("hidden.bs.modal", limparFormulario);
+
+formCliente.addEventListener("submit", (evento) => {
+  evento.preventDefault();
+
+  // 1º: validações do próprio HTML (required, type="email"...)
+  if (!formCliente.checkValidity()) {
+    formCliente.classList.add("was-validated");
+    return;
+  }
+
+  // 2º: regras do validacao.js (nome e sobrenome, CPF, telefone)
+  const dados = lerFormulario();
+  const erros = validarCliente(dados, idEmEdicao);
+  if (erros.length > 0) {
+    mostrarErros(erros);
+    return;
+  }
+
+  criar(CHAVES.clientes, { ...dados, criadoEm: new Date().toISOString() });
+  mostrarMensagem("Cliente cadastrado.");
+
+  modalCliente.hide();
+  renderizarClientes();
+});
+
 // Ao abrir a página, mostra os clientes salvos
 renderizarClientes();
