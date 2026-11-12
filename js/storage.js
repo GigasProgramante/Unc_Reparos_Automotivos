@@ -53,6 +53,16 @@ function criar(chave, dados) {
   return item;
 }
 
+// Cria uma ordem de serviço, gerando o id e o número sequencial
+// (a criação genérica, criar(), não deve ser usada para ordens)
+function criarOrdem(dados) {
+  const lista = listar(CHAVES.ordens);
+  const ordem = { ...dados, id: gerarId(), numero: gerarSequencial() };
+  lista.push(ordem);
+  salvar(CHAVES.ordens, lista);
+  return ordem;
+}
+
 // Atualiza os campos de um registro existente (retorna o registro ou undefined)
 function atualizar(chave, id, dados) {
   const lista = listar(chave);
