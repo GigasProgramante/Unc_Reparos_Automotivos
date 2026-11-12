@@ -34,7 +34,7 @@ Donos, atendentes e mecânicos de oficinas mecânicas de pequeno porte, que aten
 - Abrir ordens de serviço (OS) com orçamento calculado automaticamente.
 - Acompanhar cada OS pelas etapas do atendimento até a entrega.
 - Mostrar no painel a situação da oficina em números.
-- Avisar quais clientes estão com revisão vencida ou próxima e gerar a mensagem de lembrete.
+- Mostrar quais veículos estão com revisão vencida ou próxima.
 
 ### Tecnologias
 
@@ -60,7 +60,7 @@ Donos, atendentes e mecânicos de oficinas mecânicas de pequeno porte, que aten
 | F07 | Ver as OS em **lista** ou em **quadro** por etapa |
 | F08 | **Pesquisar, filtrar e ordenar** todas as listagens |
 | F09 | **Painel** com indicadores calculados dos dados cadastrados |
-| F10 | **Revisões preventivas**: prever a próxima revisão de cada veículo e gerar o lembrete para o cliente |
+| F10 | **Revisões preventivas**: prever a próxima revisão de cada veículo e mostrar as vencidas e próximas |
 | F11 | Alternar **tema claro e escuro** |
 | F12 | Pedir **confirmação** antes de excluir e mostrar mensagens de sucesso e erro |
 
@@ -155,7 +155,7 @@ Aberta, Em diagnóstico e Aguardando peça → Cancelada
 
 ### Funcionalidade exclusiva: revisões preventivas
 
-Para cada veículo, o sistema procura a última OS entregue com um serviço periódico (ex.: troca de óleo a cada 10.000 km ou 6 meses). A quilometragem de hoje é estimada pela média de km rodados por dia, calculada com as leituras de odômetro das OS anteriores. A revisão fica **próxima** quando faltam até 30 dias ou 1.000 km e **vencida** quando o limite passou, o que vier primeiro. A tela gera a mensagem pronta para enviar ao cliente pelo WhatsApp.
+Para cada veículo, o sistema procura a última OS entregue com um serviço periódico (ex.: troca de óleo a cada 10.000 km ou 6 meses). A quilometragem de hoje é estimada pela média de km rodados por dia, calculada com as leituras de odômetro das OS anteriores. A revisão fica **próxima** quando faltam até 30 dias ou 1.000 km e **vencida** quando o limite passou, o que vier primeiro.
 
 ### Telas
 
@@ -166,7 +166,7 @@ Para cada veículo, o sistema procura a última OS entregue com um serviço peri
 | Clientes | `clientes.html` | lista e cadastro de clientes |
 | Veículos | `veiculos.html` | cartões e cadastro de veículos |
 | Catálogo | `catalogo.html` | abas de serviços e peças, cadastro e estoque |
-| Revisões | `revisoes.html` | revisões vencidas, próximas e em dia, com lembrete |
+| Revisões | `revisoes.html` | revisões vencidas, próximas e em dia |
 
 ---
 
