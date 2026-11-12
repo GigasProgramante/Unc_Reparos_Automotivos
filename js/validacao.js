@@ -94,3 +94,56 @@ function validarCliente(dados, idAtual = null) {
 
   return erros;
 }
+
+// Placa: 7 caracteres, nos dois padrões aceitos
+// antigo:  ABC1234  (3 letras + 4 dígitos)
+// Mercosul: ABC1D23 (3 letras + dígito + letra + 2 dígitos)
+// Só o 5º caractere muda entre os padrões: no antigo é dígito, no Mercosul é letra.
+function placaValida(placa) {
+  const p = String(placa ?? "").trim().toUpperCase();
+
+  if (p.length !== 7) return false;
+
+  for (let i = 0; i < 7; i++) {
+    const ehLetra = p[i] >= "A" && p[i] <= "Z";
+    const ehDigito = p[i] >= "0" && p[i] <= "9";
+
+    if (i < 3 && !ehLetra) return false; // posições 1 a 3: letras
+    if (i === 3 && !ehDigito) return false; // posição 4: dígito
+    if (i === 4 && !ehLetra && !ehDigito) return false; // posição 5: letra ou dígito
+    if (i > 4 && !ehDigito) return false; // posições 6 e 7: dígitos
+  }
+
+  return true;
+}
+
+// Valida os dados de um veículo.
+// idAtual: informe ao editar, para a placa do próprio veículo não contar como
+// repetida e para comparar o km com o que já estava salvo.
+function validarVeiculo(dados, idAtual = null) {
+  const erros = [];
+
+  if (!buscar(CHAVES.clientes, dados.clienteId)) {
+    erros.push("Selecione um cliente existente.");
+  }
+
+  if (!placaValida(dados.placa)) {
+    erros.push("Placa inválida. Use o padrão ABC1234 ou ABC1D23.");
+  } else {
+    const placa = String(dados.placa).trim().toUpperCase();
+    const repetida = listar(CHAVES.veiculos).some(
+      (v) => v.id !== idAtual && String(v.placa).toUpperCase() === placa
+    );
+    if (repetida) erros.push("Já existe um veículo com esta placa.");
+  }
+
+  // Ao editar, o km não pode ser menor que o último km registrado
+  if (idAtual !== null) {
+    const atual = buscar(CHAVES.veiculos, idAtual);
+    if (atual && Number(dados.km) < Number(atual.km)) {
+      erros.push("O km não pode ser menor que o último registrado (" + atual.km + ").");
+    }
+  }
+
+  return erros;
+}
