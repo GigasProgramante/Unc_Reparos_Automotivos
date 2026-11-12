@@ -1,59 +1,59 @@
-const CHAVE_CLIENTES = "clientes";
+// Chaves guardadas na lista pra facilitar na hora da gente fazer o CRUD, 
+// sugestão inline puxa mais fácil
+const CHAVES = {
+  clientes: "clientes",
+  veiculos: "veiculos",
+  catalogo: "catalogo",
+  ordens: "ordens",
+};
 
-// Gera um id hexadecimal único baseado no milisegundo atual, não garante 
-// unicidade absoluta, mas é mais que o suficiente para o nosso projeto, 
+// Gera um id hexadecimal único baseado no milisegundo atual, não garante
+// unicidade absoluta, mas é mais que o suficiente para o nosso projeto,
 // visto que é executado localmente
 function gerarId() {
   return Date.now().toString(16);
 }
 
-// Lê a lista completa de clientes (array vazio se não existir nada salvo)
-function listarClientes() {
-  const texto = localStorage.getItem(CHAVE_CLIENTES);
+// Lê a lista completa de uma coleção (array vazio se não existir nada salvo)
+function listar(chave) {
+  const texto = localStorage.getItem(chave);
   return texto ? JSON.parse(texto) : [];
 }
 
-// Grava a lista completa de clientes
-function salvarClientes(clientes) {
-  localStorage.setItem(CHAVE_CLIENTES, JSON.stringify(clientes));
+// Grava a lista completa de uma coleção
+function salvar(chave, lista) {
+  localStorage.setItem(chave, JSON.stringify(lista));
 }
 
-// Busca um cliente pelo id (retorna undefined se não achar)
-function buscarCliente(id) {
-  return listarClientes().find((c) => c.id === id);
+// Busca um registro pelo id (retorna undefined se não achar)
+function buscar(chave, id) {
+  return listar(chave).find((item) => item.id === id);
 }
 
-// Cria um cliente novo, gerando o id, e retorna o objeto criado
-function criarCliente(dados) {
-  const clientes = listarClientes();
-  const cliente = { ...dados, id: gerarId() };
-  clientes.push(cliente);
-  salvarClientes(clientes);
-  return cliente;
+// Cria um registro novo, gerando o id, e retorna o objeto criado
+function criar(chave, dados) {
+  const lista = listar(chave);
+  const item = { ...dados, id: gerarId() };
+  lista.push(item);
+  salvar(chave, lista);
+  return item;
 }
 
-// Atualiza os campos de um cliente existente (retorna o cliente ou undefined)
-function atualizarCliente(id, dados) {
-  const clientes = listarClientes();
-  const indice = clientes.findIndex((c) => c.id === id);
+// Atualiza os campos de um registro existente (retorna o registro ou undefined)
+function atualizar(chave, id, dados) {
+  const lista = listar(chave);
+  const indice = lista.findIndex((item) => item.id === id);
   if (indice === -1) return undefined;
-  clientes[indice] = { ...clientes[indice], ...dados, id };
-  salvarClientes(clientes);
-  return clientes[indice];
+  lista[indice] = { ...lista[indice], ...dados, id };
+  salvar(chave, lista);
+  return lista[indice];
 }
 
-// Remove um cliente pelo id (retorna true se removeu)
-function excluirCliente(id) {
-  const clientes = listarClientes();
-  const restantes = clientes.filter((c) => c.id !== id);
-  if (restantes.length === clientes.length) return false;
-  salvarClientes(restantes);
+// Remove um registro pelo id (retorna true se removeu)
+function excluir(chave, id) {
+  const lista = listar(chave);
+  const restantes = lista.filter((item) => item.id !== id);
+  if (restantes.length === lista.length) return false;
+  salvar(chave, restantes);
   return true;
-}
-
-// Gera um id hexadecimal único baseado no milisegundo atual, não garante 
-// unicidade absoluta, mas é mais que o suficiente para o nosso projeto, 
-// visto que é executado localmente
-function gerarId() {
-  return Date.now().toString(16);
 }
