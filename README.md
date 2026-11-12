@@ -180,9 +180,10 @@ Para cada veículo, o sistema procura a última OS entregue com um serviço peri
 | 1 | Wireframes de Ordens de serviço, Catálogo e Revisões | Guilherme |
 | 2 | Camada de dados (`localStorage`) e funções de validação | Guilherme |
 | 2 | CRUD de clientes | Luís |
-| 2 | CRUD do catálogo | Guilherme |
+| 2 | Identidade visual e alternância de tema claro/escuro | Guilherme |
+| 2 | CRUD do catálogo | Luís |
 | 2 | CRUD de veículos | Luís |
-| 2 | CRUD de ordens de serviço e orçamento | Guilherme |
+| 2 | CRUD de ordens de serviço e orçamento | Luís |
 | 3 | Fluxo de status e quadro de OS | Guilherme |
 | 3 | Painel com indicadores | Luís |
 | 3 | Revisões preventivas | Guilherme |
