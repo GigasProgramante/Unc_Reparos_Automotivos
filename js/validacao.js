@@ -147,3 +147,34 @@ function validarVeiculo(dados, idAtual = null) {
 
   return erros;
 }
+
+// Campo não preenchido (os campos vazios do formulário chegam como "")
+function estaVazio(valor) {
+  return valor === undefined || valor === null || String(valor).trim() === "";
+}
+
+// Valida os dados de um item do catálogo (serviço ou peça).
+// idAtual: informe ao editar, para o nome do próprio item não contar como repetido.
+// Faixas de valores (preço, horas, estoque) já são validadas pelo HTML. Aqui ficam
+// os campos que só são obrigatórios conforme o tipo, e o nome não repetido.
+function validarItem(dados, idAtual = null) {
+  const erros = [];
+
+  const nome = String(dados.nome ?? "").trim().toLowerCase();
+  const repetido = listar(CHAVES.catalogo).some(
+    (i) => i.id !== idAtual && String(i.nome).trim().toLowerCase() === nome
+  );
+  if (repetido) erros.push("Já existe um item com este nome.");
+
+  if (dados.tipo === "servico") {
+    if (estaVazio(dados.horas)) {
+      erros.push("Informe as horas de mão de obra do serviço.");
+    }
+  } else if (dados.tipo === "peca") {
+    if (estaVazio(dados.unidade)) erros.push("Informe a unidade da peça.");
+    if (estaVazio(dados.estoque)) erros.push("Informe o estoque da peça.");
+    if (estaVazio(dados.estoqueMinimo)) erros.push("Informe o estoque mínimo da peça.");
+  }
+ 
+  return erros;
+}
