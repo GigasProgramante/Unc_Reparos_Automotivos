@@ -141,8 +141,13 @@ formVeiculo.addEventListener("submit", (evento) => {
     return;
   }
 
-  criar(CHAVES.veiculos, { ...dados, criadoEm: new Date().toISOString() });
-  mostrarMensagem(`Veículo ${dados.placa} cadastrado.`);
+  if (idEmEdicao === null) {
+    criar(CHAVES.veiculos, { ...dados, criadoEm: new Date().toISOString() });
+    mostrarMensagem(`Veículo ${dados.placa} cadastrado.`);
+  } else {
+    atualizar(CHAVES.veiculos, idEmEdicao, dados);
+    mostrarMensagem(`Veículo ${dados.placa} atualizado.`);
+  }
 
   modalVeiculo.hide();
   renderizarVeiculos();
@@ -157,6 +162,31 @@ formVeiculo.placa.addEventListener("input", () => {
     if (ehLetra || ehDigito) texto += caractere;
   }
   formVeiculo.placa.value = texto.slice(0, 7);
+});
+
+// Edição: abre o modal com os dados do veículo já preenchidos
+function abrirEdicao(id) {
+  const veiculo = buscar(CHAVES.veiculos, id);
+  if (!veiculo) return;
+
+  idEmEdicao = id;
+  formVeiculo.clienteId.value = veiculo.clienteId;
+  formVeiculo.placa.value = veiculo.placa;
+  formVeiculo.marca.value = veiculo.marca;
+  formVeiculo.modelo.value = veiculo.modelo;
+  formVeiculo.ano.value = veiculo.ano;
+  formVeiculo.cor.value = veiculo.cor;
+  formVeiculo.km.value = veiculo.km;
+  document.getElementById("tituloModalVeiculo").textContent = "Editar veículo";
+  modalVeiculo.show();
+}
+
+// Botões "Editar" e "Excluir" de cada cartão
+listaVeiculos.addEventListener("click", (evento) => {
+  const botao = evento.target.closest("button[data-acao]");
+  if (!botao) return;
+
+  if (botao.dataset.acao === "editar") abrirEdicao(botao.dataset.id);
 });
 
 // Ao abrir a página, carrega os donos e mostra os veículos salvos
