@@ -151,12 +151,40 @@ function abrirEdicao(id) {
   modalCliente.show();
 }
 
+// ---------- Exclusão ----------
+const modalExcluir = new bootstrap.Modal("#modalExcluir");
+let idParaExcluir = null;
+
+// Regra: cliente com veículos não pode ser excluído
+function pedirExclusao(id) {
+  const cliente = buscar(CHAVES.clientes, id);
+  if (!cliente) return;
+
+  const veiculos = contarVeiculos(id);
+  if (veiculos > 0) {
+    mostrarMensagem(`${cliente.nome} tem ${veiculos} veículo(s) cadastrado(s). Exclua os veículos antes.`, "erro");
+    return;
+  }
+
+  idParaExcluir = id;
+  document.getElementById("nome-excluir").textContent = cliente.nome;
+  modalExcluir.show();
+}
+
+document.getElementById("btn-confirmar-exclusao").addEventListener("click", () => {
+  excluir(CHAVES.clientes, idParaExcluir);
+  modalExcluir.hide();
+  mostrarMensagem("Cliente excluído.");
+  renderizarClientes();
+});
+
 // Botões "Editar" e "Excluir" de cada linha da tabela
 tabelaClientes.addEventListener("click", (evento) => {
   const botao = evento.target.closest("button[data-acao]");
   if (!botao) return;
 
   if (botao.dataset.acao === "editar") abrirEdicao(botao.dataset.id);
+  if (botao.dataset.acao === "excluir") pedirExclusao(botao.dataset.id);
 });
 
 // Ao abrir a página, mostra os clientes salvos
