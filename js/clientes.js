@@ -111,5 +111,24 @@ formCliente.addEventListener("submit", (evento) => {
   renderizarClientes();
 });
 
+// ---------- Máscaras: formatam o campo enquanto o usuário digita ----------
+formCliente.cpf.addEventListener("input", () => {
+  const d = somenteDigitos(formCliente.cpf.value).slice(0, 11);
+  let texto = d;
+  if (d.length > 9) texto = d.slice(0, 3) + "." + d.slice(3, 6) + "." + d.slice(6, 9) + "-" + d.slice(9);
+  else if (d.length > 6) texto = d.slice(0, 3) + "." + d.slice(3, 6) + "." + d.slice(6);
+  else if (d.length > 3) texto = d.slice(0, 3) + "." + d.slice(3);
+  formCliente.cpf.value = texto;
+});
+
+formCliente.telefone.addEventListener("input", () => {
+  const d = somenteDigitos(formCliente.telefone.value).slice(0, 11);
+  let texto = d;
+  if (d.length > 10) texto = "(" + d.slice(0, 2) + ") " + d.slice(2, 7) + "-" + d.slice(7);
+  else if (d.length > 6) texto = "(" + d.slice(0, 2) + ") " + d.slice(2, 6) + "-" + d.slice(6);
+  else if (d.length > 2) texto = "(" + d.slice(0, 2) + ") " + d.slice(2);
+  formCliente.telefone.value = texto;
+});
+
 // Ao abrir a página, mostra os clientes salvos
 renderizarClientes();
