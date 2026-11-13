@@ -35,18 +35,20 @@
         </div>
 
         <!-- Pesquisa, filtros e ordenação -->
-        <form class="row g-2 mb-3" role="search">
-            <div class="col-md-5"><input type="search" class="form-control" placeholder="Pesquisar por nome, CPF ou telefone"></div>
+        <form class="row g-2 mb-2" role="search" onsubmit="return false">
+            <div class="col-md-5"><input type="search" class="form-control" id="busca-cliente" placeholder="Pesquisar por nome, CPF ou telefone" aria-label="Pesquisar"></div>
             <div class="col-6 col-md-2">
-                <select class="form-select"><option>Todas as cidades</option><option>Mafra</option><option>Rio Negrinho</option><option>Canoinhas</option></select>
+                <select class="form-select" id="filtro-cidade" aria-label="Cidade"><option value="">Todas as cidades</option><option>Mafra</option><option>Rio Negrinho</option><option>Canoinhas</option></select>
             </div>
             <div class="col-6 col-md-2">
-                <select class="form-select"><option>Todos</option><option>Com veículos</option><option>Sem veículos</option></select>
+                <select class="form-select" id="filtro-situacao" aria-label="Situação"><option value="">Todos</option><option value="com-veiculos">Com veículos</option><option value="sem-veiculos">Sem veículos</option></select>
             </div>
             <div class="col-md-3">
-                <select class="form-select"><option>Nome (A–Z)</option><option>Nome (Z–A)</option><option>Mais recentes</option></select>
+                <select class="form-select" id="ordem-clientes" aria-label="Ordenar por"><option value="nome-az">Nome (A–Z)</option><option value="nome-za">Nome (Z–A)</option><option value="recentes">Mais recentes</option></select>
             </div>
         </form>
+
+        <p class="small text-body-secondary mb-2" id="contador-clientes"></p>
 
         <div class="card">
             <div class="table-responsive">
@@ -54,10 +56,7 @@
                     <thead>
                         <tr><th>Nome</th><th>CPF</th><th>Telefone</th><th>Cidade</th><th>Veículos</th><th class="text-end">Ações</th></tr>
                     </thead>
-                    <tbody class="placeholder-glow">
-                        <tr><td><span class="placeholder col-8"></span></td><td><span class="placeholder col-10"></span></td><td><span class="placeholder col-10"></span></td><td><span class="placeholder col-6"></span></td><td><span class="placeholder col-4"></span></td><td class="text-end"><button class="btn btn-sm btn-outline-primary" disabled>Editar</button> <button class="btn btn-sm btn-outline-danger" disabled>Excluir</button></td></tr>
-                        <tr><td><span class="placeholder col-6"></span></td><td><span class="placeholder col-10"></span></td><td><span class="placeholder col-10"></span></td><td><span class="placeholder col-7"></span></td><td><span class="placeholder col-3"></span></td><td class="text-end"><button class="btn btn-sm btn-outline-primary" disabled>Editar</button> <button class="btn btn-sm btn-outline-danger" disabled>Excluir</button></td></tr>
-                    </tbody>
+                    <tbody id="tabela-clientes"></tbody>
                 </table>
             </div>
         </div>
@@ -72,17 +71,37 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
                 </div>
                 <div class="modal-body">
-                    <form class="row g-3" id="form-cliente">
-                        <div class="col-12"><label class="form-label" for="nome">Nome completo</label><input class="form-control" id="nome" name="nome" required></div>
-                        <div class="col-sm-6"><label class="form-label" for="cpf">CPF</label><input class="form-control" id="cpf" name="cpf" placeholder="000.000.000-00" maxlength="14" inputmode="numeric" required></div>
-                        <div class="col-sm-6"><label class="form-label" for="telefone">Telefone</label><input type="tel" class="form-control" id="telefone" name="telefone" placeholder="(47) 99999-9999" maxlength="15" required></div>
-                        <div class="col-sm-7"><label class="form-label" for="email">E-mail</label><input type="email" class="form-control" id="email" name="email"></div>
-                        <div class="col-sm-5"><label class="form-label" for="cidade">Cidade</label><select class="form-select" id="cidade" name="cidade" required><option value="">Selecione</option><option>Mafra</option><option>Rio Negrinho</option><option>Canoinhas</option></select></div>
+                    <div class="alert alert-danger d-none" id="erros-cliente" role="alert"></div>
+                    <form class="row g-3" id="form-cliente" novalidate>
+                        <div class="col-12"><label class="form-label" for="nome">Nome completo</label><input class="form-control" id="nome" name="nome" required><div class="invalid-feedback">Informe o nome.</div></div>
+                        <div class="col-sm-6"><label class="form-label" for="cpf">CPF</label><input class="form-control" id="cpf" name="cpf" placeholder="000.000.000-00" maxlength="14" inputmode="numeric" required><div class="invalid-feedback">Informe o CPF.</div></div>
+                        <div class="col-sm-6"><label class="form-label" for="telefone">Telefone</label><input type="tel" class="form-control" id="telefone" name="telefone" placeholder="(47) 99999-9999" maxlength="15" required><div class="invalid-feedback">Informe o telefone.</div></div>
+                        <div class="col-sm-7"><label class="form-label" for="email">E-mail</label><input type="email" class="form-control" id="email" name="email"><div class="invalid-feedback">E-mail em formato inválido.</div></div>
+                        <div class="col-sm-5"><label class="form-label" for="cidade">Cidade</label><select class="form-select" id="cidade" name="cidade" required><option value="">Selecione</option><option>Mafra</option><option>Rio Negrinho</option><option>Canoinhas</option></select><div class="invalid-feedback">Escolha a cidade.</div></div>
                     </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" form="form-cliente" class="btn btn-primary" disabled>Salvar</button>
+                    <button type="submit" form="form-cliente" class="btn btn-primary">Salvar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmação de exclusão -->
+    <div class="modal fade" id="modalExcluir" tabindex="-1" aria-labelledby="tituloModalExcluir">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title fs-5" id="tituloModalExcluir">Excluir cliente?</h2>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="mb-0"><strong id="nome-excluir"></strong> será removido do sistema. Essa ação não pode ser desfeita.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-danger" id="btn-confirmar-exclusao">Excluir</button>
                 </div>
             </div>
         </div>
@@ -94,5 +113,8 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="js/script.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/validacao.js"></script>
+    <script src="js/clientes.js"></script>
 </body>
 </html>
