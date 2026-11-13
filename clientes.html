@@ -35,18 +35,20 @@
         </div>
 
         <!-- Pesquisa, filtros e ordenação -->
-        <form class="row g-2 mb-3" role="search">
-            <div class="col-md-5"><input type="search" class="form-control" placeholder="Pesquisar por nome, CPF ou telefone"></div>
+        <form class="row g-2 mb-2" role="search" onsubmit="return false">
+            <div class="col-md-5"><input type="search" class="form-control" id="busca-cliente" placeholder="Pesquisar por nome, CPF ou telefone" aria-label="Pesquisar"></div>
             <div class="col-6 col-md-2">
-                <select class="form-select"><option>Todas as cidades</option><option>Mafra</option><option>Rio Negrinho</option><option>Canoinhas</option></select>
+                <select class="form-select" id="filtro-cidade" aria-label="Cidade"><option value="">Todas as cidades</option><option>Mafra</option><option>Rio Negrinho</option><option>Canoinhas</option></select>
             </div>
             <div class="col-6 col-md-2">
-                <select class="form-select"><option>Todos</option><option>Com veículos</option><option>Sem veículos</option></select>
+                <select class="form-select" id="filtro-situacao" aria-label="Situação"><option value="">Todos</option><option value="com-veiculos">Com veículos</option><option value="sem-veiculos">Sem veículos</option></select>
             </div>
             <div class="col-md-3">
-                <select class="form-select"><option>Nome (A–Z)</option><option>Nome (Z–A)</option><option>Mais recentes</option></select>
+                <select class="form-select" id="ordem-clientes" aria-label="Ordenar por"><option value="nome-az">Nome (A–Z)</option><option value="nome-za">Nome (Z–A)</option><option value="recentes">Mais recentes</option></select>
             </div>
         </form>
+
+        <p class="small text-body-secondary mb-2" id="contador-clientes"></p>
 
         <div class="card">
             <div class="table-responsive">

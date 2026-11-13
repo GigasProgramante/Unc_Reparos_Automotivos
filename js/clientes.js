@@ -5,6 +5,11 @@
 // =========================================================
 
 const tabelaClientes = document.getElementById("tabela-clientes");
+const buscaCliente = document.getElementById("busca-cliente");
+const filtroCidade = document.getElementById("filtro-cidade");
+const filtroSituacao = document.getElementById("filtro-situacao");
+const ordemClientes = document.getElementById("ordem-clientes");
+const contadorClientes = document.getElementById("contador-clientes");
 
 // Deixa o CPF no formato 000.000.000-00 para mostrar na tela
 function formatarCpf(cpf) {
@@ -37,13 +42,59 @@ function linhaCliente(cliente) {
     </tr>`;
 }
 
-// Mostra todos os clientes salvos na tabela
+// Aplica a pesquisa e os filtros na lista de clientes
+function filtrarClientes(clientes) {
+  const busca = buscaCliente.value.trim().toLowerCase();
+  const buscaDigitos = somenteDigitos(busca);
+  const cidade = filtroCidade.value;
+  const situacao = filtroSituacao.value;
+
+  return clientes.filter((cliente) => {
+    // Pesquisa: pelo nome ou pelos números do CPF / telefone
+    if (busca !== "") {
+      const achouNome = cliente.nome.toLowerCase().includes(busca);
+      const achouNumero = buscaDigitos !== "" &&
+        (cliente.cpf.includes(buscaDigitos) || somenteDigitos(cliente.telefone).includes(buscaDigitos));
+      if (!achouNome && !achouNumero) return false;
+    }
+
+    if (cidade !== "" && cliente.cidade !== cidade) return false;
+
+    const veiculos = contarVeiculos(cliente.id);
+    if (situacao === "com-veiculos" && veiculos === 0) return false;
+    if (situacao === "sem-veiculos" && veiculos > 0) return false;
+
+    return true;
+  });
+}
+
+// Ordena a lista conforme a opção escolhida
+function ordenarClientes(clientes) {
+  const ordem = ordemClientes.value;
+
+  if (ordem === "nome-az") {
+    clientes.sort((a, b) => a.nome.localeCompare(b.nome, "pt-BR"));
+  } else if (ordem === "nome-za") {
+    clientes.sort((a, b) => b.nome.localeCompare(a.nome, "pt-BR"));
+  } else if (ordem === "recentes") {
+    clientes.sort((a, b) => b.criadoEm.localeCompare(a.criadoEm));
+  }
+  return clientes;
+}
+
+// Mostra os clientes na tabela, já filtrados e ordenados
 function renderizarClientes() {
-  const clientes = listar(CHAVES.clientes);
+  const todos = listar(CHAVES.clientes);
+  const clientes = ordenarClientes(filtrarClientes(todos));
+
+  contadorClientes.textContent = `${clientes.length} de ${todos.length} clientes`;
 
   if (clientes.length === 0) {
+    const mensagem = todos.length === 0
+      ? "Nenhum cliente cadastrado."
+      : "Nenhum cliente encontrado com esses filtros.";
     tabelaClientes.innerHTML = `
-      <tr><td colspan="6" class="text-center text-body-secondary py-5">Nenhum cliente cadastrado.</td></tr>`;
+      <tr><td colspan="6" class="text-center text-body-secondary py-5">${mensagem}</td></tr>`;
     return;
   }
 
@@ -52,6 +103,11 @@ function renderizarClientes() {
     html += linhaCliente(cliente);
   }
   tabelaClientes.innerHTML = html;
+}
+
+// Atualiza a lista sempre que a pesquisa ou um filtro mudar
+for (const campo of [buscaCliente, filtroCidade, filtroSituacao, ordemClientes]) {
+  campo.addEventListener("input", renderizarClientes);
 }
 
 // ---------- Formulário (cadastro e edição) ----------
