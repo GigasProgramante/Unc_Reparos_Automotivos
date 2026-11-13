@@ -148,6 +148,17 @@ formVeiculo.addEventListener("submit", (evento) => {
   renderizarVeiculos();
 });
 
+// Placa: só letras e números, em maiúsculas, no máximo 7 caracteres
+formVeiculo.placa.addEventListener("input", () => {
+  let texto = "";
+  for (const caractere of formVeiculo.placa.value.toUpperCase()) {
+    const ehLetra = caractere >= "A" && caractere <= "Z";
+    const ehDigito = caractere >= "0" && caractere <= "9";
+    if (ehLetra || ehDigito) texto += caractere;
+  }
+  formVeiculo.placa.value = texto.slice(0, 7);
+});
+
 // Ao abrir a página, carrega os donos e mostra os veículos salvos
 carregarDonos();
 renderizarVeiculos();
