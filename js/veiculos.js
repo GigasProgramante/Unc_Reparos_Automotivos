@@ -181,12 +181,40 @@ function abrirEdicao(id) {
   modalVeiculo.show();
 }
 
+// Exclusão
+const modalExcluir = new bootstrap.Modal("#modalExcluir");
+let idParaExcluir = null;
+
+// Regra: veículo com OS no histórico não pode ser excluído
+function pedirExclusao(id) {
+  const veiculo = buscar(CHAVES.veiculos, id);
+  if (!veiculo) return;
+
+  const ordens = listar(CHAVES.ordens).filter((o) => o.veiculoId === id).length;
+  if (ordens > 0) {
+    mostrarMensagem(`O veículo ${veiculo.placa} tem ${ordens} OS no histórico e não pode ser excluído.`, "erro");
+    return;
+  }
+
+  idParaExcluir = id;
+  document.getElementById("nome-excluir").textContent = `${veiculo.modelo} (${veiculo.placa})`;
+  modalExcluir.show();
+}
+
+document.getElementById("btn-confirmar-exclusao").addEventListener("click", () => {
+  excluir(CHAVES.veiculos, idParaExcluir);
+  modalExcluir.hide();
+  mostrarMensagem("Veículo excluído.");
+  renderizarVeiculos();
+});
+
 // Botões "Editar" e "Excluir" de cada cartão
 listaVeiculos.addEventListener("click", (evento) => {
   const botao = evento.target.closest("button[data-acao]");
   if (!botao) return;
 
   if (botao.dataset.acao === "editar") abrirEdicao(botao.dataset.id);
+  if (botao.dataset.acao === "excluir") pedirExclusao(botao.dataset.id);
 });
 
 // Ao abrir a página, carrega os donos e mostra os veículos salvos
