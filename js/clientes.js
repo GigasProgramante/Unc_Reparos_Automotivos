@@ -1,9 +1,3 @@
-// =========================================================
-// clientes.js — CRUD de clientes
-// Usa as funções do storage.js (listar, buscar, criar, atualizar, excluir)
-// e a validação do validacao.js (validarCliente, somenteDigitos)
-// =========================================================
-
 const tabelaClientes = document.getElementById("tabela-clientes");
 const buscaCliente = document.getElementById("busca-cliente");
 const filtroCidade = document.getElementById("filtro-cidade");
