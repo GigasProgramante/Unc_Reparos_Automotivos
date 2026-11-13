@@ -104,8 +104,13 @@ formCliente.addEventListener("submit", (evento) => {
     return;
   }
 
-  criar(CHAVES.clientes, { ...dados, criadoEm: new Date().toISOString() });
-  mostrarMensagem("Cliente cadastrado.");
+  if (idEmEdicao === null) {
+    criar(CHAVES.clientes, { ...dados, criadoEm: new Date().toISOString() });
+    mostrarMensagem("Cliente cadastrado.");
+  } else {
+    atualizar(CHAVES.clientes, idEmEdicao, dados);
+    mostrarMensagem("Cliente atualizado.");
+  }
 
   modalCliente.hide();
   renderizarClientes();
@@ -128,6 +133,30 @@ formCliente.telefone.addEventListener("input", () => {
   else if (d.length > 6) texto = "(" + d.slice(0, 2) + ") " + d.slice(2, 6) + "-" + d.slice(6);
   else if (d.length > 2) texto = "(" + d.slice(0, 2) + ") " + d.slice(2);
   formCliente.telefone.value = texto;
+});
+
+// ---------- Edição ----------
+// Abre o modal com os dados do cliente já preenchidos
+function abrirEdicao(id) {
+  const cliente = buscar(CHAVES.clientes, id);
+  if (!cliente) return;
+
+  idEmEdicao = id;
+  formCliente.nome.value = cliente.nome;
+  formCliente.cpf.value = formatarCpf(cliente.cpf);
+  formCliente.telefone.value = cliente.telefone;
+  formCliente.email.value = cliente.email;
+  formCliente.cidade.value = cliente.cidade;
+  document.getElementById("tituloModalCliente").textContent = "Editar cliente";
+  modalCliente.show();
+}
+
+// Botões "Editar" e "Excluir" de cada linha da tabela
+tabelaClientes.addEventListener("click", (evento) => {
+  const botao = evento.target.closest("button[data-acao]");
+  if (!botao) return;
+
+  if (botao.dataset.acao === "editar") abrirEdicao(botao.dataset.id);
 });
 
 // Ao abrir a página, mostra os clientes salvos
