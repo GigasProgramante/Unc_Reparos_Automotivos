@@ -1,5 +1,8 @@
 const listaVeiculos = document.getElementById("lista-veiculos");
 
+// Marcas aceitas no cadastro e no filtro
+const MARCAS = ["Chevrolet", "Fiat", "Ford", "Honda", "Hyundai", "Jeep", "Nissan", "Renault", "Toyota", "Volkswagen", "Outra"];
+
 // Nome do dono do veículo (o veículo guarda só o id do cliente)
 function nomeDoDono(clienteId) {
   const cliente = buscar(CHAVES.clientes, clienteId);
@@ -64,5 +67,87 @@ function renderizarVeiculos() {
   listaVeiculos.innerHTML = html;
 }
 
-// Ao abrir a página, mostra os veículos salvos
+// Formulário (cadastro e edição)
+const formVeiculo = document.getElementById("form-veiculo");
+const modalVeiculo = new bootstrap.Modal("#modalVeiculo");
+const errosVeiculo = document.getElementById("erros-veiculo");
+let idEmEdicao = null; // null = cadastrando um veículo novo
+
+// Coloca as marcas no select do formulário
+for (const marca of MARCAS) {
+  formVeiculo.marca.innerHTML += `<option>${marca}</option>`;
+}
+
+// Preenche o select "Dono" com os clientes cadastrados.
+// Sem cliente não dá para cadastrar veículo: mostra o aviso e trava o botão.
+function carregarDonos() {
+  const clientes = listar(CHAVES.clientes);
+  clientes.sort((a, b) => a.nome.localeCompare(b.nome, "pt-BR"));
+
+  let opcoes = '<option value="">Selecione o cliente</option>';
+  for (const cliente of clientes) {
+    opcoes += `<option value="${cliente.id}">${escaparHtml(cliente.nome)}</option>`;
+  }
+  formVeiculo.clienteId.innerHTML = opcoes;
+
+  const semClientes = clientes.length === 0;
+  document.getElementById("aviso-sem-clientes").classList.toggle("d-none", !semClientes);
+  document.getElementById("btn-novo-veiculo").disabled = semClientes;
+}
+
+// Junta os valores do formulário num objeto
+function lerFormulario() {
+  return {
+    clienteId: formVeiculo.clienteId.value,
+    placa: formVeiculo.placa.value.trim().toUpperCase(),
+    marca: formVeiculo.marca.value,
+    modelo: formVeiculo.modelo.value.trim(),
+    ano: Number(formVeiculo.ano.value),
+    cor: formVeiculo.cor.value.trim(),
+    km: Number(formVeiculo.km.value),
+  };
+}
+
+function mostrarErros(erros) {
+  errosVeiculo.innerHTML = erros.join("<br>");
+  errosVeiculo.classList.remove("d-none");
+}
+
+// Volta o formulário ao estado inicial (chamado quando o modal fecha)
+function limparFormulario() {
+  formVeiculo.reset();
+  formVeiculo.classList.remove("was-validated");
+  errosVeiculo.classList.add("d-none");
+  document.getElementById("tituloModalVeiculo").textContent = "Novo veículo";
+  idEmEdicao = null;
+}
+
+document.getElementById("modalVeiculo").addEventListener("hidden.bs.modal", limparFormulario);
+
+formVeiculo.addEventListener("submit", (evento) => {
+  evento.preventDefault();
+
+  // 1º: validações do próprio HTML (required, min, max, tamanho da placa)
+  if (!formVeiculo.checkValidity()) {
+    formVeiculo.classList.add("was-validated");
+    return;
+  }
+
+  // 2º: regras do validacao.js (dono existe, placa válida e não repetida, km)
+  const dados = lerFormulario();
+  const erros = validarVeiculo(dados, idEmEdicao);
+  if (erros.length > 0) {
+    mostrarErros(erros);
+    return;
+  }
+
+  criar(CHAVES.veiculos, { ...dados, criadoEm: new Date().toISOString() });
+  mostrarMensagem(`Veículo ${dados.placa} cadastrado.`);
+
+  modalVeiculo.hide();
+  renderizarVeiculos();
+});
+
+// Ao abrir a página, carrega os donos e mostra os veículos salvos
+carregarDonos();
 renderizarVeiculos();

@@ -31,7 +31,11 @@
     <main class="container py-4">
         <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
             <h1 class="h2 mb-0">Veículos</h1>
-            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalVeiculo"><i class="bi bi-plus-lg"></i> Novo veículo</button>
+            <button type="button" class="btn btn-primary" id="btn-novo-veiculo" data-bs-toggle="modal" data-bs-target="#modalVeiculo"><i class="bi bi-plus-lg"></i> Novo veículo</button>
+        </div>
+
+        <div class="alert alert-warning d-none" id="aviso-sem-clientes" role="alert">
+            Para cadastrar um veículo, primeiro cadastre o dono dele em <a href="clientes.html" class="alert-link">Clientes</a>.
         </div>
 
         <!-- Pesquisa, filtros e ordenação -->
@@ -60,19 +64,20 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
                 </div>
                 <div class="modal-body">
-                    <form class="row g-3" id="form-veiculo">
-                        <div class="col-12"><label class="form-label" for="dono">Dono</label><select class="form-select" id="dono" name="clienteId" required><option value="">Selecione o cliente</option></select></div>
-                        <div class="col-sm-5"><label class="form-label" for="placa">Placa</label><input class="form-control text-uppercase" id="placa" name="placa" placeholder="ABC1D23" minlength="7" maxlength="7" required></div>
-                        <div class="col-sm-7"><label class="form-label" for="marca">Marca</label><select class="form-select" id="marca" name="marca" required><option value="">Selecione</option></select></div>
-                        <div class="col-12"><label class="form-label" for="modelo">Modelo</label><input class="form-control" id="modelo" name="modelo" placeholder="Ex.: Onix LT 1.0" minlength="2" required></div>
-                        <div class="col-4"><label class="form-label" for="ano">Ano</label><input type="number" class="form-control" id="ano" name="ano" min="1960" max="2027" step="1" required></div>
+                    <div class="alert alert-danger d-none" id="erros-veiculo" role="alert"></div>
+                    <form class="row g-3" id="form-veiculo" novalidate>
+                        <div class="col-12"><label class="form-label" for="dono">Dono</label><select class="form-select" id="dono" name="clienteId" required><option value="">Selecione o cliente</option></select><div class="invalid-feedback">Escolha o dono do veículo.</div></div>
+                        <div class="col-sm-5"><label class="form-label" for="placa">Placa</label><input class="form-control text-uppercase" id="placa" name="placa" placeholder="ABC1D23" minlength="7" maxlength="7" required><div class="invalid-feedback">A placa tem 7 caracteres.</div></div>
+                        <div class="col-sm-7"><label class="form-label" for="marca">Marca</label><select class="form-select" id="marca" name="marca" required><option value="">Selecione</option></select><div class="invalid-feedback">Escolha a marca.</div></div>
+                        <div class="col-12"><label class="form-label" for="modelo">Modelo</label><input class="form-control" id="modelo" name="modelo" placeholder="Ex.: Onix LT 1.0" minlength="2" required><div class="invalid-feedback">Informe o modelo.</div></div>
+                        <div class="col-4"><label class="form-label" for="ano">Ano</label><input type="number" class="form-control" id="ano" name="ano" min="1960" max="2027" step="1" required><div class="invalid-feedback">Ano entre 1960 e 2027.</div></div>
                         <div class="col-4"><label class="form-label" for="cor">Cor</label><input class="form-control" id="cor" name="cor"></div>
-                        <div class="col-4"><label class="form-label" for="km">Km atual</label><input type="number" class="form-control" id="km" name="km" min="0" step="1" required></div>
+                        <div class="col-4"><label class="form-label" for="km">Km atual</label><input type="number" class="form-control" id="km" name="km" min="0" step="1" required><div class="invalid-feedback">Informe o km.</div></div>
                     </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" form="form-veiculo" class="btn btn-primary" disabled>Salvar</button>
+                    <button type="submit" form="form-veiculo" class="btn btn-primary">Salvar</button>
                 </div>
             </div>
         </div>
