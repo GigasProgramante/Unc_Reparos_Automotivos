@@ -39,18 +39,20 @@
         </div>
 
         <!-- Pesquisa, filtros e ordenação -->
-        <form class="row g-2 mb-3" role="search">
-            <div class="col-md-5"><input type="search" class="form-control" placeholder="Pesquisar por placa, modelo ou dono"></div>
+        <form class="row g-2 mb-2" role="search" onsubmit="return false">
+            <div class="col-md-5"><input type="search" class="form-control" id="busca-veiculo" placeholder="Pesquisar por placa, modelo ou dono" aria-label="Pesquisar"></div>
             <div class="col-6 col-md-2">
-                <select class="form-select"><option>Todas as marcas</option><option>Chevrolet</option><option>Fiat</option><option>Volkswagen</option></select>
+                <select class="form-select" id="filtro-marca" aria-label="Marca"><option value="">Todas as marcas</option></select>
             </div>
             <div class="col-6 col-md-2">
-                <select class="form-select"><option>Todos</option><option>Na oficina</option><option>Liberados</option></select>
+                <select class="form-select" id="filtro-situacao" aria-label="Situação"><option value="">Todos</option><option value="na-oficina">Na oficina</option><option value="liberados">Liberados</option></select>
             </div>
             <div class="col-md-3">
-                <select class="form-select"><option>Placa (A–Z)</option><option>Mais novos</option><option>Maior quilometragem</option></select>
+                <select class="form-select" id="ordem-veiculos" aria-label="Ordenar por"><option value="placa">Placa (A–Z)</option><option value="mais-novos">Mais novos</option><option value="maior-km">Maior quilometragem</option></select>
             </div>
         </form>
+
+        <p class="small text-body-secondary mb-2" id="contador-veiculos"></p>
 
         <section class="row g-3" id="lista-veiculos"></section>
     </main>

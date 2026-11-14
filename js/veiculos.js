@@ -1,4 +1,9 @@
 const listaVeiculos = document.getElementById("lista-veiculos");
+const buscaVeiculo = document.getElementById("busca-veiculo");
+const filtroMarca = document.getElementById("filtro-marca");
+const filtroSituacao = document.getElementById("filtro-situacao");
+const ordemVeiculos = document.getElementById("ordem-veiculos");
+const contadorVeiculos = document.getElementById("contador-veiculos");
 
 // Marcas aceitas no cadastro e no filtro
 const MARCAS = ["Chevrolet", "Fiat", "Ford", "Honda", "Hyundai", "Jeep", "Nissan", "Renault", "Toyota", "Volkswagen", "Outra"];
@@ -51,12 +56,57 @@ function mensagemVazia(texto) {
     </div>`;
 }
 
-// Mostra todos os veículos salvos como cartões
+// Aplica a pesquisa e os filtros na lista de veículos
+function filtrarVeiculos(veiculos) {
+  const busca = buscaVeiculo.value.trim().toLowerCase();
+  const marca = filtroMarca.value;
+  const situacao = filtroSituacao.value;
+
+  return veiculos.filter((veiculo) => {
+    // Pesquisa: placa, modelo ou nome do dono
+    if (busca !== "") {
+      const achou = veiculo.placa.toLowerCase().includes(busca) ||
+        veiculo.modelo.toLowerCase().includes(busca) ||
+        nomeDoDono(veiculo.clienteId).toLowerCase().includes(busca);
+      if (!achou) return false;
+    }
+
+    if (marca !== "" && veiculo.marca !== marca) return false;
+
+    const naOficina = estaNaOficina(veiculo.id);
+    if (situacao === "na-oficina" && !naOficina) return false;
+    if (situacao === "liberados" && naOficina) return false;
+
+    return true;
+  });
+}
+
+// Ordena a lista conforme a opção escolhida
+function ordenarVeiculos(veiculos) {
+  const ordem = ordemVeiculos.value;
+
+  if (ordem === "placa") {
+    veiculos.sort((a, b) => a.placa.localeCompare(b.placa));
+  } else if (ordem === "mais-novos") {
+    veiculos.sort((a, b) => b.ano - a.ano);
+  } else if (ordem === "maior-km") {
+    veiculos.sort((a, b) => b.km - a.km);
+  }
+  return veiculos;
+}
+
+// Mostra os veículos como cartões, já filtrados e ordenados
 function renderizarVeiculos() {
-  const veiculos = listar(CHAVES.veiculos);
+  const todos = listar(CHAVES.veiculos);
+  const veiculos = ordenarVeiculos(filtrarVeiculos(todos));
+
+  contadorVeiculos.textContent = `${veiculos.length} de ${todos.length} veículos`;
 
   if (veiculos.length === 0) {
-    listaVeiculos.innerHTML = mensagemVazia("Nenhum veículo cadastrado.");
+    const texto = todos.length === 0
+      ? "Nenhum veículo cadastrado."
+      : "Nenhum veículo encontrado com esses filtros.";
+    listaVeiculos.innerHTML = mensagemVazia(texto);
     return;
   }
 
@@ -65,6 +115,16 @@ function renderizarVeiculos() {
     html += cartaoVeiculo(veiculo);
   }
   listaVeiculos.innerHTML = html;
+}
+
+// Coloca as marcas no filtro
+for (const marca of MARCAS) {
+  filtroMarca.innerHTML += `<option>${marca}</option>`;
+}
+
+// Atualiza a lista sempre que a pesquisa ou um filtro mudar
+for (const campo of [buscaVeiculo, filtroMarca, filtroSituacao, ordemVeiculos]) {
+  campo.addEventListener("input", renderizarVeiculos);
 }
 
 // Formulário (cadastro e edição)
