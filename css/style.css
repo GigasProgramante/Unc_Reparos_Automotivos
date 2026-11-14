@@ -1,0 +1,379 @@
+/* ---- Tema ESCURO (padrão) ---- */
+:root,
+:root[data-theme="escuro"] {
+    /* Superfícies */
+    --app-bg: #0f1114;            /* fundo da página */
+    --app-surface: #181b20;       /* cards, tabelas */
+    --app-surface-2: #1f2329;     /* cabeçalhos de card, hover */
+    --app-surface-3: #272c34;     /* modais, dropdowns */
+    --app-inset: #0c0e11;         /* campos de formulário (rebaixados) */
+
+    /* Bordas */
+    --app-border: #343a44;        /* borda padrão, bem visível */
+    --app-border-strong: #4a525f; /* hover / foco leve */
+    --app-border-soft: #262b33;   /* divisórias internas */
+
+    /* Texto */
+    --app-text: #e4e7ec;
+    --app-text-muted: #9099a6;
+
+    /* Cor de destaque */
+    --app-accent: #3d8bfd;
+    --app-accent-hover: #5a9dfd;
+    --app-accent-contrast: #fff;
+    --app-accent-soft: rgba(61, 139, 253, .16);
+    --app-accent-rgb: 61, 139, 253;
+    --app-accent-hover-rgb: 90, 157, 253;
+    --app-bg-rgb: 15, 17, 20;
+    --app-emphasis: #fff;
+
+    /* Estados */
+    --app-success: #34c38f;
+    --app-warning: #f1b44c;
+    --app-danger:  #f1556c;
+    --app-info:    #4cc3e0;
+    --app-danger-hover: #f47a8c;
+
+    /* Alertas (fundo translúcido + texto legível) */
+    --app-danger-bg:  rgba(241, 85, 108, .12);
+    --app-success-bg: rgba(52, 195, 143, .12);
+    --app-warning-bg: rgba(241, 180, 76, .12);
+    --app-danger-text:  #f7a1ad;
+    --app-success-text: #8fe0c1;
+    --app-warning-text: #f7d396;
+
+    /* Detalhes dependentes do tema */
+    --app-icon-filter: invert(1) grayscale(1) brightness(1.5); /* ícones SVG escuros -> claros */
+    --app-backdrop: #000;
+    --app-backdrop-opacity: .7;
+    --app-hairline: rgba(255, 255, 255, .12);
+
+    /* Forma e profundidade */
+    --app-radius: .5rem;
+    --app-radius-sm: .375rem;
+    --app-border-width: 1px;
+    --app-shadow-sm: 0 1px 2px rgba(0, 0, 0, .5);
+    --app-shadow: 0 4px 12px rgba(0, 0, 0, .45), inset 0 1px 0 rgba(255, 255, 255, .04);
+    --app-shadow-lg: 0 14px 40px rgba(0, 0, 0, .6), inset 0 1px 0 rgba(255, 255, 255, .05);
+    --app-shadow-inset: inset 0 1px 3px rgba(0, 0, 0, .55);
+    --app-focus-ring: 0 0 0 .2rem var(--app-accent-soft);
+}
+
+
+/* ---- Tema CLARO ---- */
+:root[data-theme="claro"] {
+    /* Superfícies: o fundo é o mais "afundado"; cards sobem em branco */
+    --app-bg: #e9ecf1;
+    --app-surface: #ffffff;
+    --app-surface-2: #f3f5f8;
+    --app-surface-3: #ffffff;
+    --app-inset: #f6f7fa;
+
+    /* Bordas */
+    --app-border: #c5ccd6;
+    --app-border-strong: #9aa4b2;
+    --app-border-soft: #e1e5eb;
+
+    /* Texto */
+    --app-text: #1c2230;
+    --app-text-muted: #5b6577;
+
+    /* Destaque */
+    --app-accent: #1f6feb;
+    --app-accent-hover: #1558c4;
+    --app-accent-contrast: #fff;
+    --app-accent-soft: rgba(31, 111, 235, .14);
+    --app-accent-rgb: 31, 111, 235;
+    --app-accent-hover-rgb: 21, 88, 196;
+    --app-bg-rgb: 233, 236, 241;
+    --app-emphasis: #000;
+
+    /* Estados */
+    --app-success: #1a9d6c;
+    --app-warning: #c98a0b;
+    --app-danger:  #d63a52;
+    --app-info:    #1b95b3;
+    --app-danger-hover: #b92d44;
+
+    --app-danger-bg:  rgba(214, 58, 82, .10);
+    --app-success-bg: rgba(26, 157, 108, .10);
+    --app-warning-bg: rgba(201, 138, 11, .12);
+    --app-danger-text:  #8f1f33;
+    --app-success-text: #0f6445;
+    --app-warning-text: #7a5207;
+
+    --app-icon-filter: none;
+    --app-backdrop: #0b1220;
+    --app-backdrop-opacity: .5;
+    --app-hairline: rgba(0, 0, 0, .12);
+
+    /* Sombras mais suaves, mantendo a elevação */
+    --app-shadow-sm: 0 1px 2px rgba(20, 30, 50, .12);
+    --app-shadow: 0 2px 8px rgba(20, 30, 50, .10), 0 1px 2px rgba(20, 30, 50, .08);
+    --app-shadow-lg: 0 14px 36px rgba(20, 30, 50, .20), 0 2px 6px rgba(20, 30, 50, .10);
+    --app-shadow-inset: inset 0 1px 2px rgba(20, 30, 50, .10);
+}
+
+
+/* 2. PONTE COM O BOOTSTRAP
+   Seletor com [data-theme] para vencer o [data-bs-theme] do Bootstrap. */
+
+:root[data-theme] {
+    --bs-body-bg: var(--app-bg);
+    --bs-body-bg-rgb: var(--app-bg-rgb);
+    --bs-body-color: var(--app-text);
+    --bs-secondary-color: var(--app-text-muted);
+    --bs-tertiary-bg: var(--app-bg);
+    --bs-secondary-bg: var(--app-surface-2);
+    --bs-emphasis-color: var(--app-emphasis);
+
+    --bs-border-color: var(--app-border);
+    --bs-border-color-translucent: var(--app-border);
+    --bs-border-width: var(--app-border-width);
+    --bs-border-radius: var(--app-radius-sm);
+    --bs-border-radius-lg: var(--app-radius);
+
+    --bs-primary: var(--app-accent);
+    --bs-primary-rgb: var(--app-accent-rgb);
+    --bs-link-color: var(--app-accent);
+    --bs-link-hover-color: var(--app-accent-hover);
+    --bs-link-color-rgb: var(--app-accent-rgb);
+    --bs-link-hover-color-rgb: var(--app-accent-hover-rgb);
+
+    --bs-success: var(--app-success);
+    --bs-warning: var(--app-warning);
+    --bs-danger: var(--app-danger);
+    --bs-info: var(--app-info);
+
+    --bs-focus-ring-color: var(--app-accent-soft);
+    --bs-box-shadow: var(--app-shadow);
+    --bs-box-shadow-sm: var(--app-shadow-sm);
+    --bs-box-shadow-lg: var(--app-shadow-lg);
+}
+
+body {
+    background-color: var(--app-bg);
+    color: var(--app-text);
+}
+
+::selection { background: var(--app-accent-soft); }
+
+/* ---- Navbar ---- */
+.app-navbar {
+    background-color: var(--app-surface);
+    border-bottom: var(--app-border-width) solid var(--app-border);
+    box-shadow: var(--app-shadow);
+    --bs-navbar-color: var(--app-text-muted);
+    --bs-navbar-hover-color: var(--app-text);
+    --bs-navbar-active-color: var(--app-text);
+    --bs-navbar-brand-color: var(--app-text);
+    --bs-navbar-brand-hover-color: var(--app-text);
+}
+.app-navbar .navbar-brand i { color: var(--app-accent); }
+.app-navbar .nav-link {
+    border-radius: var(--app-radius-sm);
+    transition: background-color .15s, color .15s;
+}
+.app-navbar .nav-link:hover { background-color: var(--app-surface-2); }
+.app-navbar .nav-link.active {
+    background-color: var(--app-accent-soft);
+    color: var(--app-accent-hover);
+}
+.app-navbar .navbar-toggler {
+    border-color: var(--app-border);
+    --bs-navbar-toggler-focus-width: .2rem;
+}
+.app-navbar .navbar-toggler-icon { filter: var(--app-icon-filter); }
+
+/* ---- Cards ---- */
+.card {
+    --bs-card-bg: var(--app-surface);
+    --bs-card-cap-bg: var(--app-surface-2);
+    --bs-card-border-color: var(--app-border);
+    --bs-card-border-radius: var(--app-radius);
+    --bs-card-inner-border-radius: calc(var(--app-radius) - 1px);
+    --bs-card-color: var(--app-text);
+    border-width: var(--app-border-width);
+    box-shadow: var(--app-shadow);
+}
+.card-header { border-bottom-color: var(--app-border); }
+
+/* ---- Tabelas ---- */
+.table {
+    --bs-table-bg: transparent;
+    --bs-table-color: var(--app-text);
+    --bs-table-border-color: var(--app-border-soft);
+    --bs-table-hover-bg: var(--app-surface-2);
+    --bs-table-hover-color: var(--app-text);
+    --bs-table-striped-bg: var(--app-surface-2);
+}
+.table > thead > tr > th {
+    background-color: var(--app-surface-2);
+    color: var(--app-text-muted);
+    font-size: .75rem;
+    font-weight: 600;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    border-bottom: var(--app-border-width) solid var(--app-border);
+}
+.card > .table-responsive { border-radius: inherit; }
+.card > .table-responsive > .table > thead > tr:first-child > th:first-child { border-top-left-radius: calc(var(--app-radius) - 1px); }
+.card > .table-responsive > .table > thead > tr:first-child > th:last-child { border-top-right-radius: calc(var(--app-radius) - 1px); }
+
+/* ---- Listas ---- */
+.list-group {
+    --bs-list-group-bg: transparent;
+    --bs-list-group-color: var(--app-text);
+    --bs-list-group-border-color: var(--app-border-soft);
+    --bs-list-group-action-hover-bg: var(--app-surface-2);
+}
+
+/* ---- Formulários (campos "rebaixados" em relação ao card) ---- */
+.form-control,
+.form-select {
+    background-color: var(--app-inset);
+    color: var(--app-text);
+    border: var(--app-border-width) solid var(--app-border);
+    border-radius: var(--app-radius-sm);
+    box-shadow: var(--app-shadow-inset);
+    transition: border-color .15s, box-shadow .15s;
+}
+.form-control::placeholder { color: var(--app-text-muted); opacity: .7; }
+.form-control:hover,
+.form-select:hover { border-color: var(--app-border-strong); }
+.form-control:focus,
+.form-select:focus {
+    background-color: var(--app-inset);
+    color: var(--app-text);
+    border-color: var(--app-accent);
+    box-shadow: var(--app-shadow-inset), var(--app-focus-ring);
+}
+.form-control:disabled,
+.form-select:disabled { background-color: var(--app-surface-2); opacity: .6; }
+.form-label { color: var(--app-text-muted); font-size: .875rem; font-weight: 500; }
+.form-check-input {
+    background-color: var(--app-inset);
+    border-color: var(--app-border-strong);
+}
+.form-check-input:checked {
+    background-color: var(--app-accent);
+    border-color: var(--app-accent);
+}
+.form-control.is-invalid, .form-select.is-invalid { border-color: var(--app-danger); }
+.form-control.is-valid,   .form-select.is-valid   { border-color: var(--app-success); }
+.invalid-feedback { color: var(--app-danger); }
+.valid-feedback   { color: var(--app-success); }
+
+/* ---- Botões ---- */
+.btn {
+    --bs-btn-border-radius: var(--app-radius-sm);
+    --bs-btn-focus-shadow-rgb: var(--app-accent-rgb);
+    border-width: var(--app-border-width);
+    box-shadow: var(--app-shadow-sm);
+    transition: background-color .15s, border-color .15s, color .15s, transform .1s;
+}
+.btn:active { transform: translateY(1px); box-shadow: none; }
+
+.btn-primary {
+    --bs-btn-bg: var(--app-accent);
+    --bs-btn-border-color: var(--app-accent-hover);
+    --bs-btn-color: var(--app-accent-contrast);
+    --bs-btn-hover-bg: var(--app-accent-hover);
+    --bs-btn-hover-border-color: var(--app-accent-hover);
+    --bs-btn-hover-color: var(--app-accent-contrast);
+    --bs-btn-active-bg: var(--app-accent);
+    --bs-btn-active-border-color: var(--app-accent);
+    --bs-btn-active-color: var(--app-accent-contrast);
+    --bs-btn-disabled-bg: var(--app-accent);
+    --bs-btn-disabled-border-color: var(--app-accent);
+}
+.btn-danger {
+    --bs-btn-bg: var(--app-danger);
+    --bs-btn-border-color: var(--app-danger);
+    --bs-btn-hover-bg: var(--app-danger-hover);
+    --bs-btn-hover-border-color: var(--app-danger-hover);
+    --bs-btn-active-bg: var(--app-danger);
+    --bs-btn-active-border-color: var(--app-danger);
+}
+.btn-outline-secondary {
+    --bs-btn-color: var(--app-text);
+    --bs-btn-border-color: var(--app-border-strong);
+    --bs-btn-hover-bg: var(--app-surface-3);
+    --bs-btn-hover-border-color: var(--app-text-muted);
+    --bs-btn-hover-color: var(--app-text);
+    --bs-btn-active-bg: var(--app-surface-3);
+    --bs-btn-active-border-color: var(--app-text-muted);
+    --bs-btn-active-color: var(--app-text);
+    background-color: var(--app-surface-2);
+}
+.btn-outline-primary {
+    --bs-btn-color: var(--app-accent);
+    --bs-btn-border-color: var(--app-accent);
+    --bs-btn-hover-bg: var(--app-accent-soft);
+    --bs-btn-hover-color: var(--app-accent-hover);
+    --bs-btn-hover-border-color: var(--app-accent-hover);
+    --bs-btn-active-bg: var(--app-accent-soft);
+    --bs-btn-active-color: var(--app-accent-hover);
+}
+.btn-outline-danger {
+    --bs-btn-color: var(--app-danger);
+    --bs-btn-border-color: var(--app-danger);
+    --bs-btn-hover-bg: var(--app-danger);
+    --bs-btn-hover-border-color: var(--app-danger);
+    --bs-btn-hover-color: var(--app-accent-contrast);
+    --bs-btn-active-bg: var(--app-danger);
+    --bs-btn-active-border-color: var(--app-danger);
+}
+.btn-close { filter: var(--app-icon-filter); }
+
+/* ---- Modais e dropdowns (nível mais próximo do usuário) ---- */
+.modal-content {
+    --bs-modal-bg: var(--app-surface-3);
+    --bs-modal-border-color: var(--app-border-strong);
+    --bs-modal-border-radius: var(--app-radius);
+    --bs-modal-header-border-color: var(--app-border);
+    --bs-modal-footer-border-color: var(--app-border);
+    box-shadow: var(--app-shadow-lg);
+}
+.modal-backdrop { --bs-backdrop-bg: var(--app-backdrop); --bs-backdrop-opacity: var(--app-backdrop-opacity); }
+
+.dropdown-menu {
+    --bs-dropdown-bg: var(--app-surface-3);
+    --bs-dropdown-border-color: var(--app-border-strong);
+    --bs-dropdown-link-hover-bg: var(--app-surface-2);
+    --bs-dropdown-divider-bg: var(--app-border);
+    box-shadow: var(--app-shadow-lg);
+}
+
+/* ---- Alertas e badges ---- */
+.alert { border-width: var(--app-border-width); border-radius: var(--app-radius-sm); }
+.alert-danger {
+    --bs-alert-bg: var(--app-danger-bg);
+    --bs-alert-border-color: var(--app-danger);
+    --bs-alert-color: var(--app-danger-text);
+}
+.alert-success {
+    --bs-alert-bg: var(--app-success-bg);
+    --bs-alert-border-color: var(--app-success);
+    --bs-alert-color: var(--app-success-text);
+}
+.alert-warning {
+    --bs-alert-bg: var(--app-warning-bg);
+    --bs-alert-border-color: var(--app-warning);
+    --bs-alert-color: var(--app-warning-text);
+}
+.badge { border: var(--app-border-width) solid var(--app-hairline); }
+
+/* ---- Placeholders de carregamento ---- */
+.placeholder { background-color: var(--app-border); }
+
+/* ---- Rodapé e divisórias ---- */
+footer.border-top { border-color: var(--app-border) !important; }
+hr { border-color: var(--app-border); opacity: 1; }
+
+/* ---- Scrollbar discreta ---- */
+* { scrollbar-color: var(--app-border-strong) var(--app-bg); scrollbar-width: thin; }
+
+/* ---- Foco acessível ---- */
+:focus-visible { outline: 2px solid var(--app-accent); outline-offset: 2px; }
+.form-control:focus-visible, .form-select:focus-visible { outline: none; }
