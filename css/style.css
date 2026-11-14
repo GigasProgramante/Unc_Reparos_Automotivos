@@ -1,11 +1,3 @@
-/* ==========================================================================
-   UnC Reparos Automotivos — estilos base
-   1. Temas (tokens)  2. Ponte com o Bootstrap  3. Componentes
-   Novo tema: copie um bloco de tema, troque o seletor e os valores, e use
-   <html data-theme="nome" data-bs-theme="light|dark">.
-   Componentes só usam tokens --app-*, nunca cores fixas.
-   ========================================================================== */
-
 /* ---- Tema ESCURO (padrão) ---- */
 :root,
 :root[data-theme="escuro"] {
@@ -123,10 +115,8 @@
 }
 
 
-/* ==========================================================================
-   2. PONTE COM O BOOTSTRAP
-   Seletor com [data-theme] para vencer o [data-bs-theme] do Bootstrap.
-   ========================================================================== */
+/* 2. PONTE COM O BOOTSTRAP
+   Seletor com [data-theme] para vencer o [data-bs-theme] do Bootstrap. */
 
 :root[data-theme] {
     --bs-body-bg: var(--app-bg);
