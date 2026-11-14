@@ -36,33 +36,8 @@
             <a href="ordens.html" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Nova ordem de serviço</a>
         </div>
 
-        <!-- Indicadores (serão calculados a partir dos dados) -->
-        <section class="row g-3 mb-4">
-            <div class="col-6 col-lg-3">
-                <div class="card h-100"><div class="card-body">
-                    <p class="text-body-secondary small text-uppercase mb-1">Na oficina agora</p>
-                    <p class="fs-3 fw-bold mb-0">0</p>
-                </div></div>
-            </div>
-            <div class="col-6 col-lg-3">
-                <div class="card h-100"><div class="card-body">
-                    <p class="text-body-secondary small text-uppercase mb-1">Faturamento do mês</p>
-                    <p class="fs-3 fw-bold mb-0">R$ 0,00</p>
-                </div></div>
-            </div>
-            <div class="col-6 col-lg-3">
-                <div class="card h-100"><div class="card-body">
-                    <p class="text-body-secondary small text-uppercase mb-1">Ticket médio</p>
-                    <p class="fs-3 fw-bold mb-0">R$ 0,00</p>
-                </div></div>
-            </div>
-            <div class="col-6 col-lg-3">
-                <div class="card h-100"><div class="card-body">
-                    <p class="text-body-secondary small text-uppercase mb-1">Revisões vencidas</p>
-                    <p class="fs-3 fw-bold mb-0">0</p>
-                </div></div>
-            </div>
-        </section>
+        <!-- Indicadores calculados a partir dos dados salvos -->
+        <section class="row g-3 mb-4" id="indicadores" aria-label="Indicadores da oficina"></section>
 
         <div class="row g-3">
             <section class="col-lg-7">
@@ -103,5 +78,8 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="js/script.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/validacao.js"></script>
+    <script src="js/painel.js"></script>
 </body>
 </html>
