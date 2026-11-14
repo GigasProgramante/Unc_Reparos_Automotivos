@@ -33,73 +33,30 @@
     <main class="container py-4">
         <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
             <h1 class="h2 mb-0">Veículos</h1>
-            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalVeiculo"><i class="bi bi-plus-lg"></i> Novo veículo</button>
+            <button type="button" class="btn btn-primary" id="btn-novo-veiculo" data-bs-toggle="modal" data-bs-target="#modalVeiculo"><i class="bi bi-plus-lg"></i> Novo veículo</button>
+        </div>
+
+        <div class="alert alert-warning d-none" id="aviso-sem-clientes" role="alert">
+            Para cadastrar um veículo, primeiro cadastre o dono dele em <a href="clientes.html" class="alert-link">Clientes</a>.
         </div>
 
         <!-- Pesquisa, filtros e ordenação -->
-        <form class="row g-2 mb-3" role="search">
-            <div class="col-md-5"><input type="search" class="form-control" placeholder="Pesquisar por placa, modelo ou dono"></div>
+        <form class="row g-2 mb-2" role="search" onsubmit="return false">
+            <div class="col-md-5"><input type="search" class="form-control" id="busca-veiculo" placeholder="Pesquisar por placa, modelo ou dono" aria-label="Pesquisar"></div>
             <div class="col-6 col-md-2">
-                <select class="form-select"><option>Todas as marcas</option><option>Chevrolet</option><option>Fiat</option><option>Volkswagen</option></select>
+                <select class="form-select" id="filtro-marca" aria-label="Marca"><option value="">Todas as marcas</option></select>
             </div>
             <div class="col-6 col-md-2">
-                <select class="form-select"><option>Todos</option><option>Na oficina</option><option>Liberados</option></select>
+                <select class="form-select" id="filtro-situacao" aria-label="Situação"><option value="">Todos</option><option value="na-oficina">Na oficina</option><option value="liberados">Liberados</option></select>
             </div>
             <div class="col-md-3">
-                <select class="form-select"><option>Placa (A–Z)</option><option>Mais novos</option><option>Maior quilometragem</option></select>
+                <select class="form-select" id="ordem-veiculos" aria-label="Ordenar por"><option value="placa">Placa (A–Z)</option><option value="mais-novos">Mais novos</option><option value="maior-km">Maior quilometragem</option></select>
             </div>
         </form>
 
-        <section class="row g-3">
-                <div class="col-sm-6 col-lg-4">
-                    <div class="card h-100 placeholder-glow">
-                        <div class="card-body">
-                            <span class="badge text-bg-light border font-monospace mb-2">ABC1D23</span>
-                            <h2 class="h5 card-title"><span class="placeholder col-7"></span></h2>
-                            <p class="card-text small mb-1">Marca / ano: <span class="placeholder col-5"></span></p>
-                            <p class="card-text small mb-1">Km: <span class="placeholder col-4"></span></p>
-                            <p class="card-text small mb-0">Dono: <span class="placeholder col-6"></span></p>
-                        </div>
-                        <div class="card-footer bg-transparent d-flex gap-2">
-                            <button class="btn btn-sm btn-primary" disabled>Nova OS</button>
-                            <button class="btn btn-sm btn-outline-primary" disabled>Editar</button>
-                            <button class="btn btn-sm btn-outline-danger" disabled>Excluir</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-sm-6 col-lg-4">
-                    <div class="card h-100 placeholder-glow">
-                        <div class="card-body">
-                            <span class="badge text-bg-light border font-monospace mb-2">ABC1D23</span>
-                            <h2 class="h5 card-title"><span class="placeholder col-7"></span></h2>
-                            <p class="card-text small mb-1">Marca / ano: <span class="placeholder col-5"></span></p>
-                            <p class="card-text small mb-1">Km: <span class="placeholder col-4"></span></p>
-                            <p class="card-text small mb-0">Dono: <span class="placeholder col-6"></span></p>
-                        </div>
-                        <div class="card-footer bg-transparent d-flex gap-2">
-                            <button class="btn btn-sm btn-primary" disabled>Nova OS</button>
-                            <button class="btn btn-sm btn-outline-primary" disabled>Editar</button>
-                            <button class="btn btn-sm btn-outline-danger" disabled>Excluir</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-sm-6 col-lg-4">
-                    <div class="card h-100 placeholder-glow">
-                        <div class="card-body">
-                            <span class="badge text-bg-light border font-monospace mb-2">ABC1D23</span>
-                            <h2 class="h5 card-title"><span class="placeholder col-7"></span></h2>
-                            <p class="card-text small mb-1">Marca / ano: <span class="placeholder col-5"></span></p>
-                            <p class="card-text small mb-1">Km: <span class="placeholder col-4"></span></p>
-                            <p class="card-text small mb-0">Dono: <span class="placeholder col-6"></span></p>
-                        </div>
-                        <div class="card-footer bg-transparent d-flex gap-2">
-                            <button class="btn btn-sm btn-primary" disabled>Nova OS</button>
-                            <button class="btn btn-sm btn-outline-primary" disabled>Editar</button>
-                            <button class="btn btn-sm btn-outline-danger" disabled>Excluir</button>
-                        </div>
-                    </div>
-                </div>
-        </section>
+        <p class="small text-body-secondary mb-2" id="contador-veiculos"></p>
+
+        <section class="row g-3" id="lista-veiculos"></section>
     </main>
 
     <!-- Formulário de cadastro -->
@@ -111,19 +68,39 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
                 </div>
                 <div class="modal-body">
-                    <form class="row g-3" id="form-veiculo">
-                        <div class="col-12"><label class="form-label" for="dono">Dono</label><select class="form-select" id="dono" name="clienteId" required><option value="">Selecione o cliente</option></select></div>
-                        <div class="col-sm-5"><label class="form-label" for="placa">Placa</label><input class="form-control text-uppercase" id="placa" name="placa" placeholder="ABC1D23" minlength="7" maxlength="7" required></div>
-                        <div class="col-sm-7"><label class="form-label" for="marca">Marca</label><select class="form-select" id="marca" name="marca" required><option value="">Selecione</option></select></div>
-                        <div class="col-12"><label class="form-label" for="modelo">Modelo</label><input class="form-control" id="modelo" name="modelo" placeholder="Ex.: Onix LT 1.0" minlength="2" required></div>
-                        <div class="col-4"><label class="form-label" for="ano">Ano</label><input type="number" class="form-control" id="ano" name="ano" min="1960" max="2027" step="1" required></div>
+                    <div class="alert alert-danger d-none" id="erros-veiculo" role="alert"></div>
+                    <form class="row g-3" id="form-veiculo" novalidate>
+                        <div class="col-12"><label class="form-label" for="dono">Dono</label><select class="form-select" id="dono" name="clienteId" required><option value="">Selecione o cliente</option></select><div class="invalid-feedback">Escolha o dono do veículo.</div></div>
+                        <div class="col-sm-5"><label class="form-label" for="placa">Placa</label><input class="form-control text-uppercase" id="placa" name="placa" placeholder="ABC1D23" minlength="7" maxlength="7" required><div class="invalid-feedback">A placa tem 7 caracteres.</div></div>
+                        <div class="col-sm-7"><label class="form-label" for="marca">Marca</label><select class="form-select" id="marca" name="marca" required><option value="">Selecione</option></select><div class="invalid-feedback">Escolha a marca.</div></div>
+                        <div class="col-12"><label class="form-label" for="modelo">Modelo</label><input class="form-control" id="modelo" name="modelo" placeholder="Ex.: Onix LT 1.0" minlength="2" required><div class="invalid-feedback">Informe o modelo.</div></div>
+                        <div class="col-4"><label class="form-label" for="ano">Ano</label><input type="number" class="form-control" id="ano" name="ano" min="1960" max="2027" step="1" required><div class="invalid-feedback">Ano entre 1960 e 2027.</div></div>
                         <div class="col-4"><label class="form-label" for="cor">Cor</label><input class="form-control" id="cor" name="cor"></div>
-                        <div class="col-4"><label class="form-label" for="km">Km atual</label><input type="number" class="form-control" id="km" name="km" min="0" step="1" required></div>
+                        <div class="col-4"><label class="form-label" for="km">Km atual</label><input type="number" class="form-control" id="km" name="km" min="0" step="1" required><div class="invalid-feedback">Informe o km.</div></div>
                     </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" form="form-veiculo" class="btn btn-primary" disabled>Salvar</button>
+                    <button type="submit" form="form-veiculo" class="btn btn-primary">Salvar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmação de exclusão -->
+    <div class="modal fade" id="modalExcluir" tabindex="-1" aria-labelledby="tituloModalExcluir">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title fs-5" id="tituloModalExcluir">Excluir veículo?</h2>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="mb-0"><strong id="nome-excluir"></strong> será removido do sistema. Essa ação não pode ser desfeita.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-danger" id="btn-confirmar-exclusao">Excluir</button>
                 </div>
             </div>
         </div>
@@ -135,5 +112,8 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="js/script.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/validacao.js"></script>
+    <script src="js/veiculos.js"></script>
 </body>
 </html>
