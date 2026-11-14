@@ -85,13 +85,117 @@ function mostrarCamposDoTipo() {
 
 formItem.tipo.addEventListener("change", mostrarCamposDoTipo);
 
+const errosItem = document.getElementById("erros-item");
+let idEmEdicao = null; // null = cadastrando um item novo
+
+// Converte o valor do campo em número, ou null se estiver vazio
+function numeroOuNulo(valor) {
+  return String(valor).trim() === "" ? null : Number(valor);
+}
+
+// Junta os valores do formulário num objeto, só com os campos do tipo escolhido
+function lerFormulario() {
+  const dados = {
+    tipo: formItem.tipo.value,
+    nome: formItem.nome.value.trim(),
+    preco: Number(formItem.preco.value),
+  };
+
+  if (dados.tipo === "servico") {
+    dados.horas = numeroOuNulo(formItem.horas.value);
+    dados.intervaloKm = numeroOuNulo(formItem.intervaloKm.value);
+    dados.intervaloMeses = numeroOuNulo(formItem.intervaloMeses.value);
+  } else {
+    dados.unidade = formItem.unidade.value;
+    dados.estoque = numeroOuNulo(formItem.estoque.value);
+    dados.estoqueMinimo = numeroOuNulo(formItem.estoqueMinimo.value);
+  }
+  return dados;
+}
+
+function mostrarErros(erros) {
+  errosItem.innerHTML = erros.join("<br>");
+  errosItem.classList.remove("d-none");
+}
+
 // Volta o formulário ao estado inicial (chamado quando o modal fecha)
 function limparFormulario() {
   formItem.reset();
+  formItem.classList.remove("was-validated");
+  errosItem.classList.add("d-none");
+  document.getElementById("tituloModalItem").textContent = "Novo item";
+  formItem.tipo.disabled = false;
+  idEmEdicao = null;
   mostrarCamposDoTipo();
 }
 
 document.getElementById("modalItem").addEventListener("hidden.bs.modal", limparFormulario);
+
+formItem.addEventListener("submit", (evento) => {
+  evento.preventDefault();
+
+  // 1º: validações do próprio HTML (required, faixas de preço, horas e estoque)
+  if (!formItem.checkValidity()) {
+    formItem.classList.add("was-validated");
+    return;
+  }
+
+  // 2º: regras do validacao.js (nome repetido, campos obrigatórios de cada tipo)
+  const dados = lerFormulario();
+  const erros = validarItem(dados, idEmEdicao);
+  if (erros.length > 0) {
+    mostrarErros(erros);
+    return;
+  }
+
+  if (idEmEdicao === null) {
+    criar(CHAVES.catalogo, { ...dados, criadoEm: new Date().toISOString() });
+    mostrarMensagem(`"${dados.nome}" adicionado ao catálogo.`);
+  } else {
+    atualizar(CHAVES.catalogo, idEmEdicao, dados);
+    mostrarMensagem(`"${dados.nome}" atualizado.`);
+  }
+
+  modalItem.hide();
+  renderizarCatalogo();
+});
+
+// Edição: abre o modal com os dados do item. O tipo fica travado,
+// porque serviço e peça guardam campos diferentes.
+function abrirEdicao(id) {
+  const item = buscar(CHAVES.catalogo, id);
+  if (!item) return;
+
+  idEmEdicao = id;
+  formItem.tipo.value = item.tipo;
+  formItem.tipo.disabled = true;
+  formItem.nome.value = item.nome;
+  formItem.preco.value = item.preco;
+
+  if (item.tipo === "servico") {
+    formItem.horas.value = item.horas ?? "";
+    formItem.intervaloKm.value = item.intervaloKm ?? "";
+    formItem.intervaloMeses.value = item.intervaloMeses ?? "";
+  } else {
+    formItem.unidade.value = item.unidade;
+    formItem.estoque.value = item.estoque;
+    formItem.estoqueMinimo.value = item.estoqueMinimo;
+  }
+
+  mostrarCamposDoTipo();
+  document.getElementById("tituloModalItem").textContent = "Editar item";
+  modalItem.show();
+}
+
+// Botões "Editar" e "Excluir" das duas tabelas
+for (const tabela of [listaServicos, listaPecas]) {
+  tabela.addEventListener("click", (evento) => {
+    const botao = evento.target.closest("button[data-acao]");
+    if (!botao) return;
+
+    if (botao.dataset.acao === "editar") abrirEdicao(botao.dataset.id);
+  });
+}
 
 // Ao abrir a página, mostra o catálogo salvo
 renderizarCatalogo();

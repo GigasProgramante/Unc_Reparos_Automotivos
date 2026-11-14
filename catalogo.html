@@ -97,7 +97,8 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
                 </div>
                 <div class="modal-body">
-                    <form class="row g-3" id="form-item">
+                    <div class="alert alert-danger d-none" id="erros-item" role="alert"></div>
+                    <form class="row g-3" id="form-item" novalidate>
                         <div class="col-sm-5">
                             <label for="tipo" class="form-label">Tipo</label>
                             <select id="tipo" name="tipo" class="form-select" required>
@@ -105,14 +106,17 @@
                                 <option value="servico">Serviço</option>
                                 <option value="peca">Peça</option>
                             </select>
+                            <div class="invalid-feedback">Escolha o tipo.</div>
                         </div>
                         <div class="col-sm-7">
                             <label for="preco" class="form-label">Preço (R$)</label>
                             <input type="number" id="preco" name="preco" class="form-control" min="0.01" step="0.01" required>
+                            <div class="invalid-feedback">Informe um preço maior que zero.</div>
                         </div>
                         <div class="col-12">
                             <label for="nome" class="form-label">Nome</label>
                             <input type="text" id="nome" name="nome" class="form-control" required>
+                            <div class="invalid-feedback">Informe o nome.</div>
                         </div>
 
                         <!-- Só aparece quando o tipo é Serviço -->
@@ -121,6 +125,7 @@
                                 <div class="col-sm-4">
                                     <label for="horas" class="form-label">Horas</label>
                                     <input type="number" id="horas" name="horas" class="form-control" min="0.5" max="40" step="0.5">
+                            <div class="invalid-feedback">Entre 0,5 e 40 horas.</div>
                                 </div>
                                 <div class="col-sm-4">
                                     <label for="intervaloKm" class="form-label">Revisão (km)</label>
@@ -150,10 +155,12 @@
                                 <div class="col-6 col-sm-4">
                                     <label for="estoque" class="form-label">Estoque</label>
                                     <input type="number" id="estoque" name="estoque" class="form-control" min="0" step="1">
+                            <div class="invalid-feedback">Número inteiro, zero ou mais.</div>
                                 </div>
                                 <div class="col-6 col-sm-4">
                                     <label for="estoqueMinimo" class="form-label">Mínimo</label>
                                     <input type="number" id="estoqueMinimo" name="estoqueMinimo" class="form-control" min="0" step="1">
+                            <div class="invalid-feedback">Número inteiro, zero ou mais.</div>
                                 </div>
                             </div>
                         </div>
@@ -161,7 +168,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" form="form-item" class="btn btn-primary" disabled>Salvar</button>
+                    <button type="submit" form="form-item" class="btn btn-primary">Salvar</button>
                 </div>
             </div>
         </div>
