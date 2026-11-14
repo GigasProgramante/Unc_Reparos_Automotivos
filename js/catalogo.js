@@ -1,5 +1,9 @@
 const listaServicos = document.getElementById("lista-servicos");
 const listaPecas = document.getElementById("lista-pecas");
+const buscaItem = document.getElementById("busca-item");
+const filtroPreco = document.getElementById("filtro-preco");
+const filtroSituacao = document.getElementById("filtro-situacao");
+const ordemItens = document.getElementById("ordem-itens");
 
 // Texto do intervalo de revisão: "10.000 km ou 6 meses"
 function textoRevisao(servico) {
@@ -58,19 +62,69 @@ function linhaVazia(colunas, icone, texto) {
     </tr>`;
 }
 
-// Mostra os serviços e as peças salvos, cada um na sua aba
+// Aplica a pesquisa e os filtros (valem para as duas abas)
+function filtrarItens(itens) {
+  const busca = buscaItem.value.trim().toLowerCase();
+  const faixa = filtroPreco.value;
+  const situacao = filtroSituacao.value;
+
+  return itens.filter((item) => {
+    if (busca !== "" && !item.nome.toLowerCase().includes(busca)) return false;
+
+    const preco = Number(item.preco);
+    if (faixa === "ate100" && preco > 100) return false;
+    if (faixa === "100a300" && (preco <= 100 || preco > 300)) return false;
+    if (faixa === "acima300" && preco <= 300) return false;
+
+    // "Com revisão" só faz sentido para serviço; "estoque baixo" só para peça
+    if (situacao === "com-revisao" && !(item.tipo === "servico" && (item.intervaloKm || item.intervaloMeses))) return false;
+    if (situacao === "estoque-baixo" && !(item.tipo === "peca" && Number(item.estoque) <= Number(item.estoqueMinimo))) return false;
+
+    return true;
+  });
+}
+
+// Ordena a lista conforme a opção escolhida
+function ordenarItens(itens) {
+  const ordem = ordemItens.value;
+
+  if (ordem === "nome") {
+    itens.sort((a, b) => a.nome.localeCompare(b.nome, "pt-BR"));
+  } else if (ordem === "menor-preco") {
+    itens.sort((a, b) => a.preco - b.preco);
+  } else if (ordem === "maior-preco") {
+    itens.sort((a, b) => b.preco - a.preco);
+  }
+  return itens;
+}
+
+// Mostra os itens filtrados e ordenados, cada tipo na sua aba,
+// com a quantidade no título da aba
 function renderizarCatalogo() {
-  const itens = listar(CHAVES.catalogo);
+  const todos = listar(CHAVES.catalogo);
+  const itens = ordenarItens(filtrarItens(todos));
   const servicos = itens.filter((i) => i.tipo === "servico");
   const pecas = itens.filter((i) => i.tipo === "peca");
+  const totalServicos = todos.filter((i) => i.tipo === "servico").length;
+  const totalPecas = todos.filter((i) => i.tipo === "peca").length;
+
+  document.getElementById("qtd-servicos").textContent = `${servicos.length}/${totalServicos}`;
+  document.getElementById("qtd-pecas").textContent = `${pecas.length}/${totalPecas}`;
 
   let html = "";
   for (const servico of servicos) html += linhaServico(servico);
-  listaServicos.innerHTML = html || linhaVazia(5, "bi-tools", "Nenhum serviço cadastrado");
+  const vazioServicos = totalServicos === 0 ? "Nenhum serviço cadastrado" : "Nenhum serviço encontrado com esses filtros";
+  listaServicos.innerHTML = html || linhaVazia(5, "bi-tools", vazioServicos);
 
   html = "";
   for (const peca of pecas) html += linhaPeca(peca);
-  listaPecas.innerHTML = html || linhaVazia(6, "bi-box-seam", "Nenhuma peça cadastrada");
+  const vazioPecas = totalPecas === 0 ? "Nenhuma peça cadastrada" : "Nenhuma peça encontrada com esses filtros";
+  listaPecas.innerHTML = html || linhaVazia(6, "bi-box-seam", vazioPecas);
+}
+
+// Atualiza a lista sempre que a pesquisa ou um filtro mudar
+for (const campo of [buscaItem, filtroPreco, filtroSituacao, ordemItens]) {
+  campo.addEventListener("input", renderizarCatalogo);
 }
 
 // Formulário: mostra só os campos do tipo escolhido
@@ -187,6 +241,33 @@ function abrirEdicao(id) {
   modalItem.show();
 }
 
+// Exclusão
+const modalExcluir = new bootstrap.Modal("#modalExcluir");
+let idParaExcluir = null;
+
+// Regra: item já usado em alguma OS não pode ser excluído
+function pedirExclusao(id) {
+  const item = buscar(CHAVES.catalogo, id);
+  if (!item) return;
+
+  const usado = listar(CHAVES.ordens).some((o) => (o.itens || []).some((i) => i.itemId === id));
+  if (usado) {
+    mostrarMensagem(`"${item.nome}" já foi usado em ordens de serviço e não pode ser excluído.`, "erro");
+    return;
+  }
+
+  idParaExcluir = id;
+  document.getElementById("nome-excluir").textContent = item.nome;
+  modalExcluir.show();
+}
+
+document.getElementById("btn-confirmar-exclusao").addEventListener("click", () => {
+  excluir(CHAVES.catalogo, idParaExcluir);
+  modalExcluir.hide();
+  mostrarMensagem("Item excluído.");
+  renderizarCatalogo();
+});
+
 // Botões "Editar" e "Excluir" das duas tabelas
 for (const tabela of [listaServicos, listaPecas]) {
   tabela.addEventListener("click", (evento) => {
@@ -194,6 +275,7 @@ for (const tabela of [listaServicos, listaPecas]) {
     if (!botao) return;
 
     if (botao.dataset.acao === "editar") abrirEdicao(botao.dataset.id);
+    if (botao.dataset.acao === "excluir") pedirExclusao(botao.dataset.id);
   });
 }
 

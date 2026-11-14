@@ -36,12 +36,26 @@
             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalItem"><i class="bi bi-plus-lg"></i> Novo item</button>
         </div>
 
+        <!-- Pesquisa, filtros e ordenação (valem para as duas abas) -->
+        <form class="row g-2 mb-3" role="search" onsubmit="return false">
+            <div class="col-md-5"><input type="search" class="form-control" id="busca-item" placeholder="Pesquisar pelo nome" aria-label="Pesquisar"></div>
+            <div class="col-6 col-md-2">
+                <select class="form-select" id="filtro-preco" aria-label="Preço"><option value="">Qualquer preço</option><option value="ate100">Até R$ 100</option><option value="100a300">R$ 100 a R$ 300</option><option value="acima300">Acima de R$ 300</option></select>
+            </div>
+            <div class="col-6 col-md-2">
+                <select class="form-select" id="filtro-situacao" aria-label="Situação"><option value="">Todos</option><option value="com-revisao">Serviços com revisão</option><option value="estoque-baixo">Peças no estoque mínimo</option></select>
+            </div>
+            <div class="col-md-3">
+                <select class="form-select" id="ordem-itens" aria-label="Ordenar por"><option value="nome">Nome (A–Z)</option><option value="menor-preco">Menor preço</option><option value="maior-preco">Maior preço</option></select>
+            </div>
+        </form>
+
         <ul class="nav nav-tabs" id="abas" role="tablist">
             <li class="nav-item" role="presentation">
-                <button class="nav-link active" id="aba-servicos" data-bs-toggle="tab" data-bs-target="#painel-servicos" type="button" role="tab" aria-controls="painel-servicos" aria-selected="true">Serviços</button>
+                <button class="nav-link active" id="aba-servicos" data-bs-toggle="tab" data-bs-target="#painel-servicos" type="button" role="tab" aria-controls="painel-servicos" aria-selected="true">Serviços <span class="badge text-bg-secondary ms-1" id="qtd-servicos"></span></button>
             </li>
             <li class="nav-item" role="presentation">
-                <button class="nav-link" id="aba-pecas" data-bs-toggle="tab" data-bs-target="#painel-pecas" type="button" role="tab" aria-controls="painel-pecas" aria-selected="false">Peças</button>
+                <button class="nav-link" id="aba-pecas" data-bs-toggle="tab" data-bs-target="#painel-pecas" type="button" role="tab" aria-controls="painel-pecas" aria-selected="false">Peças <span class="badge text-bg-secondary ms-1" id="qtd-pecas"></span></button>
             </li>
         </ul>
 
@@ -169,6 +183,25 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
                     <button type="submit" form="form-item" class="btn btn-primary">Salvar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmação de exclusão -->
+    <div class="modal fade" id="modalExcluir" tabindex="-1" aria-labelledby="tituloModalExcluir">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title fs-5" id="tituloModalExcluir">Excluir item?</h2>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="mb-0"><strong id="nome-excluir"></strong> será removido do catálogo. Essa ação não pode ser desfeita.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-danger" id="btn-confirmar-exclusao">Excluir</button>
                 </div>
             </div>
         </div>
