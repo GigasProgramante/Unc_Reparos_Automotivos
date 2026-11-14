@@ -33,6 +33,19 @@
     --app-danger:  #f1556c;
     --app-info:    #4cc3e0;
     --app-danger-hover: #f47a8c;
+    --app-success-rgb: 52, 195, 143;
+    --app-warning-rgb: 241, 180, 76;
+    --app-danger-rgb: 241, 85, 108;
+    --app-info-rgb: 76, 195, 224;
+    --app-success-contrast: #0f1114;  /* texto sobre badge/botão do estado */
+    --app-warning-contrast: #0f1114;
+    --app-danger-contrast: #0f1114;
+    --app-info-contrast: #0f1114;
+    --app-neutral: #4a525f;           /* badge neutro (secondary) */
+    --app-neutral-rgb: 74, 82, 95;
+    --app-surface-2-rgb: 31, 35, 41;  /* = --app-surface-2 */
+    --app-surface-3-rgb: 39, 44, 52;  /* = --app-surface-3 */
+    --app-neutral-contrast: #fff;
 
     /* Alertas (fundo translúcido + texto legível) */
     --app-danger-bg:  rgba(241, 85, 108, .12);
@@ -94,6 +107,19 @@
     --app-danger:  #d63a52;
     --app-info:    #1b95b3;
     --app-danger-hover: #b92d44;
+    --app-success-rgb: 26, 157, 108;
+    --app-warning-rgb: 201, 138, 11;
+    --app-danger-rgb: 214, 58, 82;
+    --app-info-rgb: 27, 149, 179;
+    --app-success-contrast: #fff;
+    --app-warning-contrast: #1c2230;
+    --app-danger-contrast: #fff;
+    --app-info-contrast: #fff;
+    --app-neutral: #5b6577;
+    --app-neutral-rgb: 91, 101, 119;
+    --app-surface-2-rgb: 243, 245, 248;  /* = --app-surface-2 */
+    --app-surface-3-rgb: 255, 255, 255;  /* = --app-surface-3 */
+    --app-neutral-contrast: #fff;
 
     --app-danger-bg:  rgba(214, 58, 82, .10);
     --app-success-bg: rgba(26, 157, 108, .10);
@@ -144,6 +170,14 @@
     --bs-warning: var(--app-warning);
     --bs-danger: var(--app-danger);
     --bs-info: var(--app-info);
+    --bs-success-rgb: var(--app-success-rgb);
+    --bs-warning-rgb: var(--app-warning-rgb);
+    --bs-danger-rgb: var(--app-danger-rgb);
+    --bs-info-rgb: var(--app-info-rgb);
+    --bs-secondary: var(--app-neutral);
+    --bs-secondary-rgb: var(--app-neutral-rgb);
+    --bs-light-rgb: var(--app-surface-2-rgb);
+    --bs-dark-rgb: var(--app-surface-3-rgb);
 
     --bs-focus-ring-color: var(--app-accent-soft);
     --bs-box-shadow: var(--app-shadow);
@@ -363,6 +397,17 @@ body {
     --bs-alert-color: var(--app-warning-text);
 }
 .badge { border: var(--app-border-width) solid var(--app-hairline); }
+
+/* Badges gerados pelo JS (text-bg-*): o Bootstrap fixa a cor do texto em #000/#fff,
+   então aqui o texto vem do tema (o fundo já segue as variáveis --bs-*-rgb). */
+.text-bg-primary   { color: var(--app-accent-contrast) !important; }
+.text-bg-secondary { color: var(--app-neutral-contrast) !important; }
+.text-bg-success   { color: var(--app-success-contrast) !important; }
+.text-bg-warning   { color: var(--app-warning-contrast) !important; }
+.text-bg-danger    { color: var(--app-danger-contrast) !important; }
+.text-bg-info      { color: var(--app-info-contrast) !important; }
+.text-bg-light,
+.text-bg-dark      { color: var(--app-text) !important; }
 
 /* ---- Placeholders de carregamento ---- */
 .placeholder { background-color: var(--app-border); }
