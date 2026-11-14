@@ -2,25 +2,13 @@
 // Usa storage.js (dados) e script.js (formatação e helpers de OS).
 
 const idOrdem = new URLSearchParams(location.search).get("id");
-const ordem = buscar(CHAVES.ordens, idOrdem);
+let ordem = buscar(CHAVES.ordens, idOrdem);
 
 // Etapas do fluxo principal, na ordem em que aparecem
 const ETAPAS = ["aberta", "diagnostico", "execucao", "pronta", "entregue"];
 
 function texto(id, valor) {
   document.getElementById(id).textContent = valor;
-}
-
-// Previsão de entrega: data de abertura + 1 dia útil a cada 8 horas de mão de obra
-function calcularPrevisao(dataAbertura, horas) {
-  if (!horas) return null;
-  const data = new Date(dataAbertura);
-  let dias = Math.ceil(horas / 8);
-  while (dias > 0) {
-    data.setDate(data.getDate() + 1);
-    if (data.getDay() !== 0 && data.getDay() !== 6) dias--;
-  }
-  return data;
 }
 
 function preencherCabecalho() {
@@ -53,7 +41,7 @@ function preencherEtapas() {
   }).join("");
 }
 
-function preencherDados(totais) {
+function preencherDados() {
   const veiculo = buscar(CHAVES.veiculos, ordem.veiculoId);
   const cliente = veiculo ? buscar(CHAVES.clientes, veiculo.clienteId) : null;
 
@@ -63,8 +51,6 @@ function preencherDados(totais) {
   texto("os-veiculo-placa", veiculo ? `Placa ${veiculo.placa}` + (veiculo.cor ? ` · ${veiculo.cor}` : "") : "—");
   texto("os-km", `${Number(ordem.kmEntrada).toLocaleString("pt-BR")} km`);
 
-  const previsao = calcularPrevisao(ordem.dataAbertura, totais.horas);
-  texto("os-previsao", previsao ? previsao.toLocaleDateString("pt-BR") : "— (sem itens)");
   texto("os-problema", ordem.problema);
 }
 
@@ -111,13 +97,90 @@ function preencherHistorico() {
   }).join("");
 }
 
-if (!ordem) {
-  location.replace("ordens.html"); // id ausente ou inexistente
-} else {
+// ---- Atualizar status ----
+const formStatus = document.getElementById("form-status");
+const errosStatus = document.getElementById("erros-status");
+const grupoPagamento = document.getElementById("grupo-pagamento");
+const selectNovoStatus = document.getElementById("novo-status");
+
+// Oferece só as transições permitidas a partir do status atual
+function prepararFormStatus() {
+  const permitidos = STATUS_ORDEM[ordem.status] || [];
+  formStatus.reset();
+  errosStatus.classList.add("d-none");
+  grupoPagamento.classList.add("d-none");
+
+  selectNovoStatus.innerHTML = '<option value="">Selecione</option>' +
+    permitidos.map((s) => `<option value="${s}">${STATUS_INFO[s].nome}</option>`).join("");
+
+  const finalizada = permitidos.length === 0;
+  for (const campo of formStatus.elements) campo.disabled = finalizada;
+  if (finalizada) {
+    errosStatus.className = "alert alert-secondary";
+    errosStatus.textContent = "Esta OS foi finalizada e não pode mais ser alterada.";
+  }
+}
+
+function mostrarErrosStatus(erros) {
+  errosStatus.className = "alert alert-danger";
+  errosStatus.innerHTML = erros.map(escaparHtml).join("<br>");
+}
+
+// A forma de pagamento só aparece na entrega
+selectNovoStatus.addEventListener("change", () => {
+  grupoPagamento.classList.toggle("d-none", selectNovoStatus.value !== "entregue");
+});
+
+formStatus.addEventListener("submit", (evento) => {
+  evento.preventDefault();
+  const novoStatus = selectNovoStatus.value;
+  if (!novoStatus) {
+    mostrarErrosStatus(["Escolha o próximo status."]);
+    return;
+  }
+
+  const formaPagamento = document.getElementById("forma-pagamento").value;
+  const erros = validarMudancaStatus(idOrdem, novoStatus, { formaPagamento });
+  if (erros.length > 0) {
+    mostrarErrosStatus(erros);
+    return;
+  }
+
+  // Iniciar a execução baixa o estoque das peças (regra 6)
+  if (novoStatus === "execucao") {
+    for (const linha of ordem.itens || []) {
+      const item = buscar(CHAVES.catalogo, linha.itemId);
+      if (item && item.tipo === "peca") {
+        atualizar(CHAVES.catalogo, item.id, { estoque: Number(item.estoque) - Number(linha.quantidade) });
+      }
+    }
+  }
+
+  const observacao = document.getElementById("observacao").value.trim();
+  const registro = { status: novoStatus, data: new Date().toISOString() };
+  if (observacao) registro.observacao = observacao;
+
+  const mudancas = { status: novoStatus, historico: [...(ordem.historico || []), registro] };
+  if (novoStatus === "entregue") mudancas.formaPagamento = formaPagamento;
+  atualizar(CHAVES.ordens, idOrdem, mudancas);
+
+  mostrarMensagem(`Status atualizado para "${STATUS_INFO[novoStatus].nome}".`);
+  renderizar();
+});
+
+function renderizar() {
+  ordem = buscar(CHAVES.ordens, idOrdem);
   const totais = calcularTotais(ordem.itens || [], ordem.desconto);
   preencherCabecalho();
   preencherEtapas();
-  preencherDados(totais);
+  preencherDados();
   preencherItens(totais);
   preencherHistorico();
+  prepararFormStatus();
+}
+
+if (!ordem) {
+  location.replace("ordens.html"); // id ausente ou inexistente
+} else {
+  renderizar();
 }
