@@ -234,14 +234,117 @@ function prepararFormulario() {
   renderizarItens();
 }
 
+// Abertura e edição
+const errosOrdem = document.getElementById("erros-ordem");
+let idEmEdicao = null; // null = abrindo uma OS nova
+
+function mostrarErros(erros) {
+  errosOrdem.innerHTML = erros.join("<br>");
+  errosOrdem.classList.remove("d-none");
+}
+
 // Volta o formulário ao estado inicial (chamado quando o modal fecha)
 function limparFormulario() {
   formOrdem.reset();
+  formOrdem.classList.remove("was-validated");
+  errosOrdem.classList.add("d-none");
+  document.getElementById("tituloModalOrdem").textContent = "Nova ordem de serviço";
+  document.getElementById("btn-salvar-ordem").textContent = "Abrir OS";
+  formOrdem.cliente.disabled = false;
+  formOrdem.km.disabled = false;
   itensDaOrdem = [];
+  idEmEdicao = null;
   prepararFormulario();
 }
 
 document.getElementById("modalOrdem").addEventListener("hidden.bs.modal", limparFormulario);
+
+// Junta os valores do formulário num objeto
+function lerFormulario() {
+  return {
+    veiculoId: formOrdem.veiculo.value,
+    kmEntrada: Number(formOrdem.km.value),
+    problema: formOrdem.problema.value.trim(),
+    desconto: Number(formOrdem.desconto.value || 0),
+    itens: itensDaOrdem,
+  };
+}
+
+formOrdem.addEventListener("submit", (evento) => {
+  evento.preventDefault();
+
+  // 1º: validações do próprio HTML (obrigatórios, km, problema, desconto 0 a 15)
+  if (!formOrdem.checkValidity()) {
+    formOrdem.classList.add("was-validated");
+    return;
+  }
+
+  // 2º: regras do validacao.js (veículo livre, km, OS já finalizada)
+  const dados = lerFormulario();
+  const erros = validarOrdem(dados, idEmEdicao);
+  if (erros.length > 0) {
+    mostrarErros(erros);
+    return;
+  }
+
+  if (idEmEdicao === null) {
+    const agora = new Date().toISOString();
+    const nova = criarOrdem({
+      ...dados,
+      status: "aberta",
+      dataAbertura: agora,
+      historico: [{ status: "aberta", data: agora }],
+    });
+    // A OS atualiza o km do veículo (o odômetro só aumenta)
+    atualizar(CHAVES.veiculos, dados.veiculoId, { km: dados.kmEntrada });
+    mostrarMensagem(`OS ${numeroOS(nova.numero)} aberta.`);
+  } else {
+    // Na edição mudam só o problema, os itens e o desconto
+    atualizar(CHAVES.ordens, idEmEdicao, {
+      problema: dados.problema,
+      desconto: dados.desconto,
+      itens: dados.itens,
+    });
+    mostrarMensagem("Ordem de serviço atualizada.");
+  }
+
+  modalOrdem.hide();
+  renderizarOrdens();
+});
+
+// Edição: abre o modal com os dados da OS. Cliente, veículo e km ficam travados.
+function abrirEdicao(id) {
+  const ordem = buscar(CHAVES.ordens, id);
+  if (!ordem) return;
+  const veiculo = buscar(CHAVES.veiculos, ordem.veiculoId);
+
+  idEmEdicao = id;
+  if (veiculo) {
+    formOrdem.cliente.value = veiculo.clienteId;
+    carregarVeiculosDoCliente();
+    formOrdem.veiculo.value = veiculo.id;
+  }
+  formOrdem.cliente.disabled = true;
+  formOrdem.veiculo.disabled = true;
+  formOrdem.km.value = ordem.kmEntrada;
+  formOrdem.km.disabled = true;
+  formOrdem.problema.value = ordem.problema;
+  formOrdem.desconto.value = ordem.desconto;
+  itensDaOrdem = (ordem.itens || []).map((linha) => ({ ...linha }));
+  renderizarItens();
+
+  document.getElementById("tituloModalOrdem").textContent = `Editar OS ${numeroOS(ordem.numero)}`;
+  document.getElementById("btn-salvar-ordem").textContent = "Salvar alterações";
+  modalOrdem.show();
+}
+
+// Botões "Editar" e "Excluir" de cada OS
+listaOrdens.addEventListener("click", (evento) => {
+  const botao = evento.target.closest("button[data-acao]");
+  if (!botao) return;
+
+  if (botao.dataset.acao === "editar") abrirEdicao(botao.dataset.id);
+});
 
 // Ao abrir a página, prepara o formulário e mostra as OS salvas
 prepararFormulario();

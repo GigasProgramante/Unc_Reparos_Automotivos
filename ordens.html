@@ -65,22 +65,27 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
                 </div>
                 <div class="modal-body">
-                    <form class="row g-3" id="form-ordem">
+                    <div class="alert alert-danger d-none" id="erros-ordem" role="alert"></div>
+                    <form class="row g-3" id="form-ordem" novalidate>
                         <div class="col-md-6">
                             <label for="cliente" class="form-label">Cliente</label>
                             <select id="cliente" name="cliente" class="form-select" required></select>
+                            <div class="invalid-feedback">Escolha o cliente.</div>
                         </div>
                         <div class="col-md-6">
                             <label for="veiculo" class="form-label">Veículo</label>
                             <select id="veiculo" name="veiculo" class="form-select" required disabled></select>
+                            <div class="invalid-feedback">Escolha o veículo.</div>
                         </div>
                         <div class="col-md-4">
                             <label for="km" class="form-label">Km de entrada</label>
                             <input type="number" id="km" name="km" class="form-control" min="0" step="1" required>
+                            <div class="invalid-feedback">Informe o km do painel.</div>
                         </div>
                         <div class="col-md-8">
                             <label for="problema" class="form-label">Problema relatado</label>
                             <textarea id="problema" name="problema" class="form-control" rows="2" minlength="10" required placeholder="Ex.: barulho ao frear e pedal baixo"></textarea>
+                            <div class="invalid-feedback">Descreva o problema com pelo menos 10 caracteres.</div>
                         </div>
 
                         <div class="col-12">
@@ -101,6 +106,7 @@
                         <div class="col-md-4">
                             <label for="desconto" class="form-label">Desconto (%)</label>
                             <input type="number" id="desconto" name="desconto" class="form-control" min="0" max="15" step="1" value="0">
+                            <div class="invalid-feedback">De 0% a 15%.</div>
                             <div class="form-text">De 0% a 15%.</div>
                         </div>
                         <div class="col-md-8">
@@ -110,7 +116,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" form="form-ordem" class="btn btn-primary" id="btn-salvar-ordem" disabled>Abrir OS</button>
+                    <button type="submit" form="form-ordem" class="btn btn-primary" id="btn-salvar-ordem">Abrir OS</button>
                 </div>
             </div>
         </div>
