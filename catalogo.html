@@ -33,7 +33,7 @@
     <main class="container py-4">
         <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
             <h1 class="h2 mb-0">Catálogo</h1>
-            <a href="#novo-item" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Novo item</a>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalItem"><i class="bi bi-plus-lg"></i> Novo item</button>
         </div>
 
         <ul class="nav nav-tabs" id="abas" role="tablist">
@@ -45,7 +45,7 @@
             </li>
         </ul>
 
-        <div class="tab-content mb-4">
+        <div class="tab-content">
             <div class="tab-pane fade show active" id="painel-servicos" role="tabpanel" aria-labelledby="aba-servicos">
                 <section class="card border-top-0 rounded-top-0">
                     <div class="table-responsive">
@@ -59,14 +59,7 @@
                                     <th class="text-end">Ações</th>
                                 </tr>
                             </thead>
-                            <tbody id="lista-servicos">
-                                <tr>
-                                    <td colspan="5" class="text-center text-body-secondary py-5">
-                                        <i class="bi bi-tools fs-1"></i>
-                                        <p class="mb-0">Nenhum serviço cadastrado</p>
-                                    </td>
-                                </tr>
-                            </tbody>
+                            <tbody id="lista-servicos"></tbody>
                         </table>
                     </div>
                 </section>
@@ -86,90 +79,93 @@
                                     <th class="text-end">Ações</th>
                                 </tr>
                             </thead>
-                            <tbody id="lista-pecas">
-                                <tr>
-                                    <td colspan="6" class="text-center text-body-secondary py-5">
-                                        <i class="bi bi-box-seam fs-1"></i>
-                                        <p class="mb-0">Nenhuma peça cadastrada</p>
-                                    </td>
-                                </tr>
-                            </tbody>
+                            <tbody id="lista-pecas"></tbody>
                         </table>
                     </div>
                 </section>
             </div>
         </div>
 
-        <section id="novo-item" class="card">
-            <div class="card-header fw-semibold">Novo item do catálogo</div>
-            <form id="form-item" class="card-body">
-
-                <div class="mb-3">
-                    <label for="tipo" class="form-label">Tipo</label>
-                    <select id="tipo" name="tipo" class="form-select" required>
-                        <option value="">Selecione o tipo</option>
-                        <option value="servico">Serviço</option>
-                        <option value="peca">Peça</option>
-                    </select>
-                </div>
-
-                <div class="mb-3">
-                    <label for="nome" class="form-label">Nome</label>
-                    <input type="text" id="nome" name="nome" class="form-control" required>
-                </div>
-
-                <div class="mb-3">
-                    <label for="preco" class="form-label">Preço (R$)</label>
-                    <input type="number" id="preco" name="preco" class="form-control" min="0.01" step="0.01" required>
-                </div>
-
-                <h2 class="h6 mt-4">Somente para serviços</h2>
-
-                <div class="mb-3">
-                    <label for="horas" class="form-label">Horas de mão de obra</label>
-                    <input type="number" id="horas" name="horas" class="form-control" min="0.5" max="40" step="0.5">
-                    <div class="form-text">Entre 0,5 e 40 horas.</div>
-                </div>
-
-                <div class="mb-3">
-                    <label for="intervaloKm" class="form-label">Intervalo de revisão (km)</label>
-                    <input type="number" id="intervaloKm" name="intervaloKm" class="form-control" min="1" step="1">
-                    <div class="form-text">Opcional. Define se o serviço entra nas revisões.</div>
-                </div>
-
-                <div class="mb-3">
-                    <label for="intervaloMeses" class="form-label">Intervalo de revisão (meses)</label>
-                    <input type="number" id="intervaloMeses" name="intervaloMeses" class="form-control" min="1" step="1">
-                    <div class="form-text">Opcional.</div>
-                </div>
-
-                <h2 class="h6 mt-4">Somente para peças</h2>
-
-                <div class="mb-3">
-                    <label for="unidade" class="form-label">Unidade</label>
-                    <select id="unidade" name="unidade" class="form-select">
-                        <option value="">Selecione a unidade</option>
-                        <option value="un">un</option>
-                        <option value="litro">litro</option>
-                        <option value="jogo">jogo</option>
-                        <option value="kit">kit</option>
-                    </select>
-                </div>
-
-                <div class="mb-3">
-                    <label for="estoque" class="form-label">Estoque</label>
-                    <input type="number" id="estoque" name="estoque" class="form-control" min="0" step="1">
-                </div>
-
-                <div class="mb-3">
-                    <label for="estoqueMinimo" class="form-label">Estoque mínimo</label>
-                    <input type="number" id="estoqueMinimo" name="estoqueMinimo" class="form-control" min="0" step="1">
-                </div>
-
-                <button type="submit" class="btn btn-primary">Salvar item</button>
-            </form>
-        </section>
     </main>
+
+    <!-- Formulário de cadastro e edição -->
+    <div class="modal fade" id="modalItem" tabindex="-1" aria-labelledby="tituloModalItem">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title fs-5" id="tituloModalItem">Novo item</h2>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body">
+                    <form class="row g-3" id="form-item">
+                        <div class="col-sm-5">
+                            <label for="tipo" class="form-label">Tipo</label>
+                            <select id="tipo" name="tipo" class="form-select" required>
+                                <option value="">Selecione</option>
+                                <option value="servico">Serviço</option>
+                                <option value="peca">Peça</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-7">
+                            <label for="preco" class="form-label">Preço (R$)</label>
+                            <input type="number" id="preco" name="preco" class="form-control" min="0.01" step="0.01" required>
+                        </div>
+                        <div class="col-12">
+                            <label for="nome" class="form-label">Nome</label>
+                            <input type="text" id="nome" name="nome" class="form-control" required>
+                        </div>
+
+                        <!-- Só aparece quando o tipo é Serviço -->
+                        <div class="col-12 d-none" id="campos-servico">
+                            <div class="row g-3">
+                                <div class="col-sm-4">
+                                    <label for="horas" class="form-label">Horas</label>
+                                    <input type="number" id="horas" name="horas" class="form-control" min="0.5" max="40" step="0.5">
+                                </div>
+                                <div class="col-sm-4">
+                                    <label for="intervaloKm" class="form-label">Revisão (km)</label>
+                                    <input type="number" id="intervaloKm" name="intervaloKm" class="form-control" min="1" step="1">
+                                </div>
+                                <div class="col-sm-4">
+                                    <label for="intervaloMeses" class="form-label">Revisão (meses)</label>
+                                    <input type="number" id="intervaloMeses" name="intervaloMeses" class="form-control" min="1" step="1">
+                                </div>
+                                <div class="col-12 form-text mt-1">Preencha o intervalo para o serviço entrar no controle de revisões.</div>
+                            </div>
+                        </div>
+
+                        <!-- Só aparece quando o tipo é Peça -->
+                        <div class="col-12 d-none" id="campos-peca">
+                            <div class="row g-3">
+                                <div class="col-sm-4">
+                                    <label for="unidade" class="form-label">Unidade</label>
+                                    <select id="unidade" name="unidade" class="form-select">
+                                        <option value="">Selecione</option>
+                                        <option value="un">un</option>
+                                        <option value="litro">litro</option>
+                                        <option value="jogo">jogo</option>
+                                        <option value="kit">kit</option>
+                                    </select>
+                                </div>
+                                <div class="col-6 col-sm-4">
+                                    <label for="estoque" class="form-label">Estoque</label>
+                                    <input type="number" id="estoque" name="estoque" class="form-control" min="0" step="1">
+                                </div>
+                                <div class="col-6 col-sm-4">
+                                    <label for="estoqueMinimo" class="form-label">Mínimo</label>
+                                    <input type="number" id="estoqueMinimo" name="estoqueMinimo" class="form-control" min="0" step="1">
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" form="form-item" class="btn btn-primary" disabled>Salvar</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <footer class="border-top py-3 mt-5">
         <div class="container text-body-secondary small">UnC Reparos Automotivos · Desenvolvimento Web I</div>
@@ -177,5 +173,8 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="js/script.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/validacao.js"></script>
+    <script src="js/catalogo.js"></script>
 </body>
 </html>

@@ -34,3 +34,8 @@ function mostrarMensagem(texto, tipo = "sucesso") {
   toast.addEventListener("hidden.bs.toast", () => toast.remove());
   new bootstrap.Toast(toast, { delay: 4000 }).show();
 }
+
+// Formata um número como dinheiro: 1500 -> "R$ 1.500,00"
+function formatarMoeda(valor) {
+  return Number(valor || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+}
