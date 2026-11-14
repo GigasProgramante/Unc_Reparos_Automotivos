@@ -1,6 +1,11 @@
 const listaOrdens = document.getElementById("lista-ordens");
 const formOrdem = document.getElementById("form-ordem");
 const modalOrdem = new bootstrap.Modal("#modalOrdem");
+const buscaOrdem = document.getElementById("busca-ordem");
+const filtroStatus = document.getElementById("filtro-status");
+const filtroPeriodo = document.getElementById("filtro-periodo");
+const ordemLista = document.getElementById("ordem-lista");
+const contadorOrdens = document.getElementById("contador-ordens");
 
 // Nome de cada status para mostrar na tela, e a cor da etiqueta
 const STATUS_INFO = {
@@ -79,16 +84,72 @@ function linhaVazia(texto) {
     </tr>`;
 }
 
-// Mostra as OS salvas, da mais nova para a mais antiga
+// Aplica a pesquisa e os filtros na lista de OS
+function filtrarOrdens(ordens) {
+  const busca = buscaOrdem.value.trim().toLowerCase().replace("#", "");
+  const status = filtroStatus.value;
+  const periodo = filtroPeriodo.value;
+  const agora = new Date();
+
+  return ordens.filter((ordem) => {
+    // Pesquisa: número da OS, placa ou nome do cliente
+    if (busca !== "") {
+      const veiculo = buscar(CHAVES.veiculos, ordem.veiculoId);
+      const cliente = veiculo ? buscar(CHAVES.clientes, veiculo.clienteId) : null;
+      const achou = String(ordem.numero) === String(Number(busca)) ||
+        (veiculo && veiculo.placa.toLowerCase().includes(busca)) ||
+        (cliente && cliente.nome.toLowerCase().includes(busca));
+      if (!achou) return false;
+    }
+
+    if (status === "andamento" && !ordemEmAndamento(ordem)) return false;
+    if (status !== "" && status !== "andamento" && ordem.status !== status) return false;
+
+    const abertura = new Date(ordem.dataAbertura);
+    if (periodo === "mes" && (abertura.getMonth() !== agora.getMonth() || abertura.getFullYear() !== agora.getFullYear())) return false;
+    if (periodo === "30" && (agora - abertura) / 86400000 > 30) return false;
+
+    return true;
+  });
+}
+
+// Ordena a lista conforme a opção escolhida
+function ordenarOrdens(ordens) {
+  const ordem = ordemLista.value;
+  const total = (os) => calcularTotais(os.itens || [], os.desconto).total;
+
+  if (ordem === "recentes") ordens.sort((a, b) => b.numero - a.numero);
+  else if (ordem === "antigas") ordens.sort((a, b) => a.numero - b.numero);
+  else if (ordem === "maior-valor") ordens.sort((a, b) => total(b) - total(a));
+  else if (ordem === "menor-valor") ordens.sort((a, b) => total(a) - total(b));
+  return ordens;
+}
+
+// Mostra as OS filtradas e ordenadas
 function renderizarOrdens() {
-  const ordens = listar(CHAVES.ordens);
-  ordens.sort((a, b) => b.numero - a.numero);
+  const todas = listar(CHAVES.ordens);
+  const ordens = ordenarOrdens(filtrarOrdens(todas));
+
+  contadorOrdens.textContent = `${ordens.length} de ${todas.length} ordens de serviço`;
 
   let html = "";
   for (const ordem of ordens) {
     html += linhaOrdem(ordem);
   }
-  listaOrdens.innerHTML = html || linhaVazia("Nenhuma ordem de serviço cadastrada");
+  const vazio = todas.length === 0
+    ? "Nenhuma ordem de serviço cadastrada"
+    : "Nenhuma OS encontrada com esses filtros";
+  listaOrdens.innerHTML = html || linhaVazia(vazio);
+}
+
+// Coloca os status no filtro
+for (const [chave, info] of Object.entries(STATUS_INFO)) {
+  filtroStatus.innerHTML += `<option value="${chave}">${info.nome}</option>`;
+}
+
+// Atualiza a lista sempre que a pesquisa ou um filtro mudar
+for (const campo of [buscaOrdem, filtroStatus, filtroPeriodo, ordemLista]) {
+  campo.addEventListener("input", renderizarOrdens);
 }
 
 // Formulário: cliente -> veículo, itens e orçamento
@@ -338,12 +399,38 @@ function abrirEdicao(id) {
   modalOrdem.show();
 }
 
+// Exclusão
+const modalExcluir = new bootstrap.Modal("#modalExcluir");
+let idParaExcluir = null;
+
+// Regra (validacao.js): só OS abertas ou canceladas podem ser excluídas
+function pedirExclusao(id) {
+  const erros = validarExclusaoOrdem(id);
+  if (erros.length > 0) {
+    mostrarMensagem(erros[0], "erro");
+    return;
+  }
+
+  const ordem = buscar(CHAVES.ordens, id);
+  idParaExcluir = id;
+  document.getElementById("numero-excluir").textContent = numeroOS(ordem.numero);
+  modalExcluir.show();
+}
+
+document.getElementById("btn-confirmar-exclusao").addEventListener("click", () => {
+  excluir(CHAVES.ordens, idParaExcluir);
+  modalExcluir.hide();
+  mostrarMensagem("Ordem de serviço excluída.");
+  renderizarOrdens();
+});
+
 // Botões "Editar" e "Excluir" de cada OS
 listaOrdens.addEventListener("click", (evento) => {
   const botao = evento.target.closest("button[data-acao]");
   if (!botao) return;
 
   if (botao.dataset.acao === "editar") abrirEdicao(botao.dataset.id);
+  if (botao.dataset.acao === "excluir") pedirExclusao(botao.dataset.id);
 });
 
 // Ao abrir a página, prepara o formulário e mostra as OS salvas
