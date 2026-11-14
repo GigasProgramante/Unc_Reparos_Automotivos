@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-bs-theme="dark" data-theme="escuro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalhes da ordem de serviço - UnC Reparos Automotivos</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+    <script src="js/tema.js"></script>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg app-navbar">
+        <div class="container">
+            <a class="navbar-brand" href="index.html"><i class="bi bi-wrench-adjustable"></i> UnC Reparos Automotivos</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menu" aria-controls="menu" aria-expanded="false" aria-label="Abrir menu">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="menu">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="index.html">Painel</a></li>
+                    <li class="nav-item"><a class="nav-link active" aria-current="page" href="ordens.html">Ordens de serviço</a></li>
+                    <li class="nav-item"><a class="nav-link" href="clientes.html">Clientes</a></li>
+                    <li class="nav-item"><a class="nav-link" href="veiculos.html">Veículos</a></li>
+                    <li class="nav-item"><a class="nav-link" href="catalogo.html">Catálogo</a></li>
+                    <li class="nav-item"><a class="nav-link" href="revisoes.html">Revisões</a></li>
+                </ul>
+                <button type="button" id="btn-tema" class="btn btn-outline-secondary btn-sm ms-lg-3 mt-2 mt-lg-0 align-self-start" aria-label="Alternar tema"><i class="bi bi-sun"></i> <span class="d-lg-none">Alternar tema</span></button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container py-4">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb small">
+                <li class="breadcrumb-item"><a href="ordens.html">Ordens de serviço</a></li>
+                <li class="breadcrumb-item active" aria-current="page">OS nº 0000</li>
+            </ol>
+        </nav>
+
+        <!-- Cabeçalho da OS -->
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
+            <div>
+                <h1 class="h2 mb-1">Ordem de serviço nº <span id="os-numero">0000</span></h1>
+                <p class="text-body-secondary small mb-0">Aberta em <span id="os-data-abertura">00/00/0000</span></p>
+            </div>
+            <div class="d-flex flex-wrap align-items-center gap-2">
+                <span class="badge text-bg-primary fs-6" id="os-status">Aberta</span>
+                <a href="ordens.html" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Voltar</a>
+                <button type="button" class="btn btn-outline-secondary"><i class="bi bi-pencil"></i> Editar</button>
+                <button type="button" class="btn btn-outline-danger"><i class="bi bi-trash"></i> Excluir</button>
+            </div>
+        </div>
+
+        <!-- Fluxo de status (etapa atual destacada) -->
+        <section class="card mb-4" aria-label="Etapas da ordem de serviço">
+            <div class="card-body">
+                <ol class="list-unstyled d-flex flex-wrap justify-content-between gap-3 mb-0 text-center" id="os-etapas">
+                    <li class="flex-fill">
+                        <i class="bi bi-1-circle-fill fs-3 text-primary"></i>
+                        <div class="small fw-semibold">Aberta</div>
+                    </li>
+                    <li class="flex-fill">
+                        <i class="bi bi-2-circle fs-3 text-body-secondary"></i>
+                        <div class="small text-body-secondary">Em diagnóstico</div>
+                    </li>
+                    <li class="flex-fill">
+                        <i class="bi bi-3-circle fs-3 text-body-secondary"></i>
+                        <div class="small text-body-secondary">Em execução</div>
+                    </li>
+                    <li class="flex-fill">
+                        <i class="bi bi-4-circle fs-3 text-body-secondary"></i>
+                        <div class="small text-body-secondary">Pronta p/ retirada</div>
+                    </li>
+                    <li class="flex-fill">
+                        <i class="bi bi-5-circle fs-3 text-body-secondary"></i>
+                        <div class="small text-body-secondary">Entregue</div>
+                    </li>
+                </ol>
+                <p class="small text-body-secondary text-center mb-0 mt-3">
+                    <i class="bi bi-pause-circle"></i> Aguardando peça e <i class="bi bi-x-circle"></i> Cancelada aparecem aqui quando a OS estiver nesses status.
+                </p>
+            </div>
+        </section>
+
+        <div class="row g-3">
+            <!-- Coluna principal -->
+            <div class="col-lg-8">
+
+                <!-- Cliente e veículo -->
+                <section class="card mb-3">
+                    <div class="card-header fw-semibold">Cliente e veículo</div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-sm-6">
+                                <p class="text-body-secondary small text-uppercase mb-1">Cliente</p>
+                                <p class="mb-0 fw-semibold" id="os-cliente-nome">Nome do cliente</p>
+                                <p class="mb-0 small text-body-secondary" id="os-cliente-contato">(00) 00000-0000</p>
+                            </div>
+                            <div class="col-sm-6">
+                                <p class="text-body-secondary small text-uppercase mb-1">Veículo</p>
+                                <p class="mb-0 fw-semibold" id="os-veiculo-modelo">Marca Modelo · Ano</p>
+                                <p class="mb-0 small text-body-secondary" id="os-veiculo-placa">Placa AAA0A00</p>
+                            </div>
+                            <div class="col-sm-6">
+                                <p class="text-body-secondary small text-uppercase mb-1">Km de entrada</p>
+                                <p class="mb-0" id="os-km">0 km</p>
+                            </div>
+                            <div class="col-sm-6">
+                                <p class="text-body-secondary small text-uppercase mb-1">Previsão de entrega</p>
+                                <p class="mb-0" id="os-previsao">00/00/0000</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Problema relatado -->
+                <section class="card mb-3">
+                    <div class="card-header fw-semibold">Problema relatado</div>
+                    <div class="card-body">
+                        <p class="mb-0" id="os-problema">Descrição do problema informado pelo cliente.</p>
+                    </div>
+                </section>
+
+                <!-- Itens da OS -->
+                <section class="card mb-3">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <span class="fw-semibold">Serviços e peças</span>
+                        <button type="button" class="btn btn-outline-primary btn-sm"><i class="bi bi-plus-lg"></i> Adicionar item</button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Item</th>
+                                    <th>Tipo</th>
+                                    <th class="text-end">Qtd.</th>
+                                    <th class="text-end">Valor unit.</th>
+                                    <th class="text-end">Subtotal</th>
+                                    <th class="text-end">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="os-itens">
+                                <tr>
+                                    <td colspan="6" class="text-center text-body-secondary py-5">
+                                        <i class="bi bi-tools fs-1"></i>
+                                        <p class="mb-0">Nenhum item adicionado a esta ordem</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- Histórico -->
+                <section class="card">
+                    <div class="card-header fw-semibold">Histórico de status</div>
+                    <ul class="list-group list-group-flush" id="os-historico">
+                        <li class="list-group-item d-flex gap-3">
+                            <i class="bi bi-circle-fill text-primary small mt-1"></i>
+                            <div>
+                                <div class="fw-semibold">Aberta</div>
+                                <div class="small text-body-secondary">00/00/0000 00:00 · Ordem de serviço aberta.</div>
+                            </div>
+                        </li>
+                    </ul>
+                </section>
+            </div>
+
+            <!-- Coluna lateral -->
+            <aside class="col-lg-4">
+
+                <!-- Orçamento -->
+                <section class="card mb-3">
+                    <div class="card-header fw-semibold">Orçamento</div>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item d-flex justify-content-between"><span>Serviços</span><span id="os-total-servicos">R$ 0,00</span></li>
+                        <li class="list-group-item d-flex justify-content-between"><span>Peças</span><span id="os-total-pecas">R$ 0,00</span></li>
+                        <li class="list-group-item d-flex justify-content-between"><span>Desconto (<span id="os-desconto-pct">0</span>%)</span><span id="os-desconto-valor">− R$ 0,00</span></li>
+                        <li class="list-group-item d-flex justify-content-between fs-5 fw-bold"><span>Total</span><span id="os-total">R$ 0,00</span></li>
+                        <li class="list-group-item d-flex justify-content-between small text-body-secondary"><span>Mão de obra</span><span id="os-horas">0 h</span></li>
+                    </ul>
+                </section>
+
+                <!-- Mudança de status -->
+                <section class="card">
+                    <div class="card-header fw-semibold">Atualizar status</div>
+                    <form id="form-status" class="card-body" novalidate>
+                        <div class="mb-3">
+                            <label for="novo-status" class="form-label">Próximo status</label>
+                            <select id="novo-status" name="novo-status" class="form-select" required>
+                                <option value="">Selecione</option>
+                                <option>Em diagnóstico</option>
+                                <option>Cancelada</option>
+                            </select>
+                            <div class="form-text">Somente as etapas permitidas a partir do status atual.</div>
+                        </div>
+
+                        <!-- Aparece só ao entregar -->
+                        <div class="mb-3" id="grupo-pagamento">
+                            <label for="forma-pagamento" class="form-label">Forma de pagamento</label>
+                            <select id="forma-pagamento" name="forma-pagamento" class="form-select">
+                                <option value="">Selecione</option>
+                                <option>Pix</option>
+                                <option>Dinheiro</option>
+                                <option>Débito</option>
+                                <option>Crédito</option>
+                            </select>
+                            <div class="form-text">Obrigatória na entrega.</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="observacao" class="form-label">Observação</label>
+                            <textarea id="observacao" name="observacao" class="form-control" rows="2"></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100"><i class="bi bi-arrow-right-circle"></i> Atualizar status</button>
+                    </form>
+                </section>
+            </aside>
+        </div>
+    </main>
+
+    <footer class="border-top py-3 mt-5">
+        <div class="container text-body-secondary small">UnC Reparos Automotivos · Desenvolvimento Web I</div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/script.js"></script>
+</body>
+</html>
