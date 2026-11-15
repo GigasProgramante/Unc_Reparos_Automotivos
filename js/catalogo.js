@@ -23,18 +23,21 @@ function etiquetaEstoque(peca) {
 function botoesAcao(item) {
   return `
       <td class="text-end text-nowrap">
-        <button type="button" class="btn btn-sm btn-outline-primary" data-acao="editar" data-id="${item.id}">Editar</button>
-        <button type="button" class="btn btn-sm btn-outline-danger" data-acao="excluir" data-id="${item.id}">Excluir</button>
+        <button type="button" class="btn btn-sm btn-outline-primary" data-acao="editar" data-id="${item.id}" aria-label="Editar"><i class="bi bi-pencil"></i><span class="d-none d-md-inline"> Editar</span></button>
+        <button type="button" class="btn btn-sm btn-outline-danger" data-acao="excluir" data-id="${item.id}" aria-label="Excluir"><i class="bi bi-trash"></i><span class="d-none d-md-inline"> Excluir</span></button>
       </td>`;
 }
 
 function linhaServico(servico) {
   return `
     <tr>
-      <td><strong>${escaparHtml(servico.nome)}</strong></td>
-      <td>${formatarMoeda(servico.preco)}</td>
-      <td>${Number(servico.horas).toLocaleString("pt-BR")} h</td>
-      <td>${textoRevisao(servico)}</td>
+      <td>
+        <strong>${escaparHtml(servico.nome)}</strong>
+        <div class="small text-body-secondary d-md-none">${Number(servico.horas).toLocaleString("pt-BR")} h · revisão: ${textoRevisao(servico)}</div>
+      </td>
+      <td class="text-nowrap">${formatarMoeda(servico.preco)}</td>
+      <td class="d-none d-md-table-cell">${Number(servico.horas).toLocaleString("pt-BR")} h</td>
+      <td class="d-none d-md-table-cell">${textoRevisao(servico)}</td>
       ${botoesAcao(servico)}
     </tr>`;
 }
@@ -42,11 +45,14 @@ function linhaServico(servico) {
 function linhaPeca(peca) {
   return `
     <tr>
-      <td><strong>${escaparHtml(peca.nome)}</strong></td>
-      <td>${formatarMoeda(peca.preco)}</td>
-      <td>${escaparHtml(peca.unidade)}</td>
+      <td>
+        <strong>${escaparHtml(peca.nome)}</strong>
+        <div class="small text-body-secondary d-md-none">por ${escaparHtml(peca.unidade)} · mínimo ${peca.estoqueMinimo}</div>
+      </td>
+      <td class="text-nowrap">${formatarMoeda(peca.preco)}</td>
+      <td class="d-none d-md-table-cell">${escaparHtml(peca.unidade)}</td>
       <td>${peca.estoque}${etiquetaEstoque(peca)}</td>
-      <td>${peca.estoqueMinimo}</td>
+      <td class="d-none d-md-table-cell">${peca.estoqueMinimo}</td>
       ${botoesAcao(peca)}
     </tr>`;
 }
