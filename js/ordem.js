@@ -149,7 +149,7 @@ formStatus.addEventListener("submit", (evento) => {
     return;
   }
 
-  // Iniciar a execução baixa o estoque das peças (regra 6)
+  // Iniciar a execução baixa o estoque das peças (regra 7)
   if (novoStatus === "execucao") {
     for (const linha of ordem.itens || []) {
       const item = buscar(CHAVES.catalogo, linha.itemId);
