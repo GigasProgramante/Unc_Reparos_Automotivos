@@ -59,12 +59,15 @@ function preencherItens(totais) {
   if (itens.length > 0) {
     document.getElementById("os-itens").innerHTML = itens.map((linha) => `
       <tr>
-        <td>${escaparHtml(linha.nome)}</td>
-        <td><span class="badge ${linha.tipo === "servico" ? "text-bg-info" : "text-bg-secondary"}">${linha.tipo === "servico" ? "serviço" : "peça"}</span></td>
+        <td>
+          ${escaparHtml(linha.nome)}
+          <div class="small text-body-secondary d-md-none">${linha.tipo === "servico" ? "serviço" : "peça"} · ${formatarMoeda(linha.precoUnitario)} cada</div>
+        </td>
+        <td class="d-none d-md-table-cell"><span class="badge ${linha.tipo === "servico" ? "text-bg-info" : "text-bg-secondary"}">${linha.tipo === "servico" ? "serviço" : "peça"}</span></td>
         <td class="text-end">${linha.quantidade}</td>
-        <td class="text-end">${formatarMoeda(linha.precoUnitario)}</td>
-        <td class="text-end">${formatarMoeda(linha.precoUnitario * linha.quantidade)}</td>
-        <td></td>
+        <td class="text-end d-none d-md-table-cell">${formatarMoeda(linha.precoUnitario)}</td>
+        <td class="text-end text-nowrap">${formatarMoeda(linha.precoUnitario * linha.quantidade)}</td>
+        <td class="d-none d-md-table-cell"></td>
       </tr>`).join("");
   }
 

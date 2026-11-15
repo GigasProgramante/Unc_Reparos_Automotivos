@@ -57,13 +57,16 @@ function linhaRevisao(r) {
     : "";
   return `
     <tr>
-      <td>${escaparHtml(r.clienteNome)}</td>
-      <td>${escaparHtml(r.modelo)}${placa}</td>
+      <td class="d-none d-md-table-cell">${escaparHtml(r.clienteNome)}</td>
+      <td>
+        ${escaparHtml(r.modelo)}${placa}
+        <div class="small text-body-secondary d-md-none">${escaparHtml(r.clienteNome)}</div>
+      </td>
       <td>${formatarData(r.dataPrevista)}</td>
       <td>${ETIQUETAS[r.situacao]}</td>
-      <td class="text-end">
-        <button type="button" class="btn btn-sm btn-outline-primary" data-acao="editar" data-id="${r.id}">Editar</button>
-        <button type="button" class="btn btn-sm btn-outline-danger" data-acao="excluir" data-id="${r.id}">Excluir</button>
+      <td class="text-end text-nowrap">
+        <button type="button" class="btn btn-sm btn-outline-primary" data-acao="editar" data-id="${r.id}" aria-label="Editar"><i class="bi bi-pencil"></i><span class="d-none d-md-inline"> Editar</span></button>
+        <button type="button" class="btn btn-sm btn-outline-danger" data-acao="excluir" data-id="${r.id}" aria-label="Excluir"><i class="bi bi-trash"></i><span class="d-none d-md-inline"> Excluir</span></button>
       </td>
     </tr>`;
 }

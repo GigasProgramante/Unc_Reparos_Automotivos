@@ -24,14 +24,15 @@ function linhaCliente(cliente) {
       <td>
         <strong>${escaparHtml(cliente.nome)}</strong>
         <div class="small text-body-secondary">${escaparHtml(cliente.email || "sem e-mail")}</div>
+        <div class="small text-body-secondary d-md-none">${escaparHtml(cliente.cidade)}</div>
       </td>
-      <td>${formatarCpf(cliente.cpf)}</td>
-      <td>${escaparHtml(cliente.telefone)}</td>
-      <td>${escaparHtml(cliente.cidade)}</td>
-      <td>${contarVeiculos(cliente.id)}</td>
+      <td class="d-none d-md-table-cell">${formatarCpf(cliente.cpf)}</td>
+      <td class="text-nowrap">${escaparHtml(cliente.telefone)}</td>
+      <td class="d-none d-md-table-cell">${escaparHtml(cliente.cidade)}</td>
+      <td class="d-none d-lg-table-cell">${contarVeiculos(cliente.id)}</td>
       <td class="text-end text-nowrap">
-        <button type="button" class="btn btn-sm btn-outline-primary" data-acao="editar" data-id="${cliente.id}">Editar</button>
-        <button type="button" class="btn btn-sm btn-outline-danger" data-acao="excluir" data-id="${cliente.id}">Excluir</button>
+        <button type="button" class="btn btn-sm btn-outline-primary" data-acao="editar" data-id="${cliente.id}" aria-label="Editar"><i class="bi bi-pencil"></i><span class="d-none d-md-inline"> Editar</span></button>
+        <button type="button" class="btn btn-sm btn-outline-danger" data-acao="excluir" data-id="${cliente.id}" aria-label="Excluir"><i class="bi bi-trash"></i><span class="d-none d-md-inline"> Excluir</span></button>
       </td>
     </tr>`;
 }

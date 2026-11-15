@@ -57,10 +57,10 @@
                     <thead>
                         <tr>
                             <th>Nº</th>
-                            <th>Cliente</th>
+                            <th class="d-none d-md-table-cell">Cliente</th>
                             <th>Veículo</th>
                             <th>Status</th>
-                            <th>Total</th>
+                            <th class="d-none d-md-table-cell">Total</th>
                             <th class="text-end">Ações</th>
                         </tr>
                     </thead>
@@ -105,10 +105,16 @@
 
                         <div class="col-12">
                             <label for="item-catalogo" class="form-label">Serviços e peças</label>
-                            <div class="input-group">
-                                <select id="item-catalogo" class="form-select"></select>
-                                <input type="number" id="item-quantidade" class="form-control flex-grow-0" style="width: 5.5rem" value="1" min="1" step="1" aria-label="Quantidade">
-                                <button type="button" class="btn btn-outline-primary" id="btn-adicionar-item"><i class="bi bi-plus-lg"></i> Adicionar</button>
+                            <div class="row g-2">
+                                <div class="col-12 col-md">
+                                    <select id="item-catalogo" class="form-select"></select>
+                                </div>
+                                <div class="col-4 col-md-2">
+                                    <input type="number" id="item-quantidade" class="form-control" value="1" min="1" step="1" aria-label="Quantidade">
+                                </div>
+                                <div class="col-8 col-md-auto">
+                                    <button type="button" class="btn btn-outline-primary w-100" id="btn-adicionar-item"><i class="bi bi-plus-lg"></i> Adicionar</button>
+                                </div>
                             </div>
                             <div class="table-responsive mt-2">
                                 <table class="table table-sm align-middle mb-0">
