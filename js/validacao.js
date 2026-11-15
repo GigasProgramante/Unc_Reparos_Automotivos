@@ -4,6 +4,9 @@
 // Aqui ficam só as regras que o HTML não cobre. Campo obrigatório, formato de
 // e-mail e cidade da lista são validados pelos atributos do formulário.
 
+// FUNÇÕES AUXILIARES
+// ------------------------------------------------------------
+
 // Devolve só os dígitos do texto: "(47) 99999-9999" vira "47999999999"
 function somenteDigitos(texto) {
   const original = String(texto ?? "");
@@ -17,6 +20,10 @@ function somenteDigitos(texto) {
 
   return digitos;
 }
+
+
+// CLIENTE
+// ------------------------------------------------------------
 
 // Nome e sobrenome: pelo menos duas palavras, cada uma com 2 ou mais letras
 function nomeValido(nome) {
@@ -74,10 +81,12 @@ function telefoneValido(telefone) {
 function validarCliente(dados, idAtual = null) {
   const erros = [];
 
+  // Nome e sobrenome
   if (!nomeValido(dados.nome)) {
     erros.push("Informe nome e sobrenome.");
   }
 
+  // CPF válido e não repetido
   if (!cpfValido(dados.cpf)) {
     erros.push("CPF inválido.");
   } else {
@@ -88,12 +97,17 @@ function validarCliente(dados, idAtual = null) {
     if (repetido) erros.push("Já existe um cliente com este CPF.");
   }
 
+  // Telefone com DDD
   if (!telefoneValido(dados.telefone)) {
     erros.push("Telefone inválido. Use DDD + 8 ou 9 dígitos.");
   }
 
   return erros;
 }
+
+
+// VEÍCULO
+// ------------------------------------------------------------
 
 // Placa: 7 caracteres, nos dois padrões aceitos
 // antigo:  ABC1234  (3 letras + 4 dígitos)
@@ -127,6 +141,7 @@ function validarVeiculo(dados, idAtual = null) {
     erros.push("Selecione um cliente existente.");
   }
 
+  // Placa válida e não repetida
   if (!placaValida(dados.placa)) {
     erros.push("Placa inválida. Use o padrão ABC1234 ou ABC1D23.");
   } else {
@@ -148,6 +163,10 @@ function validarVeiculo(dados, idAtual = null) {
   return erros;
 }
 
+
+// CATÁLOGO
+// ------------------------------------------------------------
+
 // Campo não preenchido (os campos vazios do formulário chegam como "")
 function estaVazio(valor) {
   return valor === undefined || valor === null || String(valor).trim() === "";
@@ -160,12 +179,14 @@ function estaVazio(valor) {
 function validarItem(dados, idAtual = null) {
   const erros = [];
 
+  // Nome não pode repetir
   const nome = String(dados.nome ?? "").trim().toLowerCase();
   const repetido = listar(CHAVES.catalogo).some(
     (i) => i.id !== idAtual && String(i.nome).trim().toLowerCase() === nome
   );
   if (repetido) erros.push("Já existe um item com este nome.");
 
+  // Campos obrigatórios de cada tipo
   if (dados.tipo === "servico") {
     if (estaVazio(dados.horas)) {
       erros.push("Informe as horas de mão de obra do serviço.");
@@ -178,6 +199,10 @@ function validarItem(dados, idAtual = null) {
  
   return erros;
 }
+
+
+// ORDEM DE SERVIÇO
+// ------------------------------------------------------------
 
 // Status da OS e as transições permitidas (fluxo do README)
 const STATUS_ORDEM = {
@@ -233,6 +258,7 @@ function validarOrdem(dados, idAtual = null) {
     erros.push("Descreva o problema com pelo menos 10 caracteres.");
   }
 
+  // Desconto entre 0% e 15%
   const desconto = Number(dados.desconto || 0);
   if (desconto < 0 || desconto > 15) {
     erros.push("O desconto deve ficar entre 0% e 15%.");
@@ -253,6 +279,7 @@ function validarMudancaStatus(idOrdem, novoStatus, dados = {}) {
     return erros;
   }
 
+  // Só aceita as transições previstas no fluxo
   const permitidos = STATUS_ORDEM[ordem.status] || [];
   if (!permitidos.includes(novoStatus)) {
     erros.push("Não é possível mudar a OS de \"" + ordem.status + "\" para \"" + novoStatus + "\".");
@@ -284,12 +311,17 @@ function validarMudancaStatus(idOrdem, novoStatus, dados = {}) {
   return erros;
 }
 
+
+// REVISÃO
+// ------------------------------------------------------------
+
 // Valida os dados de uma revisão cadastrada manualmente (cliente, veículo e data prevista).
 // idAtual: informe ao editar, para a própria revisão não contar como repetida.
 // Campos obrigatórios são validados pelo HTML; aqui ficam as regras que dependem dos dados salvos.
 function validarRevisao(dados, idAtual = null) {
   const erros = [];
 
+  // Cliente e veículo precisam existir, e o veículo ser do cliente
   if (!buscar(CHAVES.clientes, dados.clienteId)) {
     erros.push("Selecione um cliente existente.");
   }
@@ -317,6 +349,10 @@ function validarRevisao(dados, idAtual = null) {
 
   return erros;
 }
+
+
+// EXCLUSÃO DE OS
+// ------------------------------------------------------------
 
 // Valida a exclusão de uma OS: só abertas ou canceladas podem ser excluídas
 function validarExclusaoOrdem(idOrdem) {

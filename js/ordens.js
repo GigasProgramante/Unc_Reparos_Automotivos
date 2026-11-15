@@ -1,3 +1,8 @@
+// Tela de ORDENS DE SERVIÇO: listagem com filtros, formulário de abertura/edição (com itens e orçamento) e exclusão.
+
+// ELEMENTOS DA PÁGINA
+// ------------------------------------------------------------
+
 const listaOrdens = document.getElementById("lista-ordens");
 const formOrdem = document.getElementById("form-ordem");
 const modalOrdem = new bootstrap.Modal("#modalOrdem");
@@ -6,6 +11,10 @@ const filtroStatus = document.getElementById("filtro-status");
 const filtroPeriodo = document.getElementById("filtro-periodo");
 const ordemLista = document.getElementById("ordem-lista");
 const contadorOrdens = document.getElementById("contador-ordens");
+
+
+// LISTAGEM
+// ------------------------------------------------------------
 
 // Monta a linha da tabela de uma OS
 function linhaOrdem(ordem) {
@@ -33,6 +42,7 @@ function linhaOrdem(ordem) {
     </tr>`;
 }
 
+// Linha que ocupa a tabela inteira quando não há nada para mostrar
 function linhaVazia(texto) {
   return `
     <tr>
@@ -45,6 +55,7 @@ function linhaVazia(texto) {
 
 // Aplica a pesquisa e os filtros na lista de OS
 function filtrarOrdens(ordens) {
+  // Lê o que o usuário digitou e escolheu nos filtros
   const busca = buscaOrdem.value.trim().toLowerCase().replace("#", "");
   const status = filtroStatus.value;
   const periodo = filtroPeriodo.value;
@@ -61,9 +72,11 @@ function filtrarOrdens(ordens) {
       if (!achou) return false;
     }
 
+    // Filtro de status ("andamento" junta todos os que ainda não terminaram)
     if (status === "andamento" && !ordemEmAndamento(ordem)) return false;
     if (status !== "" && status !== "andamento" && ordem.status !== status) return false;
 
+    // Filtro de período (este mês ou últimos 30 dias)
     const abertura = new Date(ordem.dataAbertura);
     if (periodo === "mes" && (abertura.getMonth() !== agora.getMonth() || abertura.getFullYear() !== agora.getFullYear())) return false;
     if (periodo === "30" && (agora - abertura) / 86400000 > 30) return false;
@@ -111,7 +124,10 @@ for (const campo of [buscaOrdem, filtroStatus, filtroPeriodo, ordemLista]) {
   campo.addEventListener("input", renderizarOrdens);
 }
 
-// Formulário: cliente -> veículo, itens e orçamento
+
+// FORMULÁRIO (cliente → veículo, itens e orçamento)
+// ------------------------------------------------------------
+
 let itensDaOrdem = []; // itens que estão no formulário agora
 
 // Preenche o select de clientes (só quem tem veículo cadastrado)
@@ -147,6 +163,7 @@ function sugerirKm() {
   formOrdem.km.value = veiculo ? veiculo.km : "";
 }
 
+// Ao trocar o cliente, recarrega os veículos dele e sugere o km
 formOrdem.cliente.addEventListener("change", () => {
   carregarVeiculosDoCliente();
   sugerirKm();
@@ -169,10 +186,15 @@ function carregarCatalogo() {
     `<optgroup label="Serviços">${servicos}</optgroup><optgroup label="Peças">${pecas}</optgroup>`;
 }
 
+
+// ---- Itens da OS ----
+
 // Adiciona um item à OS (se já estiver na lista, soma a quantidade)
 function adicionarItem() {
   const item = buscar(CHAVES.catalogo, document.getElementById("item-catalogo").value);
   const quantidade = Number(document.getElementById("item-quantidade").value);
+
+  // Confere se escolheu um item e uma quantidade válida
   if (!item) {
     mostrarMensagem("Escolha um serviço ou peça para adicionar.", "erro");
     return;
@@ -182,6 +204,7 @@ function adicionarItem() {
     return;
   }
 
+  // Item repetido soma a quantidade; item novo entra na lista
   const existente = itensDaOrdem.find((linha) => linha.itemId === item.id);
   if (existente) {
     existente.quantidade += quantidade;
@@ -202,11 +225,13 @@ function adicionarItem() {
   renderizarItens();
 }
 
+// Botão "Adicionar" item
 document.getElementById("btn-adicionar-item").addEventListener("click", adicionarItem);
 
 // Mostra os itens adicionados e atualiza o orçamento
 function renderizarItens() {
   const tabela = document.getElementById("itens-ordem");
+  // Sem itens: mostra um aviso; com itens: uma linha por item
   if (itensDaOrdem.length === 0) {
     tabela.innerHTML = '<tr><td colspan="4" class="text-body-secondary small">Nenhum item ainda. Os itens podem ser incluídos depois do diagnóstico.</td></tr>';
   } else {
@@ -244,6 +269,7 @@ function renderizarOrcamento() {
     <div class="small text-body-secondary mt-1">Mão de obra estimada: ${t.horas.toLocaleString("pt-BR")} h</div>`;
 }
 
+// Mudou o desconto: recalcula o orçamento
 formOrdem.desconto.addEventListener("input", renderizarOrcamento);
 
 // Prepara o formulário toda vez que o modal abre como "nova OS"
@@ -254,10 +280,14 @@ function prepararFormulario() {
   renderizarItens();
 }
 
-// Abertura e edição
+
+// ABERTURA E EDIÇÃO
+// ------------------------------------------------------------
+
 const errosOrdem = document.getElementById("erros-ordem");
 let idEmEdicao = null; // null = abrindo uma OS nova
 
+// Mostra as mensagens de erro na caixa vermelha do formulário
 function mostrarErros(erros) {
   errosOrdem.innerHTML = erros.join("<br>");
   errosOrdem.classList.remove("d-none");
@@ -277,6 +307,7 @@ function limparFormulario() {
   prepararFormulario();
 }
 
+// Ao fechar o modal, o formulário volta ao estado inicial
 document.getElementById("modalOrdem").addEventListener("hidden.bs.modal", limparFormulario);
 
 // Junta os valores do formulário num objeto
@@ -290,6 +321,7 @@ function lerFormulario() {
   };
 }
 
+// Botão Salvar: valida os dados e abre ou atualiza a OS
 formOrdem.addEventListener("submit", (evento) => {
   evento.preventDefault();
 
@@ -307,6 +339,7 @@ formOrdem.addEventListener("submit", (evento) => {
     return;
   }
 
+  // 3º: salva (abre uma nova OS ou atualiza a que está em edição)
   if (idEmEdicao === null) {
     const agora = new Date().toISOString();
     const nova = criarOrdem({
@@ -328,6 +361,7 @@ formOrdem.addEventListener("submit", (evento) => {
     mostrarMensagem("Ordem de serviço atualizada.");
   }
 
+  // Fecha o formulário e atualiza a tabela
   modalOrdem.hide();
   renderizarOrdens();
 });
@@ -358,7 +392,10 @@ function abrirEdicao(id) {
   modalOrdem.show();
 }
 
-// Exclusão
+
+// EXCLUSÃO
+// ------------------------------------------------------------
+
 const modalExcluir = new bootstrap.Modal("#modalExcluir");
 let idParaExcluir = null;
 
@@ -376,6 +413,7 @@ function pedirExclusao(id) {
   modalExcluir.show();
 }
 
+// Confirmou no modal: exclui, avisa e atualiza a tabela
 document.getElementById("btn-confirmar-exclusao").addEventListener("click", () => {
   excluir(CHAVES.ordens, idParaExcluir);
   modalExcluir.hide();
@@ -391,6 +429,10 @@ listaOrdens.addEventListener("click", (evento) => {
   if (botao.dataset.acao === "editar") abrirEdicao(botao.dataset.id);
   if (botao.dataset.acao === "excluir") pedirExclusao(botao.dataset.id);
 });
+
+
+// INÍCIO
+// ------------------------------------------------------------
 
 // Ao abrir a página, prepara o formulário e mostra as OS salvas
 prepararFormulario();

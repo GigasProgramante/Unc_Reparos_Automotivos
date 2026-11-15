@@ -1,5 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR" data-bs-theme="dark" data-theme="escuro">
+<!-- CABEÇALHO DA PÁGINA (título, estilos e tema) -->
+<!-- ------------------------------------------------------------ -->
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,6 +12,9 @@
     <script src="js/tema.js"></script>
 </head>
 <body>
+
+    <!-- MENU DE NAVEGAÇÃO -->
+    <!-- ------------------------------------------------------------ -->
     <nav class="navbar navbar-expand-lg app-navbar">
         <div class="container">
             <a class="navbar-brand" href="index.html"><i class="bi bi-wrench-adjustable"></i> UnC Reparos Automotivos</a>
@@ -25,12 +30,17 @@
                     <li class="nav-item"><a class="nav-link" href="catalogo.html">Catálogo</a></li>
                     <li class="nav-item"><a class="nav-link" href="revisoes.html">Revisões</a></li>
                 </ul>
+                <!-- Botão de alternar tema (ligado por js/tema.js) -->
                 <button type="button" id="btn-tema" class="btn btn-outline-secondary btn-sm ms-lg-3 mt-2 mt-lg-0 align-self-start" aria-label="Alternar tema"><i class="bi bi-sun"></i> <span class="d-lg-none">Alternar tema</span></button>
             </div>
         </div>
     </nav>
 
+    <!-- CONTEÚDO PRINCIPAL -->
+    <!-- ------------------------------------------------------------ -->
     <main class="container py-4">
+
+        <!-- Título da página e botão de ação -->
         <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
             <h1 class="h2 mb-0">Clientes</h1>
             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalCliente"><i class="bi bi-person-plus"></i> Novo cliente</button>
@@ -50,6 +60,7 @@
             </div>
         </form>
 
+        <!-- Contador de resultados -->
         <p class="small text-body-secondary mb-2" id="contador-clientes"></p>
 
         <div class="card">
@@ -58,30 +69,45 @@
                     <thead>
                         <tr><th>Nome</th><th class="d-none d-md-table-cell">CPF</th><th>Telefone</th><th class="d-none d-md-table-cell">Cidade</th><th class="d-none d-lg-table-cell">Veículos</th><th class="text-end">Ações</th></tr>
                     </thead>
+                    <!-- As linhas/cartões são criados pelo JavaScript -->
                     <tbody id="tabela-clientes"></tbody>
                 </table>
             </div>
         </div>
     </main>
 
-    <!-- Formulário de cadastro -->
+    <!-- FORMULÁRIO DE CADASTRO E EDIÇÃO (modal) -->
+    <!-- ------------------------------------------------------------ -->
     <div class="modal fade" id="modalCliente" tabindex="-1" aria-labelledby="tituloModalCliente">
         <div class="modal-dialog">
             <div class="modal-content">
+                <!-- Título e botão de fechar -->
                 <div class="modal-header">
                     <h2 class="modal-title fs-5" id="tituloModalCliente">Novo cliente</h2>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
                 </div>
+                <!-- Conteúdo -->
                 <div class="modal-body">
+                    <!-- Caixa de erros (aparece quando a validação falha) -->
                     <div class="alert alert-danger d-none" id="erros-cliente" role="alert"></div>
                     <form class="row g-3" id="form-cliente" novalidate>
+                        <!-- Campo: Nome completo -->
                         <div class="col-12"><label class="form-label" for="nome">Nome completo</label><input class="form-control" id="nome" name="nome" required><div class="invalid-feedback">Informe o nome.</div></div>
+
+                        <!-- Campo: CPF -->
                         <div class="col-sm-6"><label class="form-label" for="cpf">CPF</label><input class="form-control" id="cpf" name="cpf" placeholder="000.000.000-00" maxlength="14" inputmode="numeric" required><div class="invalid-feedback">Informe o CPF.</div></div>
+
+                        <!-- Campo: Telefone -->
                         <div class="col-sm-6"><label class="form-label" for="telefone">Telefone</label><input type="tel" class="form-control" id="telefone" name="telefone" placeholder="(47) 99999-9999" maxlength="15" required><div class="invalid-feedback">Informe o telefone.</div></div>
+
+                        <!-- Campo: E-mail -->
                         <div class="col-sm-7"><label class="form-label" for="email">E-mail</label><input type="email" class="form-control" id="email" name="email"><div class="invalid-feedback">E-mail em formato inválido.</div></div>
+
+                        <!-- Campo: Cidade -->
                         <div class="col-sm-5"><label class="form-label" for="cidade">Cidade</label><select class="form-select" id="cidade" name="cidade" required><option value="">Selecione</option><option>Mafra</option><option>Rio Negrinho</option><option>Canoinhas</option></select><div class="invalid-feedback">Escolha a cidade.</div></div>
                     </form>
                 </div>
+                <!-- Botões -->
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
                     <button type="submit" form="form-cliente" class="btn btn-primary">Salvar</button>
@@ -90,17 +116,21 @@
         </div>
     </div>
 
-    <!-- Confirmação de exclusão -->
+    <!-- CONFIRMAÇÃO DE EXCLUSÃO (modal) -->
+    <!-- ------------------------------------------------------------ -->
     <div class="modal fade" id="modalExcluir" tabindex="-1" aria-labelledby="tituloModalExcluir">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
+                <!-- Título e botão de fechar -->
                 <div class="modal-header">
                     <h2 class="modal-title fs-5" id="tituloModalExcluir">Excluir cliente?</h2>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
                 </div>
+                <!-- Conteúdo -->
                 <div class="modal-body">
                     <p class="mb-0"><strong id="nome-excluir"></strong> será removido do sistema. Essa ação não pode ser desfeita.</p>
                 </div>
+                <!-- Botões -->
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
                     <button type="button" class="btn btn-danger" id="btn-confirmar-exclusao">Excluir</button>
@@ -109,10 +139,14 @@
         </div>
     </div>
 
+    <!-- RODAPÉ -->
+    <!-- ------------------------------------------------------------ -->
     <footer class="border-top py-3 mt-5">
         <div class="container text-body-secondary small">UnC Reparos Automotivos · Desenvolvimento Web I</div>
     </footer>
 
+    <!-- SCRIPTS (Bootstrap e código da página) -->
+    <!-- ------------------------------------------------------------ -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="js/script.js"></script>
     <script src="js/storage.js"></script>

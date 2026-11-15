@@ -11,8 +11,10 @@ const filtroSituacao = document.getElementById("filtro-situacao");
 
 // ---- Exibição ----
 
+// Ordem das situações na lista: vencidas primeiro
 const PESO_SITUACAO = { vencida: 0, proxima: 1, "em-dia": 2 };
 
+// Etiqueta colorida de cada situação
 const ETIQUETAS = {
   vencida: '<span class="badge text-bg-danger">Vencida</span>',
   proxima: '<span class="badge text-bg-warning">Próxima</span>',
@@ -51,6 +53,7 @@ function detalharRevisao(revisao) {
   };
 }
 
+// Monta a linha da tabela de uma revisão (já detalhada)
 function linhaRevisao(r) {
   const placa = r.placa
     ? ` <span class="badge text-bg-light border font-monospace">${escaparHtml(r.placa)}</span>`
@@ -72,6 +75,7 @@ function linhaRevisao(r) {
     </tr>`;
 }
 
+// Linha que ocupa a tabela inteira quando não há nada para mostrar
 function linhaVazia(texto) {
   return `
     <tr>
@@ -116,6 +120,7 @@ function renderizarRevisoes() {
   listaRevisoes.innerHTML = revisoes.map(linhaRevisao).join("");
 }
 
+// Atualiza a lista sempre que a busca ou o filtro mudar
 for (const campo of [buscaRevisao, filtroSituacao]) {
   campo.addEventListener("input", renderizarRevisoes);
 }
@@ -130,7 +135,7 @@ const modalRevisao = new bootstrap.Modal("#modalRevisao");
 const errosRevisao = document.getElementById("erros-revisao");
 let idEmEdicao = null; // null = cadastrando uma revisão nova
 
-// Select de clientes
+// Preenche o select de clientes
 function carregarClientes() {
   const clientes = listar(CHAVES.clientes);
   clientes.sort((a, b) => a.nome.localeCompare(b.nome, "pt-BR"));
@@ -147,7 +152,7 @@ function carregarClientes() {
   document.getElementById("btn-nova-revisao").disabled = semVeiculos;
 }
 
-// Select de veículos: só os do cliente escolhido
+// Preenche o select de veículos: só os do cliente escolhido
 function carregarVeiculos(clienteId) {
   const veiculos = listar(CHAVES.veiculos).filter((v) => v.clienteId === clienteId);
 
@@ -162,8 +167,10 @@ function carregarVeiculos(clienteId) {
   }
 }
 
+// Ao trocar o cliente, recarrega os veículos dele
 formRevisao.clienteId.addEventListener("change", () => carregarVeiculos(formRevisao.clienteId.value));
 
+// Junta os valores do formulário num objeto
 function lerFormulario() {
   return {
     clienteId: formRevisao.clienteId.value,
@@ -172,6 +179,7 @@ function lerFormulario() {
   };
 }
 
+// Mostra as mensagens de erro na caixa vermelha do formulário
 function mostrarErros(erros) {
   errosRevisao.innerHTML = erros.join("<br>");
   errosRevisao.classList.remove("d-none");
@@ -187,8 +195,10 @@ function limparFormulario() {
   idEmEdicao = null;
 }
 
+// Ao fechar o modal, o formulário volta ao estado inicial
 document.getElementById("modalRevisao").addEventListener("hidden.bs.modal", limparFormulario);
 
+// Botão Salvar: valida os dados e cria ou atualiza a revisão
 formRevisao.addEventListener("submit", (evento) => {
   evento.preventDefault();
 
@@ -206,6 +216,7 @@ formRevisao.addEventListener("submit", (evento) => {
     return;
   }
 
+  // 3º: salva (cria uma nova ou atualiza a que está em edição)
   if (idEmEdicao === null) {
     criar(CHAVES.revisoes, { ...dados, criadoEm: new Date().toISOString() });
     mostrarMensagem("Revisão cadastrada.");
@@ -214,6 +225,7 @@ formRevisao.addEventListener("submit", (evento) => {
     mostrarMensagem("Revisão atualizada.");
   }
 
+  // Fecha o formulário e atualiza a tabela
   modalRevisao.hide();
   renderizarRevisoes();
 });
@@ -232,31 +244,10 @@ function abrirEdicao(id) {
   modalRevisao.show();
 }
 
-// ---- Exclusão ----
+// ---- Lembrete para o cliente ----
 
-const modalExcluir = new bootstrap.Modal("#modalExcluir");
-let idParaExcluir = null;
-
-function pedirExclusao(id) {
-  const revisao = buscar(CHAVES.revisoes, id);
-  if (!revisao) return;
-
-  const r = detalharRevisao(revisao);
-  idParaExcluir = id;
-  document.getElementById("nome-excluir").textContent =
-    `Revisão de ${r.modelo}${r.placa ? " (" + r.placa + ")" : ""} em ${formatarData(r.dataPrevista)}`;
-  modalExcluir.show();
-}
-
-document.getElementById("btn-confirmar-exclusao").addEventListener("click", () => {
-  excluir(CHAVES.revisoes, idParaExcluir);
-  modalExcluir.hide();
-  mostrarMensagem("Revisão excluída.");
-  renderizarRevisoes();
-});
-
-// ---- Mensagem de lembrete ----
-
+// Monta o texto do lembrete a partir de uma revisão já detalhada.
+// Para mudar o texto da mensagem, edite só esta função.
 function montarLembrete(r) {
   const primeiroNome = r.clienteNome.split(" ")[0];
   const veiculo = r.placa ? `${r.modelo} (placa ${r.placa})` : r.modelo;
@@ -288,6 +279,7 @@ async function copiarTexto(texto) {
   }
 }
 
+// Copia o lembrete da revisão para a área de transferência e avisa o usuário
 async function copiarLembrete(id) {
   const revisao = buscar(CHAVES.revisoes, id);
   if (!revisao) return;
@@ -295,6 +287,30 @@ async function copiarLembrete(id) {
   const ok = await copiarTexto(montarLembrete(detalharRevisao(revisao)));
   mostrarMensagem(ok ? "Lembrete copiado. É só colar na conversa." : "Não foi possível copiar o lembrete.");
 }
+
+// ---- Exclusão ----
+
+const modalExcluir = new bootstrap.Modal("#modalExcluir");
+let idParaExcluir = null;
+
+function pedirExclusao(id) {
+  const revisao = buscar(CHAVES.revisoes, id);
+  if (!revisao) return;
+
+  const r = detalharRevisao(revisao);
+  idParaExcluir = id;
+  document.getElementById("nome-excluir").textContent =
+    `Revisão de ${r.modelo}${r.placa ? " (" + r.placa + ")" : ""} em ${formatarData(r.dataPrevista)}`;
+  modalExcluir.show();
+}
+
+// Confirmou no modal: exclui, avisa e atualiza a tabela
+document.getElementById("btn-confirmar-exclusao").addEventListener("click", () => {
+  excluir(CHAVES.revisoes, idParaExcluir);
+  modalExcluir.hide();
+  mostrarMensagem("Revisão excluída.");
+  renderizarRevisoes();
+});
 
 // Botões "Lembrete", "Editar" e "Excluir" de cada linha
 listaRevisoes.addEventListener("click", (evento) => {
@@ -306,6 +322,7 @@ listaRevisoes.addEventListener("click", (evento) => {
   if (botao.dataset.acao === "excluir") pedirExclusao(botao.dataset.id);
 });
 
+// ---- Início ----
 // Ao abrir a página, carrega os clientes e mostra as revisões salvas
 carregarClientes();
 carregarVeiculos("");
