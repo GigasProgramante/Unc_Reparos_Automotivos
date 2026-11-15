@@ -65,8 +65,11 @@ function linhaRevisao(r) {
         ${escaparHtml(r.modelo)}${placa}
         <div class="small text-body-secondary d-md-none">${escaparHtml(r.clienteNome)}</div>
       </td>
-      <td>${formatarData(r.dataPrevista)}</td>
-      <td>${ETIQUETAS[r.situacao]}</td>
+      <td>
+        ${formatarData(r.dataPrevista)}
+        <div class="d-md-none mt-1">${ETIQUETAS[r.situacao]}</div>
+      </td>
+      <td class="d-none d-md-table-cell">${ETIQUETAS[r.situacao]}</td>
       <td class="text-end text-nowrap">
         <button type="button" class="btn btn-sm btn-outline-success" data-acao="lembrete" data-id="${r.id}" aria-label="Copiar lembrete"><i class="bi bi-clipboard"></i><span class="d-none d-md-inline"> Lembrete</span></button>
         <button type="button" class="btn btn-sm btn-outline-primary" data-acao="editar" data-id="${r.id}" aria-label="Editar"><i class="bi bi-pencil"></i><span class="d-none d-md-inline"> Editar</span></button>

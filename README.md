@@ -61,7 +61,7 @@ Donos, atendentes e mecânicos de oficinas mecânicas de pequeno porte, que aten
 | F06 | Mudar o **status da OS** respeitando o fluxo e as regras de cada etapa |
 | F07 | **Pesquisar, filtrar e ordenar** todas as listagens |
 | F08 | **Painel** com indicadores calculados dos dados cadastrados |
-| F09 | **Revisões preventivas**: cadastrar, listar, editar e excluir revisões (cliente, veículo e data prevista) e mostrar as vencidas e próximas |
+| F09 | **Revisões preventivas**: cadastrar, listar, editar e excluir revisões (cliente, veículo e data prevista), mostrar as vencidas e próximas e copiar uma mensagem de lembrete para enviar ao cliente |
 | F10 | Alternar **tema claro e escuro** |
 | F11 | Pedir **confirmação** antes de excluir e mostrar mensagens de sucesso e erro |
 
@@ -170,6 +170,8 @@ As contagens de revisões vencidas e próximas ficam na tela de Revisões.
 
 As revisões são registradas manualmente, informando cliente, veículo e data prevista. A situação é calculada pela data: **vencida** quando a data já passou, **próxima** quando faltam até 30 dias e **em dia** nos demais casos.
 
+O botão **Lembrete** de cada revisão copia uma mensagem pronta, com o primeiro nome do cliente, o veículo, a data e a situação, para colar no WhatsApp ou no e-mail.
+
 ### Telas
 
 | Tela | Arquivo | Conteúdo |
@@ -220,8 +222,8 @@ As revisões são registradas manualmente, informando cliente, veículo e data p
 | R09 — Pesquisa, 2 filtros e ordenação | em todas as listagens; ex.: Ordens tem busca por nº/placa/cliente, filtro de status, filtro de período e ordenação |
 | R10 — Dashboard com 4+ indicadores | `index.html` + `js/painel.js`: 6 indicadores calculados, fila, OS por etapa, faturamento de 6 meses e serviços mais realizados |
 | R11 — Processo com status | fluxo da OS em `ordem.html` + `js/ordem.js` (baixa de estoque na execução, pagamento na entrega) |
-| R12 — 3 interações com JS | tema claro/escuro, orçamento calculado ao vivo, seleção de veículo filtrada pelo cliente, filtros em tempo real, toasts e confirmação de exclusão |
-| R13 — Funcionalidade exclusiva | revisões preventivas (`revisoes.html` + `js/revisoes.js`) com situação vencida / próxima / em dia |
+| R12 — 3 interações com JS | tema claro/escuro, orçamento calculado ao vivo, seleção de veículo filtrada pelo cliente, filtros em tempo real, cópia da mensagem de lembrete, toasts e confirmação de exclusão |
+| R13 — Funcionalidade exclusiva | revisões preventivas (`revisoes.html` + `js/revisoes.js`) com situação vencida / próxima / em dia e mensagem de lembrete copiada com um clique |
 
 ## 5. Como executar
 
