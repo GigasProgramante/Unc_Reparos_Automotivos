@@ -4,6 +4,8 @@ Sistema web para controlar o dia a dia de uma oficina mecânica: clientes, veíc
 
 Trabalho prático de **Desenvolvimento Web I** — Universidade do Contestado (UnC).
 
+**Acesse o sistema:** https://gigasprogramante.github.io/Unc_Reparos_Automotivos/
+
 ## Integrantes
 
 | Nome | GitHub |
@@ -55,14 +57,13 @@ Donos, atendentes e mecânicos de oficinas mecânicas de pequeno porte, que aten
 | F02 | Cadastrar, listar, editar e excluir **veículos**, sempre ligados a um cliente |
 | F03 | Cadastrar, listar, editar e excluir **serviços e peças** do catálogo |
 | F04 | Abrir, listar, editar e excluir **ordens de serviço** com itens do catálogo |
-| F05 | Calcular o **orçamento** da OS: serviços + peças − desconto, horas de mão de obra e previsão de entrega |
+| F05 | Calcular o **orçamento** da OS: serviços + peças − desconto e horas de mão de obra |
 | F06 | Mudar o **status da OS** respeitando o fluxo e as regras de cada etapa |
-| F07 | Ver as OS em **lista** ou em **quadro** por etapa |
-| F08 | **Pesquisar, filtrar e ordenar** todas as listagens |
-| F09 | **Painel** com indicadores calculados dos dados cadastrados |
-| F10 | **Revisões preventivas**: cadastrar, listar, editar e excluir revisões (cliente, veículo e data prevista) e mostrar as vencidas e próximas |
-| F11 | Alternar **tema claro e escuro** |
-| F12 | Pedir **confirmação** antes de excluir e mostrar mensagens de sucesso e erro |
+| F07 | **Pesquisar, filtrar e ordenar** todas as listagens |
+| F08 | **Painel** com indicadores calculados dos dados cadastrados |
+| F09 | **Revisões preventivas**: cadastrar, listar, editar e excluir revisões (cliente, veículo e data prevista) e mostrar as vencidas e próximas |
+| F10 | Alternar **tema claro e escuro** |
+| F11 | Pedir **confirmação** antes de excluir e mostrar mensagens de sucesso e erro |
 
 ### Entidades e campos
 
@@ -96,7 +97,7 @@ Donos, atendentes e mecânicos de oficinas mecânicas de pequeno porte, que aten
 | nome | texto | sim | não repetido |
 | preco | número | sim | maior que zero |
 | horas | número | só serviço | entre 0,5 e 40 |
-| intervaloKm / intervaloMeses | número | não (serviço) | define se o serviço entra nas revisões |
+| intervaloKm / intervaloMeses | número | não (serviço) | intervalo de revisão recomendado, mostrado no catálogo |
 | unidade | lista | só peça | un, litro, jogo, kit |
 | estoque / estoqueMinimo | número | só peça | inteiro, zero ou mais |
 
@@ -133,14 +134,14 @@ Cliente 1 ──── N Veículo 1 ──── N Ordem de serviço N ───
 1. Um cliente com veículos cadastrados não pode ser excluído.
 2. Um veículo com OS no histórico não pode ser excluído.
 3. Um item do catálogo já usado em alguma OS não pode ser excluído.
-3a. Um veículo com revisão cadastrada não pode ser excluído.
-4. Cada veículo pode ter **apenas uma OS em andamento** por vez.
-5. O km de entrada da OS não pode ser menor que o último km do veículo; ao abrir a OS, o km do veículo é atualizado.
-6. Para iniciar a execução, a OS precisa ter itens e todas as peças precisam ter estoque; o estoque é baixado nesse momento.
-7. A entrega exige a forma de pagamento.
-8. OS entregues ou canceladas não podem mais ser alteradas.
-9. Só é possível excluir OS abertas ou canceladas.
-10. O desconto máximo é de 15%.
+4. Um veículo com revisão cadastrada não pode ser excluído.
+5. Cada veículo pode ter **apenas uma OS em andamento** por vez.
+6. O km de entrada da OS não pode ser menor que o último km do veículo; ao abrir a OS, o km do veículo é atualizado.
+7. Para iniciar a execução, a OS precisa ter itens e todas as peças precisam ter estoque; o estoque é baixado nesse momento.
+8. A entrega exige a forma de pagamento.
+9. OS entregues ou canceladas não podem mais ser alteradas.
+10. Só é possível excluir OS abertas ou canceladas.
+11. O desconto máximo é de 15%.
 
 ### Fluxo de status da OS
 
@@ -155,12 +156,15 @@ Aberta, Em diagnóstico e Aguardando peça → Cancelada
 ### Indicadores do painel
 
 - OS em andamento na oficina (e quantas estão prontas para retirada)
-- Faturamento do mês (OS entregues)
-- Ticket médio
+- Faturamento do mês (OS entregues no mês)
+- Ticket médio (faturamento ÷ OS entregues)
 - Tempo médio de reparo (da abertura à entrega)
-- Revisões vencidas e próximas
 - Peças no estoque mínimo
+- Clientes e veículos cadastrados
+- Fila da oficina, com alerta para OS paradas há mais de 3 dias na mesma etapa
 - Gráficos: OS por etapa, faturamento dos últimos 6 meses e serviços mais realizados
+
+As contagens de revisões vencidas e próximas ficam na tela de Revisões.
 
 ### Funcionalidade exclusiva: revisões preventivas
 
@@ -171,7 +175,8 @@ As revisões são registradas manualmente, informando cliente, veículo e data p
 | Tela | Arquivo | Conteúdo |
 |------|---------|----------|
 | Painel | `index.html` | indicadores, fila da oficina e gráficos |
-| Ordens de serviço | `ordens.html` | lista e quadro de OS, cadastro, detalhes e mudança de status |
+| Ordens de serviço | `ordens.html` | lista de OS, cadastro e orçamento |
+| Detalhe da OS | `ordem.html` | dados da OS, itens, histórico e mudança de status |
 | Clientes | `clientes.html` | lista e cadastro de clientes |
 | Veículos | `veiculos.html` | cartões e cadastro de veículos |
 | Catálogo | `catalogo.html` | abas de serviços e peças, cadastro e estoque |
@@ -193,12 +198,32 @@ As revisões são registradas manualmente, informando cliente, veículo e data p
 | 2 | CRUD do catálogo | Luís |
 | 2 | CRUD de veículos | Luís |
 | 2 | CRUD de ordens de serviço e orçamento | Luís |
-| 3 | Fluxo de status e quadro de OS | Guilherme |
+| 3 | Fluxo de status e tela de detalhe da OS | Guilherme |
 | 3 | Painel com indicadores | Luís |
 | 3 | Revisões preventivas | Guilherme |
-| 3 | Responsividade, dados de exemplo, GitHub Pages e documentação final | Luís |
+| 3 | Revisão de responsividade | Luís |
+| 3 | Dados de exemplo e publicação no GitHub Pages | Guilherme |
+| 3 | Documentação final (README) | Luís |
 
-## Como executar
+## 4. Onde cada requisito está implementado
+
+| Requisito | Onde está |
+|-----------|-----------|
+| R01 — 5 ou mais telas | 7 telas: Painel, Ordens, Detalhe da OS, Clientes, Veículos, Catálogo e Revisões |
+| R02 — Responsivo, HTML semântico e CSS próprio | `nav`, `main` e `footer` em todas as telas, `section` para os blocos de conteúdo; grid do Bootstrap; colunas secundárias escondidas no celular; `css/style.css` com a identidade visual |
+| R03 — 5 tipos de componentes | navbar, cards, tabelas, modais, toasts, abas (catálogo), badges, barras de progresso (painel), list-group, breadcrumb e alertas |
+| R04 — Bootstrap | Bootstrap 5.3 e Bootstrap Icons via CDN em todas as páginas |
+| R05 — CRUD | clientes (`js/clientes.js`), veículos (`js/veiculos.js`), catálogo (`js/catalogo.js`), ordens (`js/ordens.js`) e revisões (`js/revisoes.js`) |
+| R06 — 3 entidades relacionadas | Cliente → Veículo → Ordem de serviço → Item do catálogo (ligados por id) |
+| R07 — Validações | atributos HTML (`required`, `minlength`, `min`, `max`) + regras em `js/validacao.js` (CPF, placa, km, desconto, OS em andamento, exclusões bloqueadas) |
+| R08 — localStorage | `js/storage.js` (`listar`, `criar`, `atualizar`, `excluir`) |
+| R09 — Pesquisa, 2 filtros e ordenação | em todas as listagens; ex.: Ordens tem busca por nº/placa/cliente, filtro de status, filtro de período e ordenação |
+| R10 — Dashboard com 4+ indicadores | `index.html` + `js/painel.js`: 6 indicadores calculados, fila, OS por etapa, faturamento de 6 meses e serviços mais realizados |
+| R11 — Processo com status | fluxo da OS em `ordem.html` + `js/ordem.js` (baixa de estoque na execução, pagamento na entrega) |
+| R12 — 3 interações com JS | tema claro/escuro, orçamento calculado ao vivo, seleção de veículo filtrada pelo cliente, filtros em tempo real, toasts e confirmação de exclusão |
+| R13 — Funcionalidade exclusiva | revisões preventivas (`revisoes.html` + `js/revisoes.js`) com situação vencida / próxima / em dia |
+
+## 5. Como executar
 
 1. Clone o repositório:
    ```
@@ -206,4 +231,14 @@ As revisões são registradas manualmente, informando cliente, veículo e data p
    ```
 2. Abra o `index.html` no navegador (ou use a extensão Live Server do VS Code).
 
-Não há back-end nem instalação.
+Não há back-end nem instalação. Os dados ficam salvos no navegador de quem usa (`localStorage`); para começar do zero, basta limpar os dados do site.
+
+Ou acesse direto pelo GitHub Pages: https://gigasprogramante.github.io/Unc_Reparos_Automotivos/
+
+## 6. Como usar
+
+1. Cadastre os **serviços e peças** no Catálogo.
+2. Cadastre um **cliente** e depois os **veículos** dele.
+3. Abra uma **ordem de serviço**: escolha o cliente, o veículo, informe o km e o problema e adicione os itens. O orçamento é calculado na hora.
+4. Abra a OS e avance o **status** (diagnóstico, execução, pronta, entregue). Na entrega, informe a forma de pagamento.
+5. Acompanhe a oficina pelo **Painel** e cadastre as próximas **revisões** dos veículos.
