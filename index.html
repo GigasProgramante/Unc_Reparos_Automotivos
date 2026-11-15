@@ -32,7 +32,10 @@
 
     <main class="container py-4">
         <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
-            <h1 class="h2 mb-0">Painel da oficina</h1>
+            <div>
+                <p class="text-body-secondary small mb-1" id="data-hoje"></p>
+                <h1 class="h2 mb-0">Painel da oficina</h1>
+            </div>
             <a href="ordens.html" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Nova ordem de serviço</a>
         </div>
 
@@ -52,13 +55,18 @@
                     <div class="card-body" id="os-por-etapa"></div>
                 </div>
             </section>
-            <section class="col-12">
-                <div class="card">
+            <section class="col-lg-7">
+                <div class="card h-100">
                     <div class="card-header fw-semibold">Faturamento dos últimos 6 meses</div>
-                    <div class="card-body text-center text-body-secondary py-5">
-                        <i class="bi bi-bar-chart fs-1"></i>
-                        <p class="mb-0">Gráfico de faturamento</p>
+                    <div class="card-body">
+                        <div class="d-flex align-items-end gap-2" style="height: 220px" id="grafico-faturamento" role="img" aria-label="Gráfico de faturamento mensal"></div>
                     </div>
+                </div>
+            </section>
+            <section class="col-lg-5">
+                <div class="card h-100">
+                    <div class="card-header fw-semibold">Serviços mais realizados</div>
+                    <div class="card-body" id="servicos-mais-feitos"></div>
                 </div>
             </section>
         </div>

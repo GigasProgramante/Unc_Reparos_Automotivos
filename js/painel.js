@@ -149,7 +149,78 @@ function renderizarEtapas() {
   document.getElementById("os-por-etapa").innerHTML = html;
 }
 
+// Gráfico de colunas: faturamento (OS entregues) de cada um dos últimos 6 meses
+function renderizarFaturamento() {
+  const entregues = listar(CHAVES.ordens).filter((o) => o.status === "entregue" && dataEntrega(o));
+  const meses = [];
+  for (let i = 5; i >= 0; i--) {
+    const data = new Date();
+    data.setDate(1);
+    data.setMonth(data.getMonth() - i);
+    meses.push(data);
+  }
+
+  const valores = meses.map((mes) => somar(
+    entregues.filter((o) => mesmoMes(dataEntrega(o), mes)).map(totalDaOrdem)
+  ));
+  const maior = Math.max(1, ...valores);
+
+  let html = "";
+  meses.forEach((mes, indice) => {
+    const atual = indice === meses.length - 1;
+    const nome = mes.toLocaleDateString("pt-BR", { month: "short" }).replace(".", "");
+    html += `
+      <div class="flex-fill d-flex flex-column justify-content-end align-items-center h-100" title="${formatarMoeda(valores[indice])}">
+        <span class="small ${atual ? "fw-semibold" : "text-body-secondary"}">${valores[indice] ? formatarMoeda(valores[indice]) : "—"}</span>
+        <div class="w-75 rounded-top ${atual ? "bg-primary" : "bg-secondary"}" style="height: ${(valores[indice] / maior) * 80}%; min-height: 2px"></div>
+        <span class="small text-body-secondary text-capitalize mt-1">${nome}</span>
+      </div>`;
+  });
+  document.getElementById("grafico-faturamento").innerHTML = html;
+}
+
+// Os 5 serviços que mais aparecem nas OS (canceladas não contam)
+function renderizarServicos() {
+  const contagem = {};
+  for (const ordem of listar(CHAVES.ordens)) {
+    if (ordem.status === "cancelada") continue;
+    for (const linha of ordem.itens || []) {
+      if (linha.tipo === "servico") {
+        contagem[linha.nome] = (contagem[linha.nome] || 0) + Number(linha.quantidade);
+      }
+    }
+  }
+
+  const ranking = Object.entries(contagem).sort((a, b) => b[1] - a[1]).slice(0, 5);
+  const area = document.getElementById("servicos-mais-feitos");
+  if (ranking.length === 0) {
+    area.innerHTML = '<p class="text-center text-body-secondary mb-0 py-4">Os serviços aparecem aqui conforme as OS são abertas.</p>';
+    return;
+  }
+
+  const maior = ranking[0][1];
+  let html = "";
+  for (const [nome, quantidade] of ranking) {
+    html += `
+      <div class="mb-3">
+        <div class="d-flex justify-content-between small mb-1">
+          <span>${escaparHtml(nome)}</span><span class="fw-semibold">${quantidade}</span>
+        </div>
+        <div class="progress" role="progressbar" aria-label="${escaparHtml(nome)}" aria-valuenow="${quantidade}" aria-valuemin="0" aria-valuemax="${maior}" style="height: 0.6rem">
+          <div class="progress-bar bg-info" style="width: ${(quantidade / maior) * 100}%"></div>
+        </div>
+      </div>`;
+  }
+  area.innerHTML = html;
+}
+
+// Data de hoje no cabeçalho: "Sábado, 14 de novembro"
+const hoje = new Date().toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long" });
+document.getElementById("data-hoje").textContent = hoje.charAt(0).toUpperCase() + hoje.slice(1);
+
 // Ao abrir a página, calcula e mostra tudo
 renderizarIndicadores();
 renderizarFila();
 renderizarEtapas();
+renderizarFaturamento();
+renderizarServicos();
