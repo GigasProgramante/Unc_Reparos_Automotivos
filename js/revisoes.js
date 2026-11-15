@@ -65,6 +65,7 @@ function linhaRevisao(r) {
       <td>${formatarData(r.dataPrevista)}</td>
       <td>${ETIQUETAS[r.situacao]}</td>
       <td class="text-end text-nowrap">
+        <button type="button" class="btn btn-sm btn-outline-success" data-acao="lembrete" data-id="${r.id}" aria-label="Copiar lembrete"><i class="bi bi-clipboard"></i><span class="d-none d-md-inline"> Lembrete</span></button>
         <button type="button" class="btn btn-sm btn-outline-primary" data-acao="editar" data-id="${r.id}" aria-label="Editar"><i class="bi bi-pencil"></i><span class="d-none d-md-inline"> Editar</span></button>
         <button type="button" class="btn btn-sm btn-outline-danger" data-acao="excluir" data-id="${r.id}" aria-label="Excluir"><i class="bi bi-trash"></i><span class="d-none d-md-inline"> Excluir</span></button>
       </td>
@@ -254,11 +255,53 @@ document.getElementById("btn-confirmar-exclusao").addEventListener("click", () =
   renderizarRevisoes();
 });
 
-// Botões "Editar" e "Excluir" de cada linha
+// ---- Mensagem de lembrete ----
+
+function montarLembrete(r) {
+  const primeiroNome = r.clienteNome.split(" ")[0];
+  const veiculo = r.placa ? `${r.modelo} (placa ${r.placa})` : r.modelo;
+  const data = formatarData(r.dataPrevista);
+  const situacao = r.situacao === "vencida"
+    ? `A revisão do seu ${veiculo} estava prevista para ${data} e já está vencida.`
+    : `A revisão do seu ${veiculo} está prevista para ${data}.`;
+
+  return `Olá, ${primeiroNome}! Tudo bem?\n\n${situacao}\n` +
+    "Que tal agendar um horário para mantê-lo sempre em dia e seguro?\n\n" +
+    "UnC Reparos Automotivos";
+}
+
+// Copia o texto; se o navegador bloquear a API (ex.: página sem https), usa um textarea temporário
+async function copiarTexto(texto) {
+  try {
+    await navigator.clipboard.writeText(texto);
+    return true;
+  } catch {
+    const area = document.createElement("textarea");
+    area.value = texto;
+    area.style.position = "fixed";
+    area.style.opacity = "0";
+    document.body.appendChild(area);
+    area.select();
+    const ok = document.execCommand("copy");
+    area.remove();
+    return ok;
+  }
+}
+
+async function copiarLembrete(id) {
+  const revisao = buscar(CHAVES.revisoes, id);
+  if (!revisao) return;
+
+  const ok = await copiarTexto(montarLembrete(detalharRevisao(revisao)));
+  mostrarMensagem(ok ? "Lembrete copiado. É só colar na conversa." : "Não foi possível copiar o lembrete.");
+}
+
+// Botões "Lembrete", "Editar" e "Excluir" de cada linha
 listaRevisoes.addEventListener("click", (evento) => {
   const botao = evento.target.closest("button[data-acao]");
   if (!botao) return;
 
+  if (botao.dataset.acao === "lembrete") copiarLembrete(botao.dataset.id);
   if (botao.dataset.acao === "editar") abrirEdicao(botao.dataset.id);
   if (botao.dataset.acao === "excluir") pedirExclusao(botao.dataset.id);
 });
