@@ -60,7 +60,7 @@ Donos, atendentes e mecânicos de oficinas mecânicas de pequeno porte, que aten
 | F07 | Ver as OS em **lista** ou em **quadro** por etapa |
 | F08 | **Pesquisar, filtrar e ordenar** todas as listagens |
 | F09 | **Painel** com indicadores calculados dos dados cadastrados |
-| F10 | **Revisões preventivas**: prever a próxima revisão de cada veículo e mostrar as vencidas e próximas |
+| F10 | **Revisões preventivas**: cadastrar, listar, editar e excluir revisões (cliente, veículo e data prevista) e mostrar as vencidas e próximas |
 | F11 | Alternar **tema claro e escuro** |
 | F12 | Pedir **confirmação** antes de excluir e mostrar mensagens de sucesso e erro |
 
@@ -114,6 +114,14 @@ Donos, atendentes e mecânicos de oficinas mecânicas de pequeno porte, que aten
 | historico | lista | automático | data e observação de cada mudança |
 | formaPagamento | lista | na entrega | Pix, dinheiro, débito ou crédito |
 
+**Revisão** (cadastrada manualmente)
+
+| Campo | Tipo | Obrigatório | Validação |
+|-------|------|:-----------:|-----------|
+| clienteId | referência | sim | cliente existente |
+| veiculoId | referência | sim | veículo existente e pertencente ao cliente |
+| dataPrevista | data | sim | data válida, sem repetir a mesma data para o mesmo veículo |
+
 ### Relacionamentos
 
 ```
@@ -125,6 +133,7 @@ Cliente 1 ──── N Veículo 1 ──── N Ordem de serviço N ───
 1. Um cliente com veículos cadastrados não pode ser excluído.
 2. Um veículo com OS no histórico não pode ser excluído.
 3. Um item do catálogo já usado em alguma OS não pode ser excluído.
+3a. Um veículo com revisão cadastrada não pode ser excluído.
 4. Cada veículo pode ter **apenas uma OS em andamento** por vez.
 5. O km de entrada da OS não pode ser menor que o último km do veículo; ao abrir a OS, o km do veículo é atualizado.
 6. Para iniciar a execução, a OS precisa ter itens e todas as peças precisam ter estoque; o estoque é baixado nesse momento.
@@ -155,7 +164,7 @@ Aberta, Em diagnóstico e Aguardando peça → Cancelada
 
 ### Funcionalidade exclusiva: revisões preventivas
 
-Para cada veículo, o sistema procura a última OS entregue com um serviço periódico (ex.: troca de óleo a cada 10.000 km ou 6 meses). A quilometragem de hoje é estimada pela média de km rodados por dia, calculada com as leituras de odômetro das OS anteriores. A revisão fica **próxima** quando faltam até 30 dias ou 1.000 km e **vencida** quando o limite passou, o que vier primeiro.
+As revisões são registradas manualmente, informando cliente, veículo e data prevista. A situação é calculada pela data: **vencida** quando a data já passou, **próxima** quando faltam até 30 dias e **em dia** nos demais casos.
 
 ### Telas
 
@@ -166,7 +175,7 @@ Para cada veículo, o sistema procura a última OS entregue com um serviço peri
 | Clientes | `clientes.html` | lista e cadastro de clientes |
 | Veículos | `veiculos.html` | cartões e cadastro de veículos |
 | Catálogo | `catalogo.html` | abas de serviços e peças, cadastro e estoque |
-| Revisões | `revisoes.html` | revisões vencidas, próximas e em dia |
+| Revisões | `revisoes.html` | lista e cadastro de revisões, vencidas, próximas e em dia |
 
 ---
 

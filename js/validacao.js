@@ -284,6 +284,40 @@ function validarMudancaStatus(idOrdem, novoStatus, dados = {}) {
   return erros;
 }
 
+// Valida os dados de uma revisão cadastrada manualmente (cliente, veículo e data prevista).
+// idAtual: informe ao editar, para a própria revisão não contar como repetida.
+// Campos obrigatórios são validados pelo HTML; aqui ficam as regras que dependem dos dados salvos.
+function validarRevisao(dados, idAtual = null) {
+  const erros = [];
+
+  if (!buscar(CHAVES.clientes, dados.clienteId)) {
+    erros.push("Selecione um cliente existente.");
+  }
+
+  const veiculo = buscar(CHAVES.veiculos, dados.veiculoId);
+  if (!veiculo) {
+    erros.push("Selecione um veículo existente.");
+  } else if (veiculo.clienteId !== dados.clienteId) {
+    erros.push("O veículo selecionado não pertence a este cliente.");
+  }
+
+  // Formato AAAA-MM-DD (valor do input date) e data que realmente existe
+  const partes = String(dados.dataPrevista ?? "").split("-").map(Number);
+  const data = new Date(partes[0], partes[1] - 1, partes[2]);
+  const dataOk = partes.length === 3 && data.getFullYear() === partes[0] &&
+    data.getMonth() === partes[1] - 1 && data.getDate() === partes[2];
+  if (!dataOk) {
+    erros.push("Informe uma data prevista válida.");
+  } else if (veiculo) {
+    const repetida = listar(CHAVES.revisoes).some(
+      (r) => r.id !== idAtual && r.veiculoId === dados.veiculoId && r.dataPrevista === dados.dataPrevista
+    );
+    if (repetida) erros.push("Já existe uma revisão deste veículo nesta data.");
+  }
+
+  return erros;
+}
+
 // Valida a exclusão de uma OS: só abertas ou canceladas podem ser excluídas
 function validarExclusaoOrdem(idOrdem) {
   const erros = [];
