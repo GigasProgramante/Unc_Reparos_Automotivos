@@ -32,66 +32,41 @@
 
     <main class="container py-4">
         <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
-            <h1 class="h2 mb-0">Painel da oficina</h1>
+            <div>
+                <p class="text-body-secondary small mb-1" id="data-hoje"></p>
+                <h1 class="h2 mb-0">Painel da oficina</h1>
+            </div>
             <a href="ordens.html" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Nova ordem de serviço</a>
         </div>
 
-        <!-- Indicadores (serão calculados a partir dos dados) -->
-        <section class="row g-3 mb-4">
-            <div class="col-6 col-lg-3">
-                <div class="card h-100"><div class="card-body">
-                    <p class="text-body-secondary small text-uppercase mb-1">Na oficina agora</p>
-                    <p class="fs-3 fw-bold mb-0">0</p>
-                </div></div>
-            </div>
-            <div class="col-6 col-lg-3">
-                <div class="card h-100"><div class="card-body">
-                    <p class="text-body-secondary small text-uppercase mb-1">Faturamento do mês</p>
-                    <p class="fs-3 fw-bold mb-0">R$ 0,00</p>
-                </div></div>
-            </div>
-            <div class="col-6 col-lg-3">
-                <div class="card h-100"><div class="card-body">
-                    <p class="text-body-secondary small text-uppercase mb-1">Ticket médio</p>
-                    <p class="fs-3 fw-bold mb-0">R$ 0,00</p>
-                </div></div>
-            </div>
-            <div class="col-6 col-lg-3">
-                <div class="card h-100"><div class="card-body">
-                    <p class="text-body-secondary small text-uppercase mb-1">Revisões vencidas</p>
-                    <p class="fs-3 fw-bold mb-0">0</p>
-                </div></div>
-            </div>
-        </section>
+        <!-- Indicadores calculados a partir dos dados salvos -->
+        <section class="row g-3 mb-4" id="indicadores" aria-label="Indicadores da oficina"></section>
 
         <div class="row g-3">
             <section class="col-lg-7">
                 <div class="card h-100">
                     <div class="card-header fw-semibold">Fila da oficina</div>
-                    <ul class="list-group list-group-flush">
-                        <li class="list-group-item placeholder-glow"><span class="placeholder col-3"></span> <span class="placeholder col-5"></span></li>
-                        <li class="list-group-item placeholder-glow"><span class="placeholder col-3"></span> <span class="placeholder col-4"></span></li>
-                        <li class="list-group-item placeholder-glow"><span class="placeholder col-3"></span> <span class="placeholder col-6"></span></li>
-                    </ul>
+                    <ul class="list-group list-group-flush" id="fila-oficina"></ul>
                 </div>
             </section>
             <section class="col-lg-5">
                 <div class="card h-100">
                     <div class="card-header fw-semibold">OS por etapa</div>
-                    <div class="card-body placeholder-glow">
-                        <p class="mb-2">Aberta <span class="placeholder col-6 float-end"></span></p>
-                        <p class="mb-2">Em execução <span class="placeholder col-4 float-end"></span></p>
-                        <p class="mb-0">Pronta p/ retirada <span class="placeholder col-3 float-end"></span></p>
+                    <div class="card-body" id="os-por-etapa"></div>
+                </div>
+            </section>
+            <section class="col-lg-7">
+                <div class="card h-100">
+                    <div class="card-header fw-semibold">Faturamento dos últimos 6 meses</div>
+                    <div class="card-body">
+                        <div class="d-flex align-items-end gap-2" style="height: 220px" id="grafico-faturamento" role="img" aria-label="Gráfico de faturamento mensal"></div>
                     </div>
                 </div>
             </section>
-            <section class="col-12">
-                <div class="card">
-                    <div class="card-header fw-semibold">Faturamento dos últimos 6 meses</div>
-                    <div class="card-body text-center text-body-secondary py-5">
-                        <i class="bi bi-bar-chart fs-1"></i>
-                        <p class="mb-0">Gráfico de faturamento</p>
-                    </div>
+            <section class="col-lg-5">
+                <div class="card h-100">
+                    <div class="card-header fw-semibold">Serviços mais realizados</div>
+                    <div class="card-body" id="servicos-mais-feitos"></div>
                 </div>
             </section>
         </div>
@@ -103,5 +78,8 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="js/script.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/validacao.js"></script>
+    <script src="js/painel.js"></script>
 </body>
 </html>
