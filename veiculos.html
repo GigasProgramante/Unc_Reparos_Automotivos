@@ -1,5 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR" data-bs-theme="dark" data-theme="escuro">
+<!-- CABEÇALHO DA PÁGINA (título, estilos e tema) -->
+<!-- ------------------------------------------------------------ -->
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,6 +12,9 @@
     <script src="js/tema.js"></script>
 </head>
 <body>
+
+    <!-- MENU DE NAVEGAÇÃO -->
+    <!-- ------------------------------------------------------------ -->
     <nav class="navbar navbar-expand-lg app-navbar">
         <div class="container">
             <a class="navbar-brand" href="index.html"><i class="bi bi-wrench-adjustable"></i> UnC Reparos Automotivos</a>
@@ -25,17 +30,23 @@
                     <li class="nav-item"><a class="nav-link" href="catalogo.html">Catálogo</a></li>
                     <li class="nav-item"><a class="nav-link" href="revisoes.html">Revisões</a></li>
                 </ul>
+                <!-- Botão de alternar tema (ligado por js/tema.js) -->
                 <button type="button" id="btn-tema" class="btn btn-outline-secondary btn-sm ms-lg-3 mt-2 mt-lg-0 align-self-start" aria-label="Alternar tema"><i class="bi bi-sun"></i> <span class="d-lg-none">Alternar tema</span></button>
             </div>
         </div>
     </nav>
 
+    <!-- CONTEÚDO PRINCIPAL -->
+    <!-- ------------------------------------------------------------ -->
     <main class="container py-4">
+
+        <!-- Título da página e botão de ação -->
         <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
             <h1 class="h2 mb-0">Veículos</h1>
             <button type="button" class="btn btn-primary" id="btn-novo-veiculo" data-bs-toggle="modal" data-bs-target="#modalVeiculo"><i class="bi bi-plus-lg"></i> Novo veículo</button>
         </div>
 
+        <!-- Aviso de cadastro prévio (aparece só quando falta algo) -->
         <div class="alert alert-warning d-none" id="aviso-sem-clientes" role="alert">
             Para cadastrar um veículo, primeiro cadastre o dono dele em <a href="clientes.html" class="alert-link">Clientes</a>.
         </div>
@@ -54,31 +65,51 @@
             </div>
         </form>
 
+        <!-- Contador de resultados -->
         <p class="small text-body-secondary mb-2" id="contador-veiculos"></p>
 
+        <!-- As linhas/cartões são criados pelo JavaScript -->
         <section class="row g-3" id="lista-veiculos"></section>
     </main>
 
-    <!-- Formulário de cadastro -->
+    <!-- FORMULÁRIO DE CADASTRO E EDIÇÃO (modal) -->
+    <!-- ------------------------------------------------------------ -->
     <div class="modal fade" id="modalVeiculo" tabindex="-1" aria-labelledby="tituloModalVeiculo">
         <div class="modal-dialog">
             <div class="modal-content">
+                <!-- Título e botão de fechar -->
                 <div class="modal-header">
                     <h2 class="modal-title fs-5" id="tituloModalVeiculo">Novo veículo</h2>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
                 </div>
+                <!-- Conteúdo -->
                 <div class="modal-body">
+                    <!-- Caixa de erros (aparece quando a validação falha) -->
                     <div class="alert alert-danger d-none" id="erros-veiculo" role="alert"></div>
                     <form class="row g-3" id="form-veiculo" novalidate>
+                        <!-- Campo: Dono -->
                         <div class="col-12"><label class="form-label" for="dono">Dono</label><select class="form-select" id="dono" name="clienteId" required><option value="">Selecione o cliente</option></select><div class="invalid-feedback">Escolha o dono do veículo.</div></div>
+
+                        <!-- Campo: Placa -->
                         <div class="col-sm-5"><label class="form-label" for="placa">Placa</label><input class="form-control text-uppercase" id="placa" name="placa" placeholder="ABC1D23" minlength="7" maxlength="7" required><div class="invalid-feedback">A placa tem 7 caracteres.</div></div>
+
+                        <!-- Campo: Marca -->
                         <div class="col-sm-7"><label class="form-label" for="marca">Marca</label><select class="form-select" id="marca" name="marca" required><option value="">Selecione</option></select><div class="invalid-feedback">Escolha a marca.</div></div>
+
+                        <!-- Campo: Modelo -->
                         <div class="col-12"><label class="form-label" for="modelo">Modelo</label><input class="form-control" id="modelo" name="modelo" placeholder="Ex.: Onix LT 1.0" minlength="2" required><div class="invalid-feedback">Informe o modelo.</div></div>
+
+                        <!-- Campo: Ano -->
                         <div class="col-4"><label class="form-label" for="ano">Ano</label><input type="number" class="form-control" id="ano" name="ano" min="1960" max="2027" step="1" required><div class="invalid-feedback">Ano entre 1960 e 2027.</div></div>
+
+                        <!-- Campo: Cor -->
                         <div class="col-4"><label class="form-label" for="cor">Cor</label><input class="form-control" id="cor" name="cor"></div>
+
+                        <!-- Campo: Km atual -->
                         <div class="col-4"><label class="form-label" for="km">Km atual</label><input type="number" class="form-control" id="km" name="km" min="0" step="1" required><div class="invalid-feedback">Informe o km.</div></div>
                     </form>
                 </div>
+                <!-- Botões -->
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
                     <button type="submit" form="form-veiculo" class="btn btn-primary">Salvar</button>
@@ -87,17 +118,21 @@
         </div>
     </div>
 
-    <!-- Confirmação de exclusão -->
+    <!-- CONFIRMAÇÃO DE EXCLUSÃO (modal) -->
+    <!-- ------------------------------------------------------------ -->
     <div class="modal fade" id="modalExcluir" tabindex="-1" aria-labelledby="tituloModalExcluir">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
+                <!-- Título e botão de fechar -->
                 <div class="modal-header">
                     <h2 class="modal-title fs-5" id="tituloModalExcluir">Excluir veículo?</h2>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
                 </div>
+                <!-- Conteúdo -->
                 <div class="modal-body">
                     <p class="mb-0"><strong id="nome-excluir"></strong> será removido do sistema. Essa ação não pode ser desfeita.</p>
                 </div>
+                <!-- Botões -->
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
                     <button type="button" class="btn btn-danger" id="btn-confirmar-exclusao">Excluir</button>
@@ -106,10 +141,14 @@
         </div>
     </div>
 
+    <!-- RODAPÉ -->
+    <!-- ------------------------------------------------------------ -->
     <footer class="border-top py-3 mt-5">
         <div class="container text-body-secondary small">UnC Reparos Automotivos · Desenvolvimento Web I</div>
     </footer>
 
+    <!-- SCRIPTS (Bootstrap e código da página) -->
+    <!-- ------------------------------------------------------------ -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="js/script.js"></script>
     <script src="js/storage.js"></script>

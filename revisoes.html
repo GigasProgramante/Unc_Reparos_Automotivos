@@ -1,5 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR" data-bs-theme="dark" data-theme="escuro">
+<!-- CABEÇALHO DA PÁGINA (título, estilos e tema) -->
+<!-- ------------------------------------------------------------ -->
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,6 +12,9 @@
     <script src="js/tema.js"></script>
 </head>
 <body>
+
+    <!-- MENU DE NAVEGAÇÃO -->
+    <!-- ------------------------------------------------------------ -->
     <nav class="navbar navbar-expand-lg app-navbar">
         <div class="container">
             <a class="navbar-brand" href="index.html"><i class="bi bi-wrench-adjustable"></i> UnC Reparos Automotivos</a>
@@ -25,12 +30,17 @@
                     <li class="nav-item"><a class="nav-link" href="catalogo.html">Catálogo</a></li>
                     <li class="nav-item"><a class="nav-link active" aria-current="page" href="revisoes.html">Revisões</a></li>
                 </ul>
+                <!-- Botão de alternar tema (ligado por js/tema.js) -->
                 <button type="button" id="btn-tema" class="btn btn-outline-secondary btn-sm ms-lg-3 mt-2 mt-lg-0 align-self-start" aria-label="Alternar tema"><i class="bi bi-sun"></i> <span class="d-lg-none">Alternar tema</span></button>
             </div>
         </div>
     </nav>
 
+    <!-- CONTEÚDO PRINCIPAL -->
+    <!-- ------------------------------------------------------------ -->
     <main class="container py-4">
+
+        <!-- Título da página e botão de ação -->
         <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
             <div>
                 <h1 class="h2 mb-1">Revisões preventivas</h1>
@@ -42,10 +52,12 @@
             <button type="button" class="btn btn-primary" id="btn-nova-revisao" data-bs-toggle="modal" data-bs-target="#modalRevisao"><i class="bi bi-plus-lg"></i> Nova revisão</button>
         </div>
 
+        <!-- Aviso de cadastro prévio (aparece só quando falta algo) -->
         <div class="alert alert-warning d-none" id="aviso-sem-veiculos" role="alert">
             Para agendar uma revisão, primeiro cadastre o veículo em <a href="veiculos.html" class="alert-link">Veículos</a>.
         </div>
 
+        <!-- Contadores de revisões vencidas e próximas -->
         <div class="row g-3 mb-4">
             <div class="col-sm-6">
                 <div class="card h-100">
@@ -65,6 +77,7 @@
             </div>
         </div>
 
+        <!-- Pesquisa, filtros e ordenação -->
         <form class="row g-2 mb-3">
             <div class="col-md-8">
                 <label for="busca" class="form-label visually-hidden">Buscar</label>
@@ -93,6 +106,7 @@
                             <th class="text-end">Ações</th>
                         </tr>
                     </thead>
+                    <!-- As linhas/cartões são criados pelo JavaScript -->
                     <tbody id="lista-revisoes">
                         <tr>
                             <td colspan="5" class="text-center text-body-secondary py-5">
@@ -106,22 +120,32 @@
         </section>
     </main>
 
-    <!-- Formulário de cadastro -->
+    <!-- FORMULÁRIO DE CADASTRO E EDIÇÃO (modal) -->
+    <!-- ------------------------------------------------------------ -->
     <div class="modal fade" id="modalRevisao" tabindex="-1" aria-labelledby="tituloModalRevisao">
         <div class="modal-dialog">
             <div class="modal-content">
+                <!-- Título e botão de fechar -->
                 <div class="modal-header">
                     <h2 class="modal-title fs-5" id="tituloModalRevisao">Nova revisão</h2>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
                 </div>
+                <!-- Conteúdo -->
                 <div class="modal-body">
+                    <!-- Caixa de erros (aparece quando a validação falha) -->
                     <div class="alert alert-danger d-none" id="erros-revisao" role="alert"></div>
                     <form class="row g-3" id="form-revisao" novalidate>
+                        <!-- Campo: Cliente -->
                         <div class="col-12"><label class="form-label" for="cliente">Cliente</label><select class="form-select" id="cliente" name="clienteId" required><option value="">Selecione o cliente</option></select><div class="invalid-feedback">Escolha o cliente.</div></div>
+
+                        <!-- Campo: Veículo -->
                         <div class="col-12"><label class="form-label" for="veiculo">Veículo</label><select class="form-select" id="veiculo" name="veiculoId" required disabled><option value="">Selecione o veículo</option></select><div class="invalid-feedback">Escolha o veículo.</div></div>
+
+                        <!-- Campo: Data prevista -->
                         <div class="col-12"><label class="form-label" for="data-prevista">Data prevista</label><input type="date" class="form-control" id="data-prevista" name="dataPrevista" required><div class="invalid-feedback">Informe a data prevista.</div></div>
                     </form>
                 </div>
+                <!-- Botões -->
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
                     <button type="submit" form="form-revisao" class="btn btn-primary">Salvar</button>
@@ -130,17 +154,21 @@
         </div>
     </div>
 
-    <!-- Confirmação de exclusão -->
+    <!-- CONFIRMAÇÃO DE EXCLUSÃO (modal) -->
+    <!-- ------------------------------------------------------------ -->
     <div class="modal fade" id="modalExcluir" tabindex="-1" aria-labelledby="tituloModalExcluir">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
+                <!-- Título e botão de fechar -->
                 <div class="modal-header">
                     <h2 class="modal-title fs-5" id="tituloModalExcluir">Excluir revisão?</h2>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
                 </div>
+                <!-- Conteúdo -->
                 <div class="modal-body">
                     <p class="mb-0"><strong id="nome-excluir"></strong> será removida do sistema. Essa ação não pode ser desfeita.</p>
                 </div>
+                <!-- Botões -->
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
                     <button type="button" class="btn btn-danger" id="btn-confirmar-exclusao">Excluir</button>
@@ -149,10 +177,14 @@
         </div>
     </div>
 
+    <!-- RODAPÉ -->
+    <!-- ------------------------------------------------------------ -->
     <footer class="border-top py-3 mt-5">
         <div class="container text-body-secondary small">UnC Reparos Automotivos · Desenvolvimento Web I</div>
     </footer>
 
+    <!-- SCRIPTS (Bootstrap e código da página) -->
+    <!-- ------------------------------------------------------------ -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="js/script.js"></script>
     <script src="js/storage.js"></script>
