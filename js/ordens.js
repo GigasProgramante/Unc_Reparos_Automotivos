@@ -16,18 +16,19 @@ function linhaOrdem(ordem) {
 
   return `
     <tr>
-      <td><a class="fw-semibold font-monospace" href="ordem.html?id=${ordem.id}">${numeroOS(ordem.numero)}</a><div class="small text-body-secondary">${data}</div></td>
-      <td>${escaparHtml(cliente ? cliente.nome : "—")}</td>
+      <td><a class="fw-semibold font-monospace" href="ordem.html?id=${ordem.id}">${numeroOS(ordem.numero)}</a><div class="small text-body-secondary d-none d-md-block">${data}</div></td>
+      <td class="d-none d-md-table-cell">${escaparHtml(cliente ? cliente.nome : "—")}</td>
       <td>
         <span class="badge text-bg-light border font-monospace">${escaparHtml(veiculo ? veiculo.placa : "???")}</span>
         <span class="small">${escaparHtml(veiculo ? veiculo.modelo : "Veículo removido")}</span>
+        <div class="small text-body-secondary d-md-none">${escaparHtml(cliente ? cliente.nome : "—")} · ${formatarMoeda(total)}</div>
       </td>
       <td>${etiquetaStatus(ordem.status)}</td>
-      <td>${formatarMoeda(total)}</td>
+      <td class="d-none d-md-table-cell text-nowrap">${formatarMoeda(total)}</td>
       <td class="text-end text-nowrap">
-        <a class="btn btn-sm btn-outline-secondary" href="ordem.html?id=${ordem.id}">Ver</a>
-        <button type="button" class="btn btn-sm btn-outline-primary" data-acao="editar" data-id="${ordem.id}"${ordemEmAndamento(ordem) ? "" : " disabled"}>Editar</button>
-        <button type="button" class="btn btn-sm btn-outline-danger" data-acao="excluir" data-id="${ordem.id}">Excluir</button>
+        <a class="btn btn-sm btn-outline-secondary d-none d-md-inline-block" href="ordem.html?id=${ordem.id}">Ver</a>
+        <button type="button" class="btn btn-sm btn-outline-primary" data-acao="editar" data-id="${ordem.id}" aria-label="Editar"${ordemEmAndamento(ordem) ? "" : " disabled"}><i class="bi bi-pencil"></i><span class="d-none d-md-inline"> Editar</span></button>
+        <button type="button" class="btn btn-sm btn-outline-danger" data-acao="excluir" data-id="${ordem.id}" aria-label="Excluir"><i class="bi bi-trash"></i><span class="d-none d-md-inline"> Excluir</span></button>
       </td>
     </tr>`;
 }
