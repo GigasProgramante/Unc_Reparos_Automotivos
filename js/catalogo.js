@@ -1,9 +1,18 @@
+// Tela do CATÁLOGO: serviços e peças em duas abas, formulário de cadastro/edição e exclusão.
+
+// ELEMENTOS DA PÁGINA
+// ------------------------------------------------------------
+
 const listaServicos = document.getElementById("lista-servicos");
 const listaPecas = document.getElementById("lista-pecas");
 const buscaItem = document.getElementById("busca-item");
 const filtroPreco = document.getElementById("filtro-preco");
 const filtroSituacao = document.getElementById("filtro-situacao");
 const ordemItens = document.getElementById("ordem-itens");
+
+
+// LISTAGEM (abas de serviços e peças)
+// ------------------------------------------------------------
 
 // Texto do intervalo de revisão: "10.000 km ou 6 meses"
 function textoRevisao(servico) {
@@ -20,6 +29,7 @@ function etiquetaEstoque(peca) {
   return "";
 }
 
+// Célula da tabela com os botões Editar e Excluir de um item
 function botoesAcao(item) {
   return `
       <td class="text-end text-nowrap">
@@ -28,6 +38,7 @@ function botoesAcao(item) {
       </td>`;
 }
 
+// Linha da tabela de serviços (nome, preço, horas e revisão)
 function linhaServico(servico) {
   return `
     <tr>
@@ -42,6 +53,7 @@ function linhaServico(servico) {
     </tr>`;
 }
 
+// Linha da tabela de peças (nome, preço, unidade e estoque)
 function linhaPeca(peca) {
   return `
     <tr>
@@ -70,6 +82,7 @@ function linhaVazia(colunas, icone, texto) {
 
 // Aplica a pesquisa e os filtros (valem para as duas abas)
 function filtrarItens(itens) {
+  // Lê o que o usuário digitou e escolheu nos filtros
   const busca = buscaItem.value.trim().toLowerCase();
   const faixa = filtroPreco.value;
   const situacao = filtroSituacao.value;
@@ -77,6 +90,7 @@ function filtrarItens(itens) {
   return itens.filter((item) => {
     if (busca !== "" && !item.nome.toLowerCase().includes(busca)) return false;
 
+    // Filtro de faixa de preço
     const preco = Number(item.preco);
     if (faixa === "ate100" && preco > 100) return false;
     if (faixa === "100a300" && (preco <= 100 || preco > 300)) return false;
@@ -114,14 +128,18 @@ function renderizarCatalogo() {
   const totalServicos = todos.filter((i) => i.tipo === "servico").length;
   const totalPecas = todos.filter((i) => i.tipo === "peca").length;
 
+  // Quantidade mostrada no título de cada aba (filtrados/total)
   document.getElementById("qtd-servicos").textContent = `${servicos.length}/${totalServicos}`;
   document.getElementById("qtd-pecas").textContent = `${pecas.length}/${totalPecas}`;
 
+  // Aba de serviços
   let html = "";
   for (const servico of servicos) html += linhaServico(servico);
   const vazioServicos = totalServicos === 0 ? "Nenhum serviço cadastrado" : "Nenhum serviço encontrado com esses filtros";
   listaServicos.innerHTML = html || linhaVazia(5, "bi-tools", vazioServicos);
 
+
+  // Aba de peças
   html = "";
   for (const peca of pecas) html += linhaPeca(peca);
   const vazioPecas = totalPecas === 0 ? "Nenhuma peça cadastrada" : "Nenhuma peça encontrada com esses filtros";
@@ -133,7 +151,11 @@ for (const campo of [buscaItem, filtroPreco, filtroSituacao, ordemItens]) {
   campo.addEventListener("input", renderizarCatalogo);
 }
 
-// Formulário: mostra só os campos do tipo escolhido
+
+// FORMULÁRIO (cadastro e edição)
+// ------------------------------------------------------------
+
+// Mostra só os campos do tipo escolhido (serviço ou peça)
 const formItem = document.getElementById("form-item");
 const modalItem = new bootstrap.Modal("#modalItem");
 
@@ -162,10 +184,12 @@ function lerFormulario() {
   };
 
   if (dados.tipo === "servico") {
+    // Campos só do serviço
     dados.horas = numeroOuNulo(formItem.horas.value);
     dados.intervaloKm = numeroOuNulo(formItem.intervaloKm.value);
     dados.intervaloMeses = numeroOuNulo(formItem.intervaloMeses.value);
   } else {
+    // Campos só da peça
     dados.unidade = formItem.unidade.value;
     dados.estoque = numeroOuNulo(formItem.estoque.value);
     dados.estoqueMinimo = numeroOuNulo(formItem.estoqueMinimo.value);
@@ -173,6 +197,7 @@ function lerFormulario() {
   return dados;
 }
 
+// Mostra as mensagens de erro na caixa vermelha do formulário
 function mostrarErros(erros) {
   errosItem.innerHTML = erros.join("<br>");
   errosItem.classList.remove("d-none");
@@ -189,8 +214,10 @@ function limparFormulario() {
   mostrarCamposDoTipo();
 }
 
+// Ao fechar o modal, o formulário volta ao estado inicial
 document.getElementById("modalItem").addEventListener("hidden.bs.modal", limparFormulario);
 
+// Botão Salvar: valida os dados e cria ou atualiza o item
 formItem.addEventListener("submit", (evento) => {
   evento.preventDefault();
 
@@ -208,6 +235,7 @@ formItem.addEventListener("submit", (evento) => {
     return;
   }
 
+  // 3º: salva (cria um novo ou atualiza o que está em edição)
   if (idEmEdicao === null) {
     criar(CHAVES.catalogo, { ...dados, criadoEm: new Date().toISOString() });
     mostrarMensagem(`"${dados.nome}" adicionado ao catálogo.`);
@@ -216,6 +244,7 @@ formItem.addEventListener("submit", (evento) => {
     mostrarMensagem(`"${dados.nome}" atualizado.`);
   }
 
+  // Fecha o formulário e atualiza as tabelas
   modalItem.hide();
   renderizarCatalogo();
 });
@@ -233,10 +262,12 @@ function abrirEdicao(id) {
   formItem.preco.value = item.preco;
 
   if (item.tipo === "servico") {
+    // Campos só do serviço
     formItem.horas.value = item.horas ?? "";
     formItem.intervaloKm.value = item.intervaloKm ?? "";
     formItem.intervaloMeses.value = item.intervaloMeses ?? "";
   } else {
+    // Campos só da peça
     formItem.unidade.value = item.unidade;
     formItem.estoque.value = item.estoque;
     formItem.estoqueMinimo.value = item.estoqueMinimo;
@@ -247,7 +278,10 @@ function abrirEdicao(id) {
   modalItem.show();
 }
 
-// Exclusão
+
+// EXCLUSÃO
+// ------------------------------------------------------------
+
 const modalExcluir = new bootstrap.Modal("#modalExcluir");
 let idParaExcluir = null;
 
@@ -267,6 +301,7 @@ function pedirExclusao(id) {
   modalExcluir.show();
 }
 
+// Confirmou no modal: exclui, avisa e atualiza as tabelas
 document.getElementById("btn-confirmar-exclusao").addEventListener("click", () => {
   excluir(CHAVES.catalogo, idParaExcluir);
   modalExcluir.hide();
@@ -284,6 +319,10 @@ for (const tabela of [listaServicos, listaPecas]) {
     if (botao.dataset.acao === "excluir") pedirExclusao(botao.dataset.id);
   });
 }
+
+
+// INÍCIO
+// ------------------------------------------------------------
 
 // Ao abrir a página, mostra o catálogo salvo
 renderizarCatalogo();

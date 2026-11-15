@@ -1,16 +1,26 @@
 // Página de detalhes da OS (ordem.html?id=...): só preenche os dados na tela.
 // Usa storage.js (dados) e script.js (formatação e helpers de OS).
 
+// DADOS DA OS
+// ------------------------------------------------------------
+
+// Id da OS vem da URL (ordem.html?id=...) e a OS é buscada no storage
 const idOrdem = new URLSearchParams(location.search).get("id");
 let ordem = buscar(CHAVES.ordens, idOrdem);
 
 // Etapas do fluxo principal, na ordem em que aparecem
 const ETAPAS = ["aberta", "diagnostico", "execucao", "pronta", "entregue"];
 
+// Escreve um texto no elemento com esse id
 function texto(id, valor) {
   document.getElementById(id).textContent = valor;
 }
 
+
+// EXIBIÇÃO
+// ------------------------------------------------------------
+
+// Número, data de abertura e etiqueta de status no topo da página
 function preencherCabecalho() {
   const numero = numeroOS(ordem.numero);
   document.title = `OS ${numero} - UnC Reparos Automotivos`;
@@ -24,6 +34,7 @@ function preencherCabecalho() {
   status.textContent = info.nome;
 }
 
+// Linha do tempo das etapas: concluídas (verde), atual (azul) e futuras (cinza)
 function preencherEtapas() {
   let atual = ETAPAS.indexOf(ordem.status);
   if (ordem.status === "aguardando_peca") atual = ETAPAS.indexOf("diagnostico");
@@ -41,6 +52,7 @@ function preencherEtapas() {
   }).join("");
 }
 
+// Dados do cliente, do veículo, km de entrada e problema relatado
 function preencherDados() {
   const veiculo = buscar(CHAVES.veiculos, ordem.veiculoId);
   const cliente = veiculo ? buscar(CHAVES.clientes, veiculo.clienteId) : null;
@@ -54,6 +66,7 @@ function preencherDados() {
   texto("os-problema", ordem.problema);
 }
 
+// Tabela de itens e totais do orçamento (serviços, peças, desconto, total e horas)
 function preencherItens(totais) {
   const itens = ordem.itens || [];
   if (itens.length > 0) {
@@ -79,6 +92,7 @@ function preencherItens(totais) {
   texto("os-horas", `${totais.horas.toLocaleString("pt-BR")} h`);
 }
 
+// Histórico de mudanças de status, do mais recente para o mais antigo
 function preencherHistorico() {
   const historico = ordem.historico && ordem.historico.length
     ? ordem.historico
@@ -100,7 +114,10 @@ function preencherHistorico() {
   }).join("");
 }
 
-// ---- Atualizar status ----
+
+// ATUALIZAR STATUS
+// ------------------------------------------------------------
+
 const formStatus = document.getElementById("form-status");
 const errosStatus = document.getElementById("erros-status");
 const grupoPagamento = document.getElementById("grupo-pagamento");
@@ -124,6 +141,7 @@ function prepararFormStatus() {
   }
 }
 
+// Mostra os erros da mudança de status na caixa vermelha
 function mostrarErrosStatus(erros) {
   errosStatus.className = "alert alert-danger";
   errosStatus.innerHTML = erros.map(escaparHtml).join("<br>");
@@ -134,6 +152,7 @@ selectNovoStatus.addEventListener("change", () => {
   grupoPagamento.classList.toggle("d-none", selectNovoStatus.value !== "entregue");
 });
 
+// Botão Salvar: valida a mudança, aplica as regras da etapa e registra no histórico
 formStatus.addEventListener("submit", (evento) => {
   evento.preventDefault();
   const novoStatus = selectNovoStatus.value;
@@ -142,6 +161,7 @@ formStatus.addEventListener("submit", (evento) => {
     return;
   }
 
+  // Valida a transição de status e os dados exigidos pela etapa
   const formaPagamento = document.getElementById("forma-pagamento").value;
   const erros = validarMudancaStatus(idOrdem, novoStatus, { formaPagamento });
   if (erros.length > 0) {
@@ -159,6 +179,7 @@ formStatus.addEventListener("submit", (evento) => {
     }
   }
 
+  // Registra a mudança no histórico (com observação, se houver)
   const observacao = document.getElementById("observacao").value.trim();
   const registro = { status: novoStatus, data: new Date().toISOString() };
   if (observacao) registro.observacao = observacao;
@@ -171,6 +192,11 @@ formStatus.addEventListener("submit", (evento) => {
   renderizar();
 });
 
+
+// INÍCIO
+// ------------------------------------------------------------
+
+// Recarrega a OS do storage e redesenha a página inteira
 function renderizar() {
   ordem = buscar(CHAVES.ordens, idOrdem);
   const totais = calcularTotais(ordem.itens || [], ordem.desconto);
@@ -182,6 +208,7 @@ function renderizar() {
   prepararFormStatus();
 }
 
+// Sem OS válida volta para a lista; com OS mostra os dados
 if (!ordem) {
   location.replace("ordens.html"); // id ausente ou inexistente
 } else {

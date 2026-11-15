@@ -1,9 +1,18 @@
+// Tela de CLIENTES: listagem com filtros, formulário de cadastro/edição e exclusão.
+
+// ELEMENTOS DA PÁGINA
+// ------------------------------------------------------------
+
 const tabelaClientes = document.getElementById("tabela-clientes");
 const buscaCliente = document.getElementById("busca-cliente");
 const filtroCidade = document.getElementById("filtro-cidade");
 const filtroSituacao = document.getElementById("filtro-situacao");
 const ordemClientes = document.getElementById("ordem-clientes");
 const contadorClientes = document.getElementById("contador-clientes");
+
+
+// LISTAGEM
+// ------------------------------------------------------------
 
 // Deixa o CPF no formato 000.000.000-00 para mostrar na tela
 function formatarCpf(cpf) {
@@ -39,6 +48,7 @@ function linhaCliente(cliente) {
 
 // Aplica a pesquisa e os filtros na lista de clientes
 function filtrarClientes(clientes) {
+  // Lê o que o usuário digitou e escolheu nos filtros
   const busca = buscaCliente.value.trim().toLowerCase();
   const buscaDigitos = somenteDigitos(busca);
   const cidade = filtroCidade.value;
@@ -53,8 +63,10 @@ function filtrarClientes(clientes) {
       if (!achouNome && !achouNumero) return false;
     }
 
+    // Filtro de cidade
     if (cidade !== "" && cliente.cidade !== cidade) return false;
 
+    // Filtro de situação (com ou sem veículos)
     const veiculos = contarVeiculos(cliente.id);
     if (situacao === "com-veiculos" && veiculos === 0) return false;
     if (situacao === "sem-veiculos" && veiculos > 0) return false;
@@ -105,7 +117,10 @@ for (const campo of [buscaCliente, filtroCidade, filtroSituacao, ordemClientes])
   campo.addEventListener("input", renderizarClientes);
 }
 
-// ---------- Formulário (cadastro e edição) ----------
+
+// FORMULÁRIO (cadastro e edição)
+// ------------------------------------------------------------
+
 const formCliente = document.getElementById("form-cliente");
 const modalCliente = new bootstrap.Modal("#modalCliente");
 const errosCliente = document.getElementById("erros-cliente");
@@ -122,6 +137,7 @@ function lerFormulario() {
   };
 }
 
+// Mostra as mensagens de erro na caixa vermelha do formulário
 function mostrarErros(erros) {
   errosCliente.innerHTML = erros.join("<br>");
   errosCliente.classList.remove("d-none");
@@ -136,8 +152,10 @@ function limparFormulario() {
   idEmEdicao = null;
 }
 
+// Ao fechar o modal, o formulário volta ao estado inicial
 document.getElementById("modalCliente").addEventListener("hidden.bs.modal", limparFormulario);
 
+// Botão Salvar: valida os dados e cria ou atualiza o cliente
 formCliente.addEventListener("submit", (evento) => {
   evento.preventDefault();
 
@@ -155,6 +173,7 @@ formCliente.addEventListener("submit", (evento) => {
     return;
   }
 
+  // 3º: salva (cria um novo ou atualiza o que está em edição)
   if (idEmEdicao === null) {
     criar(CHAVES.clientes, { ...dados, criadoEm: new Date().toISOString() });
     mostrarMensagem("Cliente cadastrado.");
@@ -163,11 +182,14 @@ formCliente.addEventListener("submit", (evento) => {
     mostrarMensagem("Cliente atualizado.");
   }
 
+  // Fecha o formulário e atualiza a tabela
   modalCliente.hide();
   renderizarClientes();
 });
 
+
 // ---------- Máscaras: formatam o campo enquanto o usuário digita ----------
+// CPF: coloca pontos e traço enquanto digita (000.000.000-00)
 formCliente.cpf.addEventListener("input", () => {
   const d = somenteDigitos(formCliente.cpf.value).slice(0, 11);
   let texto = d;
@@ -177,6 +199,7 @@ formCliente.cpf.addEventListener("input", () => {
   formCliente.cpf.value = texto;
 });
 
+// Telefone: coloca parênteses e traço enquanto digita ((00) 00000-0000)
 formCliente.telefone.addEventListener("input", () => {
   const d = somenteDigitos(formCliente.telefone.value).slice(0, 11);
   let texto = d;
@@ -185,6 +208,7 @@ formCliente.telefone.addEventListener("input", () => {
   else if (d.length > 2) texto = "(" + d.slice(0, 2) + ") " + d.slice(2);
   formCliente.telefone.value = texto;
 });
+
 
 // ---------- Edição ----------
 // Abre o modal com os dados do cliente já preenchidos
@@ -201,6 +225,7 @@ function abrirEdicao(id) {
   document.getElementById("tituloModalCliente").textContent = "Editar cliente";
   modalCliente.show();
 }
+
 
 // ---------- Exclusão ----------
 const modalExcluir = new bootstrap.Modal("#modalExcluir");
@@ -222,6 +247,7 @@ function pedirExclusao(id) {
   modalExcluir.show();
 }
 
+// Confirmou no modal: exclui, avisa e atualiza a tabela
 document.getElementById("btn-confirmar-exclusao").addEventListener("click", () => {
   excluir(CHAVES.clientes, idParaExcluir);
   modalExcluir.hide();
@@ -238,5 +264,7 @@ tabelaClientes.addEventListener("click", (evento) => {
   if (botao.dataset.acao === "excluir") pedirExclusao(botao.dataset.id);
 });
 
+
+// ---------- Início ----------
 // Ao abrir a página, mostra os clientes salvos
 renderizarClientes();

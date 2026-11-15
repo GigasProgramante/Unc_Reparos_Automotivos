@@ -1,17 +1,26 @@
+// PAINEL: indicadores, fila da oficina, OS por etapa, faturamento dos últimos 6 meses e serviços mais feitos.
+// Todos os números são calculados na hora a partir dos dados salvos.
+
+// INDICADORES
+// ------------------------------------------------------------
+
 // Data em que a OS foi entregue (fica registrada no histórico de status)
 function dataEntrega(ordem) {
   const registro = (ordem.historico || []).find((h) => h.status === "entregue");
   return registro ? new Date(registro.data) : null;
 }
 
+// Valor total de uma OS (serviços + peças − desconto)
 function totalDaOrdem(ordem) {
   return calcularTotais(ordem.itens || [], ordem.desconto).total;
 }
 
+// As duas datas caem no mesmo mês e ano?
 function mesmoMes(data, referencia) {
   return data.getMonth() === referencia.getMonth() && data.getFullYear() === referencia.getFullYear();
 }
 
+// Soma uma lista de números
 function somar(numeros) {
   return numeros.reduce((total, n) => total + n, 0);
 }
@@ -21,6 +30,7 @@ function calcularIndicadores() {
   const ordens = listar(CHAVES.ordens);
   const hoje = new Date();
 
+  // Separa as OS por situação
   const emAndamento = ordens.filter(ordemEmAndamento);
   const entregues = ordens.filter((o) => o.status === "entregue");
   const entreguesNoMes = entregues.filter((o) => dataEntrega(o) && mesmoMes(dataEntrega(o), hoje));
@@ -30,9 +40,11 @@ function calcularIndicadores() {
     .filter((o) => dataEntrega(o))
     .map((o) => (dataEntrega(o) - new Date(o.dataAbertura)) / 86400000);
 
+  // Peças com estoque igual ou abaixo do mínimo
   const pecasNoMinimo = listar(CHAVES.catalogo)
     .filter((i) => i.tipo === "peca" && Number(i.estoque) <= Number(i.estoqueMinimo));
 
+  // Valores que os cartões mostram
   return {
     naOficina: emAndamento.length,
     prontas: emAndamento.filter((o) => o.status === "pronta").length,
@@ -61,6 +73,7 @@ function cartao(icone, rotulo, valor, detalhe, alerta = false) {
     </div>`;
 }
 
+// Desenha os cartões de indicadores (um cartão por linha de "cartao(...)")
 function renderizarIndicadores() {
   const i = calcularIndicadores();
   const tempo = i.tempoMedio === null
@@ -79,7 +92,11 @@ function renderizarIndicadores() {
     cartao("bi-people", "Clientes", i.clientes, `${i.veiculos} veículo(s) cadastrado(s)`);
 }
 
-// Fila da oficina: OS em andamento, da mais antiga para a mais nova
+
+// FILA DA OFICINA E OS POR ETAPA
+// ------------------------------------------------------------
+
+// Etapas em andamento, na ordem do fluxo
 const ETAPAS_ANDAMENTO = ["aberta", "diagnostico", "aguardando_peca", "execucao", "pronta"];
 
 // Quantos dias a OS está na etapa atual (desde a última mudança de status)
@@ -89,6 +106,7 @@ function diasNaEtapa(ordem) {
   return Math.floor((new Date() - new Date(ultima)) / 86400000);
 }
 
+// Fila da oficina: OS em andamento, da mais antiga para a mais nova
 function renderizarFila() {
   const ordens = listar(CHAVES.ordens)
     .filter(ordemEmAndamento)
@@ -148,6 +166,10 @@ function renderizarEtapas() {
   }
   document.getElementById("os-por-etapa").innerHTML = html;
 }
+
+
+// GRÁFICOS
+// ------------------------------------------------------------
 
 // Gráfico de colunas: faturamento (OS entregues) de cada um dos últimos 6 meses
 function renderizarFaturamento() {
@@ -213,6 +235,10 @@ function renderizarServicos() {
   }
   area.innerHTML = html;
 }
+
+
+// INÍCIO
+// ------------------------------------------------------------
 
 // Data de hoje no cabeçalho: "Sábado, 14 de novembro"
 const hoje = new Date().toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long" });

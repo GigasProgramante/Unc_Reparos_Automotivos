@@ -1,3 +1,8 @@
+// Tela de VEÍCULOS: listagem em cartões com filtros, formulário de cadastro/edição e exclusão.
+
+// ELEMENTOS DA PÁGINA
+// ------------------------------------------------------------
+
 const listaVeiculos = document.getElementById("lista-veiculos");
 const buscaVeiculo = document.getElementById("busca-veiculo");
 const filtroMarca = document.getElementById("filtro-marca");
@@ -5,8 +10,12 @@ const filtroSituacao = document.getElementById("filtro-situacao");
 const ordemVeiculos = document.getElementById("ordem-veiculos");
 const contadorVeiculos = document.getElementById("contador-veiculos");
 
-// Marcas aceitas no cadastro e no filtro
+// Marcas aceitas no cadastro e no filtro (para incluir uma marca, adicione na lista)
 const MARCAS = ["Chevrolet", "Fiat", "Ford", "Honda", "Hyundai", "Jeep", "Nissan", "Renault", "Toyota", "Volkswagen", "Outra"];
+
+
+// LISTAGEM (cartões)
+// ------------------------------------------------------------
 
 // Nome do dono do veículo (o veículo guarda só o id do cliente)
 function nomeDoDono(clienteId) {
@@ -58,6 +67,7 @@ function mensagemVazia(texto) {
 
 // Aplica a pesquisa e os filtros na lista de veículos
 function filtrarVeiculos(veiculos) {
+  // Lê o que o usuário digitou e escolheu nos filtros
   const busca = buscaVeiculo.value.trim().toLowerCase();
   const marca = filtroMarca.value;
   const situacao = filtroSituacao.value;
@@ -71,8 +81,10 @@ function filtrarVeiculos(veiculos) {
       if (!achou) return false;
     }
 
+    // Filtro de marca
     if (marca !== "" && veiculo.marca !== marca) return false;
 
+    // Filtro de situação (na oficina ou liberado)
     const naOficina = estaNaOficina(veiculo.id);
     if (situacao === "na-oficina" && !naOficina) return false;
     if (situacao === "liberados" && naOficina) return false;
@@ -127,7 +139,10 @@ for (const campo of [buscaVeiculo, filtroMarca, filtroSituacao, ordemVeiculos]) 
   campo.addEventListener("input", renderizarVeiculos);
 }
 
-// Formulário (cadastro e edição)
+
+// FORMULÁRIO (cadastro e edição)
+// ------------------------------------------------------------
+
 const formVeiculo = document.getElementById("form-veiculo");
 const modalVeiculo = new bootstrap.Modal("#modalVeiculo");
 const errosVeiculo = document.getElementById("erros-veiculo");
@@ -168,6 +183,7 @@ function lerFormulario() {
   };
 }
 
+// Mostra as mensagens de erro na caixa vermelha do formulário
 function mostrarErros(erros) {
   errosVeiculo.innerHTML = erros.join("<br>");
   errosVeiculo.classList.remove("d-none");
@@ -182,8 +198,10 @@ function limparFormulario() {
   idEmEdicao = null;
 }
 
+// Ao fechar o modal, o formulário volta ao estado inicial
 document.getElementById("modalVeiculo").addEventListener("hidden.bs.modal", limparFormulario);
 
+// Botão Salvar: valida os dados e cria ou atualiza o veículo
 formVeiculo.addEventListener("submit", (evento) => {
   evento.preventDefault();
 
@@ -201,6 +219,7 @@ formVeiculo.addEventListener("submit", (evento) => {
     return;
   }
 
+  // 3º: salva (cria um novo ou atualiza o que está em edição)
   if (idEmEdicao === null) {
     criar(CHAVES.veiculos, { ...dados, criadoEm: new Date().toISOString() });
     mostrarMensagem(`Veículo ${dados.placa} cadastrado.`);
@@ -209,6 +228,7 @@ formVeiculo.addEventListener("submit", (evento) => {
     mostrarMensagem(`Veículo ${dados.placa} atualizado.`);
   }
 
+  // Fecha o formulário e atualiza os cartões
   modalVeiculo.hide();
   renderizarVeiculos();
 });
@@ -241,7 +261,10 @@ function abrirEdicao(id) {
   modalVeiculo.show();
 }
 
-// Exclusão
+
+// EXCLUSÃO
+// ------------------------------------------------------------
+
 const modalExcluir = new bootstrap.Modal("#modalExcluir");
 let idParaExcluir = null;
 
@@ -267,6 +290,7 @@ function pedirExclusao(id) {
   modalExcluir.show();
 }
 
+// Confirmou no modal: exclui, avisa e atualiza os cartões
 document.getElementById("btn-confirmar-exclusao").addEventListener("click", () => {
   excluir(CHAVES.veiculos, idParaExcluir);
   modalExcluir.hide();
@@ -282,6 +306,10 @@ listaVeiculos.addEventListener("click", (evento) => {
   if (botao.dataset.acao === "editar") abrirEdicao(botao.dataset.id);
   if (botao.dataset.acao === "excluir") pedirExclusao(botao.dataset.id);
 });
+
+
+// INÍCIO
+// ------------------------------------------------------------
 
 // Ao abrir a página, carrega os donos e mostra os veículos salvos
 carregarDonos();

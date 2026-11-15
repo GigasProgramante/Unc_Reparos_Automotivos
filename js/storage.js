@@ -1,3 +1,9 @@
+// Acesso aos dados salvos no navegador (localStorage).
+// Cada coleção (clientes, veículos...) é uma lista de objetos guardada como texto JSON.
+
+// COLEÇÕES
+// ------------------------------------------------------------
+
 // Chaves guardadas na lista pra facilitar na hora da gente fazer o CRUD, 
 // sugestão inline puxa mais fácil
 const CHAVES = {
@@ -7,6 +13,9 @@ const CHAVES = {
   ordens: "ordens",
   revisoes: "revisoes",
 };
+
+// NÚMERO SEQUENCIAL DA OS
+// ------------------------------------------------------------
 
 // Crie o Sequencial caso ele não exista no localStorage
 if (localStorage.getItem("sequencial") === null){
@@ -22,12 +31,18 @@ function gerarSequencial() {
     return sequencial;
 }
 
+// IDENTIFICADORES
+// ------------------------------------------------------------
+
 // Gera um id hexadecimal único baseado no milisegundo atual, não garante
 // unicidade absoluta, mas é mais que o suficiente para o nosso projeto,
 // visto que é executado localmente
 function gerarId() {
   return Date.now().toString(16);
 }
+
+// CRUD GENÉRICO (listar, salvar, buscar, criar, atualizar, excluir)
+// ------------------------------------------------------------
 
 // Lê a lista completa de uma coleção (array vazio se não existir nada salvo)
 function listar(chave) {
@@ -54,6 +69,9 @@ function criar(chave, dados) {
   return item;
 }
 
+// ORDEM DE SERVIÇO (criação com número sequencial)
+// ------------------------------------------------------------
+
 // Cria uma ordem de serviço, gerando o id e o número sequencial
 // (a criação genérica, criar(), não deve ser usada para ordens)
 function criarOrdem(dados) {
@@ -64,11 +82,16 @@ function criarOrdem(dados) {
   return ordem;
 }
 
+// ATUALIZAR E EXCLUIR
+// ------------------------------------------------------------
+
 // Atualiza os campos de um registro existente (retorna o registro ou undefined)
 function atualizar(chave, id, dados) {
   const lista = listar(chave);
+  // Procura a posição do registro; se não existir, não faz nada
   const indice = lista.findIndex((item) => item.id === id);
   if (indice === -1) return undefined;
+  // Mantém os dados antigos, troca só os novos e preserva o id
   lista[indice] = { ...lista[indice], ...dados, id };
   salvar(chave, lista);
   return lista[indice];
@@ -77,6 +100,7 @@ function atualizar(chave, id, dados) {
 // Remove um registro pelo id (retorna true se removeu)
 function excluir(chave, id) {
   const lista = listar(chave);
+  // Guarda todos os registros, menos o que será removido
   const restantes = lista.filter((item) => item.id !== id);
   if (restantes.length === lista.length) return false;
   salvar(chave, restantes);
