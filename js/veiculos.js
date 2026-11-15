@@ -256,6 +256,12 @@ function pedirExclusao(id) {
     return;
   }
 
+  const revisoes = listar(CHAVES.revisoes).filter((r) => r.veiculoId === id).length;
+  if (revisoes > 0) {
+    mostrarMensagem(`O veículo ${veiculo.placa} tem ${revisoes} revisão(ões) cadastrada(s) e não pode ser excluído.`, "erro");
+    return;
+  }
+
   idParaExcluir = id;
   document.getElementById("nome-excluir").textContent = `${veiculo.modelo} (${veiculo.placa})`;
   modalExcluir.show();

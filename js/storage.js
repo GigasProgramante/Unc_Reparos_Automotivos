@@ -5,6 +5,7 @@ const CHAVES = {
   veiculos: "veiculos",
   catalogo: "catalogo",
   ordens: "ordens",
+  revisoes: "revisoes",
 };
 
 // Crie o Sequencial caso ele não exista no localStorage

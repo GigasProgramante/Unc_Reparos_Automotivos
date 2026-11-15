@@ -1,122 +1,17 @@
 // Tela de revisões preventivas (F10).
-// Não é uma coleção salva: tudo é calculado aqui a partir dos dados do storage.js.
+// A revisão é cadastrada manualmente: cliente, veículo e data prevista.
+// A situação (vencida, próxima, em dia) é calculada aqui só para exibir, pela data.
+
+const DIA_MS = 24 * 60 * 60 * 1000;
+const AVISO_DIAS = 30; // "próxima": faltam até 30 dias
 
 const listaRevisoes = document.getElementById("lista-revisoes");
 const buscaRevisao = document.getElementById("busca");
 const filtroSituacao = document.getElementById("filtro-situacao");
 
-// ---- Cálculo (a partir de listar() e buscar() do storage.js; nada é gravado) ----
-
-const DIA_MS = 24 * 60 * 60 * 1000;
-const AVISO_DIAS = 30; // "próxima": faltam até 30 dias...
-const AVISO_KM = 1000; // ...ou até 1.000 km
-
-
-// Data em que a OS foi entregue (cai na abertura se o histórico não tiver a etapa)
-function dataEntrega(ordem) {
-  const registro = (ordem.historico || []).find((r) => r.status === "entregue");
-  return new Date(registro ? registro.data : ordem.dataAbertura);
-}
-
-// Serviço do catálogo que gera revisão: tem intervalo de km e/ou de meses
-function intervaloDoServico(itemId) {
-  const item = buscar(CHAVES.catalogo, itemId);
-  if (!item || item.tipo !== "servico") return null;
-  const km = Number(item.intervaloKm) || 0;
-  const meses = Number(item.intervaloMeses) || 0;
-  if (km === 0 && meses === 0) return null;
-  return { nome: item.nome, km, meses };
-}
-
-// Km de hoje estimado pela média de km por dia entre as leituras de odômetro
-// (km de entrada de cada OS). Com menos de 2 leituras usa o km salvo do veículo.
-function estimarKmHoje(veiculo, ordensDoVeiculo, hoje) {
-  const leituras = ordensDoVeiculo
-    .filter((o) => o.status !== "cancelada")
-    .map((o) => ({ data: new Date(o.dataAbertura), km: Number(o.kmEntrada) }))
-    .sort((a, b) => a.data - b.data);
-
-  const kmSalvo = Number(veiculo.km);
-  if (leituras.length < 2) return kmSalvo;
-
-  const primeira = leituras[0];
-  const ultima = leituras[leituras.length - 1];
-  const dias = (ultima.data - primeira.data) / DIA_MS;
-  if (dias <= 0) return kmSalvo;
-
-  const kmPorDia = Math.max(0, (ultima.km - primeira.km) / dias);
-  const diasDesdeUltima = Math.max(0, (hoje - ultima.data) / DIA_MS);
-  return Math.max(kmSalvo, Math.round(ultima.km + kmPorDia * diasDesdeUltima));
-}
+// ---- Exibição ----
 
 const PESO_SITUACAO = { vencida: 0, proxima: 1, "em-dia": 2 };
-
-// Situação de um serviço periódico. O que vencer primeiro (data ou km) define.
-function avaliarServico(intervalo, ordem, kmHoje, hoje) {
-  const feito = dataEntrega(ordem);
-  let situacao = "em-dia";
-  let dataLimite = null;
-  let kmLimite = null;
-
-  if (intervalo.meses > 0) {
-    dataLimite = new Date(feito);
-    dataLimite.setMonth(dataLimite.getMonth() + intervalo.meses);
-    const diasRestantes = Math.ceil((dataLimite - hoje) / DIA_MS);
-    if (diasRestantes <= 0) situacao = "vencida";
-    else if (diasRestantes <= AVISO_DIAS) situacao = "proxima";
-  }
-
-  if (intervalo.km > 0) {
-    kmLimite = Number(ordem.kmEntrada) + intervalo.km;
-    const kmRestantes = kmLimite - kmHoje;
-    if (kmRestantes <= 0) situacao = "vencida";
-    else if (kmRestantes <= AVISO_KM && situacao === "em-dia") situacao = "proxima";
-  }
-
-  return { servico: intervalo.nome, feitoEm: feito, kmFeito: Number(ordem.kmEntrada), dataLimite, kmLimite, situacao };
-}
-
-// Camada de dados da tela: devolve uma revisão por veículo que tenha OS entregue
-// com serviço periódico. Se a OS tiver vários, vale o mais urgente.
-function calcularRevisoes(hoje = new Date()) {
-  const ordens = listar(CHAVES.ordens);
-  const revisoes = [];
-
-  for (const veiculo of listar(CHAVES.veiculos)) {
-    const ordensDoVeiculo = ordens.filter((o) => o.veiculoId === veiculo.id);
-
-    // Última OS entregue que tenha algum serviço periódico
-    const entregues = ordensDoVeiculo
-      .filter((o) => o.status === "entregue")
-      .sort((a, b) => dataEntrega(b) - dataEntrega(a));
-    const ordem = entregues.find((o) => (o.itens || []).some((l) => intervaloDoServico(l.itemId)));
-    if (!ordem) continue;
-
-    const kmHoje = estimarKmHoje(veiculo, ordensDoVeiculo, hoje);
-    const avaliacoes = (ordem.itens || [])
-      .map((linha) => intervaloDoServico(linha.itemId))
-      .filter(Boolean)
-      .map((intervalo) => avaliarServico(intervalo, ordem, kmHoje, hoje));
-
-    // Mais urgente primeiro: pior situação e, no empate, a data limite mais próxima
-    avaliacoes.sort((a, b) =>
-      PESO_SITUACAO[a.situacao] - PESO_SITUACAO[b.situacao] ||
-      (a.dataLimite ?? Infinity) - (b.dataLimite ?? Infinity));
-
-    const cliente = buscar(CHAVES.clientes, veiculo.clienteId);
-    revisoes.push({
-      veiculo,
-      clienteNome: cliente ? cliente.nome : "Cliente não encontrado",
-      ordemId: ordem.id,
-      kmHoje,
-      ...avaliacoes[0],
-    });
-  }
-
-  return revisoes;
-}
-
-// ---- Tela ----
 
 const ETIQUETAS = {
   vencida: '<span class="badge text-bg-danger">Vencida</span>',
@@ -124,30 +19,59 @@ const ETIQUETAS = {
   "em-dia": '<span class="badge text-bg-success">Em dia</span>',
 };
 
-function textoProximaRevisao(revisao) {
-  const partes = [];
-  if (revisao.dataLimite) partes.push(revisao.dataLimite.toLocaleDateString("pt-BR"));
-  if (revisao.kmLimite !== null) partes.push(revisao.kmLimite.toLocaleString("pt-BR") + " km");
-  return partes.join(" ou ");
+// "2026-11-20" (valor do input date) vira uma data local, sem erro de fuso
+function lerData(texto) {
+  const [ano, mes, dia] = String(texto).split("-").map(Number);
+  return new Date(ano, mes - 1, dia);
 }
 
-function linhaRevisao(revisao) {
-  const v = revisao.veiculo;
+function formatarData(texto) {
+  return lerData(texto).toLocaleDateString("pt-BR");
+}
+
+// Vencida: a data já passou. Próxima: faltam até 30 dias (inclui hoje).
+function situacaoDaRevisao(revisao, hoje = new Date()) {
+  const hoje0 = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate());
+  const dias = Math.round((lerData(revisao.dataPrevista) - hoje0) / DIA_MS);
+  if (dias < 0) return "vencida";
+  if (dias <= AVISO_DIAS) return "proxima";
+  return "em-dia";
+}
+
+// Junta a revisão com os dados do cliente e do veículo (ela guarda só os ids)
+function detalharRevisao(revisao) {
+  const cliente = buscar(CHAVES.clientes, revisao.clienteId);
+  const veiculo = buscar(CHAVES.veiculos, revisao.veiculoId);
+  return {
+    ...revisao,
+    clienteNome: cliente ? cliente.nome : "Cliente não encontrado",
+    modelo: veiculo ? veiculo.modelo : "Veículo não encontrado",
+    placa: veiculo ? veiculo.placa : "",
+    situacao: situacaoDaRevisao(revisao),
+  };
+}
+
+function linhaRevisao(r) {
+  const placa = r.placa
+    ? ` <span class="badge text-bg-light border font-monospace">${escaparHtml(r.placa)}</span>`
+    : "";
   return `
     <tr>
-      <td>${escaparHtml(revisao.clienteNome)}</td>
-      <td>${escaparHtml(v.modelo)} <span class="badge text-bg-light border font-monospace">${escaparHtml(v.placa)}</span></td>
-      <td>${escaparHtml(revisao.servico)}<div class="small text-body-secondary">${revisao.feitoEm.toLocaleDateString("pt-BR")} · ${revisao.kmFeito.toLocaleString("pt-BR")} km</div></td>
-      <td>${textoProximaRevisao(revisao)}<div class="small text-body-secondary">Km estimado hoje: ${revisao.kmHoje.toLocaleString("pt-BR")}</div></td>
-      <td>${ETIQUETAS[revisao.situacao]}</td>
-      <td class="text-end"><a class="btn btn-sm btn-outline-primary" href="ordem.html?id=${encodeURIComponent(revisao.ordemId)}">Ver OS</a></td>
+      <td>${escaparHtml(r.clienteNome)}</td>
+      <td>${escaparHtml(r.modelo)}${placa}</td>
+      <td>${formatarData(r.dataPrevista)}</td>
+      <td>${ETIQUETAS[r.situacao]}</td>
+      <td class="text-end">
+        <button type="button" class="btn btn-sm btn-outline-primary" data-acao="editar" data-id="${r.id}">Editar</button>
+        <button type="button" class="btn btn-sm btn-outline-danger" data-acao="excluir" data-id="${r.id}">Excluir</button>
+      </td>
     </tr>`;
 }
 
 function linhaVazia(texto) {
   return `
     <tr>
-      <td colspan="6" class="text-center text-body-secondary py-5">
+      <td colspan="5" class="text-center text-body-secondary py-5">
         <i class="bi bi-calendar-check fs-1"></i>
         <p class="mb-0">${texto}</p>
       </td>
@@ -163,20 +87,21 @@ function filtrarRevisoes(revisoes) {
     if (situacao !== "" && r.situacao !== situacao) return false;
     if (busca === "") return true;
     return r.clienteNome.toLowerCase().includes(busca) ||
-      r.veiculo.placa.toLowerCase().includes(busca) ||
-      r.veiculo.modelo.toLowerCase().includes(busca);
+      r.placa.toLowerCase().includes(busca) ||
+      r.modelo.toLowerCase().includes(busca);
   });
 }
 
 function renderizarRevisoes() {
-  const todas = calcularRevisoes();
+  const todas = listar(CHAVES.revisoes).map(detalharRevisao);
 
   // Os contadores mostram o total geral, sem depender dos filtros
   document.getElementById("total-vencidas").textContent = todas.filter((r) => r.situacao === "vencida").length;
   document.getElementById("total-proximas").textContent = todas.filter((r) => r.situacao === "proxima").length;
 
-  // Mais urgentes primeiro
-  const revisoes = filtrarRevisoes(todas).sort((a, b) => PESO_SITUACAO[a.situacao] - PESO_SITUACAO[b.situacao]);
+  // Data mais antiga primeiro: as vencidas aparecem no topo
+  const revisoes = filtrarRevisoes(todas).sort((a, b) =>
+    PESO_SITUACAO[a.situacao] - PESO_SITUACAO[b.situacao] || a.dataPrevista.localeCompare(b.dataPrevista));
 
   if (revisoes.length === 0) {
     listaRevisoes.innerHTML = linhaVazia(
@@ -194,4 +119,148 @@ for (const campo of [buscaRevisao, filtroSituacao]) {
 // O Enter na busca não deve recarregar a página
 buscaRevisao.form.addEventListener("submit", (evento) => evento.preventDefault());
 
+// ---- Formulário (cadastro e edição) ----
+
+const formRevisao = document.getElementById("form-revisao");
+const modalRevisao = new bootstrap.Modal("#modalRevisao");
+const errosRevisao = document.getElementById("erros-revisao");
+let idEmEdicao = null; // null = cadastrando uma revisão nova
+
+// Select de clientes
+function carregarClientes() {
+  const clientes = listar(CHAVES.clientes);
+  clientes.sort((a, b) => a.nome.localeCompare(b.nome, "pt-BR"));
+
+  let opcoes = '<option value="">Selecione o cliente</option>';
+  for (const cliente of clientes) {
+    opcoes += `<option value="${cliente.id}">${escaparHtml(cliente.nome)}</option>`;
+  }
+  formRevisao.clienteId.innerHTML = opcoes;
+
+  // Sem veículo cadastrado não há o que agendar: mostra o aviso e trava o botão
+  const semVeiculos = listar(CHAVES.veiculos).length === 0;
+  document.getElementById("aviso-sem-veiculos").classList.toggle("d-none", !semVeiculos);
+  document.getElementById("btn-nova-revisao").disabled = semVeiculos;
+}
+
+// Select de veículos: só os do cliente escolhido
+function carregarVeiculos(clienteId) {
+  const veiculos = listar(CHAVES.veiculos).filter((v) => v.clienteId === clienteId);
+
+  let opcoes = '<option value="">Selecione o veículo</option>';
+  for (const v of veiculos) {
+    opcoes += `<option value="${v.id}">${escaparHtml(v.modelo)} (${escaparHtml(v.placa)})</option>`;
+  }
+  formRevisao.veiculoId.innerHTML = opcoes;
+  formRevisao.veiculoId.disabled = clienteId === "";
+  if (clienteId !== "" && veiculos.length === 0) {
+    formRevisao.veiculoId.innerHTML = '<option value="">Este cliente não tem veículos</option>';
+  }
+}
+
+formRevisao.clienteId.addEventListener("change", () => carregarVeiculos(formRevisao.clienteId.value));
+
+function lerFormulario() {
+  return {
+    clienteId: formRevisao.clienteId.value,
+    veiculoId: formRevisao.veiculoId.value,
+    dataPrevista: formRevisao.dataPrevista.value,
+  };
+}
+
+function mostrarErros(erros) {
+  errosRevisao.innerHTML = erros.join("<br>");
+  errosRevisao.classList.remove("d-none");
+}
+
+// Volta o formulário ao estado inicial (chamado quando o modal fecha)
+function limparFormulario() {
+  formRevisao.reset();
+  formRevisao.classList.remove("was-validated");
+  errosRevisao.classList.add("d-none");
+  document.getElementById("tituloModalRevisao").textContent = "Nova revisão";
+  carregarVeiculos("");
+  idEmEdicao = null;
+}
+
+document.getElementById("modalRevisao").addEventListener("hidden.bs.modal", limparFormulario);
+
+formRevisao.addEventListener("submit", (evento) => {
+  evento.preventDefault();
+
+  // 1º: validações do próprio HTML (campos obrigatórios)
+  if (!formRevisao.checkValidity()) {
+    formRevisao.classList.add("was-validated");
+    return;
+  }
+
+  // 2º: regras do validacao.js (cliente e veículo existem, veículo é do cliente, data)
+  const dados = lerFormulario();
+  const erros = validarRevisao(dados, idEmEdicao);
+  if (erros.length > 0) {
+    mostrarErros(erros);
+    return;
+  }
+
+  if (idEmEdicao === null) {
+    criar(CHAVES.revisoes, { ...dados, criadoEm: new Date().toISOString() });
+    mostrarMensagem("Revisão cadastrada.");
+  } else {
+    atualizar(CHAVES.revisoes, idEmEdicao, dados);
+    mostrarMensagem("Revisão atualizada.");
+  }
+
+  modalRevisao.hide();
+  renderizarRevisoes();
+});
+
+// Edição: abre o modal com os dados da revisão já preenchidos
+function abrirEdicao(id) {
+  const revisao = buscar(CHAVES.revisoes, id);
+  if (!revisao) return;
+
+  idEmEdicao = id;
+  formRevisao.clienteId.value = revisao.clienteId;
+  carregarVeiculos(revisao.clienteId);
+  formRevisao.veiculoId.value = revisao.veiculoId;
+  formRevisao.dataPrevista.value = revisao.dataPrevista;
+  document.getElementById("tituloModalRevisao").textContent = "Editar revisão";
+  modalRevisao.show();
+}
+
+// ---- Exclusão ----
+
+const modalExcluir = new bootstrap.Modal("#modalExcluir");
+let idParaExcluir = null;
+
+function pedirExclusao(id) {
+  const revisao = buscar(CHAVES.revisoes, id);
+  if (!revisao) return;
+
+  const r = detalharRevisao(revisao);
+  idParaExcluir = id;
+  document.getElementById("nome-excluir").textContent =
+    `Revisão de ${r.modelo}${r.placa ? " (" + r.placa + ")" : ""} em ${formatarData(r.dataPrevista)}`;
+  modalExcluir.show();
+}
+
+document.getElementById("btn-confirmar-exclusao").addEventListener("click", () => {
+  excluir(CHAVES.revisoes, idParaExcluir);
+  modalExcluir.hide();
+  mostrarMensagem("Revisão excluída.");
+  renderizarRevisoes();
+});
+
+// Botões "Editar" e "Excluir" de cada linha
+listaRevisoes.addEventListener("click", (evento) => {
+  const botao = evento.target.closest("button[data-acao]");
+  if (!botao) return;
+
+  if (botao.dataset.acao === "editar") abrirEdicao(botao.dataset.id);
+  if (botao.dataset.acao === "excluir") pedirExclusao(botao.dataset.id);
+});
+
+// Ao abrir a página, carrega os clientes e mostra as revisões salvas
+carregarClientes();
+carregarVeiculos("");
 renderizarRevisoes();
