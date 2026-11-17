@@ -49,7 +49,6 @@ function cartaoVeiculo(veiculo) {
           <p class="card-text small mb-0">Dono: ${escaparHtml(nomeDoDono(veiculo.clienteId))}</p>
         </div>
         <div class="card-footer bg-transparent d-flex gap-2">
-          <button type="button" class="btn btn-sm btn-primary" disabled title="Disponível junto com o CRUD de ordens de serviço">Nova OS</button>
           <button type="button" class="btn btn-sm btn-outline-primary" data-acao="editar" data-id="${veiculo.id}">Editar</button>
           <button type="button" class="btn btn-sm btn-outline-danger" data-acao="excluir" data-id="${veiculo.id}">Excluir</button>
         </div>

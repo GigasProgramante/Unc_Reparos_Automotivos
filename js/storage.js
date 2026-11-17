@@ -19,16 +19,16 @@ const CHAVES = {
 
 // Crie o Sequencial caso ele não exista no localStorage
 if (localStorage.getItem("sequencial") === null){
-    localStorage.setItem("sequencial", "0");
+  localStorage.setItem("sequencial", "0");
 }
 
 // Para gerar o sequencial especifico da Ordem de serviço, apenas aumenta
 function gerarSequencial() {
-    let sequencial = Number(localStorage.getItem("sequencial"));
-    sequencial += 1;
+  let sequencial = Number(localStorage.getItem("sequencial"));
+  sequencial += 1;
 
-    localStorage.setItem("sequencial", String(sequencial));
-    return sequencial;
+  localStorage.setItem("sequencial", String(sequencial));
+  return sequencial;
 }
 
 // IDENTIFICADORES
