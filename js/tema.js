@@ -1,7 +1,5 @@
-// Troca de tema (escuro/claro). Para adicionar um tema novo:
-//   1. crie o bloco [data-theme="nome"] no css/style.css
-//   2. registre-o aqui em TEMAS (bs = "light" ou "dark", base do Bootstrap)
-// Carregue este arquivo no <head>, para aplicar o tema antes da página aparecer.
+// Troca de tema (escuro/claro).
+// Arquivo carrega no <head>, para aplicar o tema antes da página aparecer.
 // O botão <button id="btn-tema"> fica no HTML da navbar; este script cuida do clique, do ícone e do texto.
 
 const TEMAS = {
